@@ -89,8 +89,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://vajn.github.io/2018/05/27/desgin-pattern/images/简单工厂模式_Hk5GOvU1m.png">
 <meta property="og:image" content="https://vajn.github.io/2018/05/27/desgin-pattern/images/策略模式_rJ4cAcDym.png">
-<meta property="og:image" content="https://vajn.github.io/2018/05/27/desgin-pattern/2018/05/27/desgin-pattern/images/策略模式_rJ4cAcDym.png">
-<meta property="og:updated_time" content="2018-05-28T01:12:02.000Z">
+<meta property="og:updated_time" content="2018-05-28T01:17:33.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="设计模式整理(-)">
 <meta name="twitter:description" content="简单的工厂模式模式的定义简单工厂模式(Simple Factory Pattern)：又称静态工厂方法(Static Factory Method)模式，它属于类创建型模式。在简单工厂模式中，可以根据参数不同返回不同的示例。简单工厂模式专门定义一个类来负责创建其他类的实例，被创建的实例通常都具有共同的父类。 模式结构简单工厂模式包含如下角色 Factory: 工厂角色 ​    工厂角色负责实现创">
@@ -345,7 +344,6 @@
 <p>Strategy：抽象策略类</p>
 <p>ConcreteStrategy：具体策略类</p>
 <p><img src="/2018/05/27/desgin-pattern/images/策略模式_rJ4cAcDym.png" alt="策略模式_rJ4cAcDym"></p>
-<img src="/2018/05/27/desgin-pattern/2018/05/27/desgin-pattern/images/策略模式_rJ4cAcDym.png" title="This is an image">
 <p><strong>示例代码</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">package com.cx.StrategyPattern;</span><br><span class="line"></span><br><span class="line">public abstract class Strategy &#123;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 抽象算法方法</span><br><span class="line">     */</span><br><span class="line">    public abstract void algorithmInterface();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">package com.cx.StrategyPattern;</span><br><span class="line"></span><br><span class="line">public class ConcreateStrategyA extends Strategy&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void algorithmInterface() &#123;</span><br><span class="line">        System.out.println(&quot;algorithm A implements !&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
