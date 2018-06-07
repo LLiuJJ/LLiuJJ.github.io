@@ -79,19 +79,17 @@
 
 
 
-<meta name="description" content="Cxspace一个安静码代码的码农  南昌大学网络工程专业本科生，对分布式计算，云编码，高性能计算强烈研究热情。  正在努力让自己过的真实  你看到什么，听到什么，做什么，和谁在一起，如果有一种从心灵深处满溢出来的，不懊悔也不羞耻的，平和与喜悦，那就是真实。  邮箱  liu___jie@outlook.com">
-<meta property="og:type" content="website">
-<meta property="og:title" content="about">
-<meta property="og:url" content="https://vajn.github.io/about/index.html">
+<meta name="description" content="80X86的CPU结构 1.总线接口部件：管理地址、数据和控制总线，完成指令预取、读/写数据等总线操作 2.指令预取部件：含有32字节的指令预取队列，可通过总线接口部件从M中读取指令放入指令队列 3.指令译码部件：从指令预取队列中读取指令译码 4.指令执行部件：由ALU、通用R、桶形移位R等组成完成各种逻辑/算术运算 5.段管理部件：对M进行分段管理，将逻辑地址转换为32位线性地址 6.页管理部件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微机原理">
+<meta property="og:url" content="https://vajn.github.io/2018/06/06/微机原理/index.html">
 <meta property="og:site_name" content="用心感受生活">
-<meta property="og:description" content="Cxspace一个安静码代码的码农  南昌大学网络工程专业本科生，对分布式计算，云编码，高性能计算强烈研究热情。  正在努力让自己过的真实  你看到什么，听到什么，做什么，和谁在一起，如果有一种从心灵深处满溢出来的，不懊悔也不羞耻的，平和与喜悦，那就是真实。  邮箱  liu___jie@outlook.com">
+<meta property="og:description" content="80X86的CPU结构 1.总线接口部件：管理地址、数据和控制总线，完成指令预取、读/写数据等总线操作 2.指令预取部件：含有32字节的指令预取队列，可通过总线接口部件从M中读取指令放入指令队列 3.指令译码部件：从指令预取队列中读取指令译码 4.指令执行部件：由ALU、通用R、桶形移位R等组成完成各种逻辑/算术运算 5.段管理部件：对M进行分段管理，将逻辑地址转换为32位线性地址 6.页管理部件">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://vajn.github.io/about/head.jpg">
-<meta property="og:updated_time" content="2018-06-06T08:44:07.000Z">
+<meta property="og:updated_time" content="2018-06-07T05:25:00.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="about">
-<meta name="twitter:description" content="Cxspace一个安静码代码的码农  南昌大学网络工程专业本科生，对分布式计算，云编码，高性能计算强烈研究热情。  正在努力让自己过的真实  你看到什么，听到什么，做什么，和谁在一起，如果有一种从心灵深处满溢出来的，不懊悔也不羞耻的，平和与喜悦，那就是真实。  邮箱  liu___jie@outlook.com">
-<meta name="twitter:image" content="https://vajn.github.io/about/head.jpg">
+<meta name="twitter:title" content="微机原理">
+<meta name="twitter:description" content="80X86的CPU结构 1.总线接口部件：管理地址、数据和控制总线，完成指令预取、读/写数据等总线操作 2.指令预取部件：含有32字节的指令预取队列，可通过总线接口部件从M中读取指令放入指令队列 3.指令译码部件：从指令预取队列中读取指令译码 4.指令执行部件：由ALU、通用R、桶形移位R等组成完成各种逻辑/算术运算 5.段管理部件：对M进行分段管理，将逻辑地址转换为32位线性地址 6.页管理部件">
 
 
 
@@ -121,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="https://vajn.github.io/about/"/>
+  <link rel="canonical" href="https://vajn.github.io/2018/06/06/微机原理/"/>
 
 
 
 
 
-  <title>about | 用心感受生活</title>
+  <title>微机原理 | 用心感受生活</title>
   
 
 
@@ -232,46 +230,147 @@
 
   <div id="posts" class="posts-expand">
     
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://vajn.github.io/2018/06/06/微机原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jie Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="用心感受生活">
+    </span>
+
     
-    
-    <div class="post-block page">
       <header class="post-header">
 
-	<h1 class="post-title" itemprop="name headline">about</h1>
-
-
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
         
         
-          <h4 id="Cxspace"><a href="#Cxspace" class="headerlink" title="Cxspace"></a>Cxspace</h4><p><strong>一个安静码代码的码农</strong></p>
-<ul>
-<li>南昌大学网络工程专业本科生，对分布式计算，云编码，高性能计算强烈研究热情。</li>
-</ul>
-<p><strong>正在努力让自己过的真实</strong></p>
-<ul>
-<li>你看到什么，听到什么，做什么，和谁在一起，如果有一种从心灵深处满溢出来的，不懊悔也不羞耻的，平和与喜悦，那就是真实。</li>
-</ul>
-<p><strong>邮箱</strong></p>
-<ul>
-<li><a href="mailto:liu___jie@outlook.com" target="_blank" rel="noopener">liu___jie@outlook.com</a></li>
-</ul>
-<p><img src="/about/head.jpg" alt="head"></p>
-
+          <h1 class="post-title" itemprop="name headline">微机原理</h1>
         
-      </div>
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-06T22:32:38+08:00">
+                2018-06-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
       
+
+      
+        <h2 id="80X86的CPU结构"><a href="#80X86的CPU结构" class="headerlink" title="80X86的CPU结构"></a>80X86的CPU结构</h2><ul>
+<li>1.总线接口部件：管理地址、数据和控制总线，完成指令预取、读/写数据等总线操作</li>
+<li>2.指令预取部件：含有32字节的指令预取队列，可通过总线接口部件从M中读取指令放入指令队列</li>
+<li>3.指令译码部件：从指令预取队列中读取指令译码</li>
+<li>4.指令执行部件：由ALU、通用R、桶形移位R等组成完成各种逻辑/算术运算</li>
+<li>5.段管理部件：对M进行分段管理，将逻辑地址转换为32位线性地址</li>
+<li>6.页管理部件：对M进行分页管理，将线性地址变换为M的32位物理地址</li>
+<li>7.高速缓冲部件：可加速指令和数据的访问</li>
+<li>8.浮点运算部件：简称FPU，专门用于浮点运算</li>
+</ul>
+<h2 id="PCI-E总线"><a href="#PCI-E总线" class="headerlink" title="PCI-E总线"></a>PCI-E总线</h2>
       
     </div>
     
     
     
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/06/desgin-pattern2/" rel="next" title="设计模式整理(二)">
+                <i class="fa fa-chevron-left"></i> 设计模式整理(二)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
   </div>
 
 
@@ -375,7 +474,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Cxspace"><span class="nav-number">1.</span> <span class="nav-text">Cxspace</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#80X86的CPU结构"><span class="nav-number">1.</span> <span class="nav-text">80X86的CPU结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PCI-E总线"><span class="nav-number">2.</span> <span class="nav-text">PCI-E总线</span></a></li></ol></div>
             
 
           </div>
