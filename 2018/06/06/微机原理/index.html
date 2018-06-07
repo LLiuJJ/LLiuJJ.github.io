@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="用心感受生活">
 <meta property="og:description" content="80X86的CPU结构 1.总线接口部件：管理地址、数据和控制总线，完成指令预取、读/写数据等总线操作 2.指令预取部件：含有32字节的指令预取队列，可通过总线接口部件从M中读取指令放入指令队列 3.指令译码部件：从指令预取队列中读取指令译码 4.指令执行部件：由ALU、通用R、桶形移位R等组成完成各种逻辑/算术运算 5.段管理部件：对M进行分段管理，将逻辑地址转换为32位线性地址 6.页管理部件">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-06-07T05:25:00.000Z">
+<meta property="og:updated_time" content="2018-06-07T11:26:09.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="微机原理">
 <meta name="twitter:description" content="80X86的CPU结构 1.总线接口部件：管理地址、数据和控制总线，完成指令预取、读/写数据等总线操作 2.指令预取部件：含有32字节的指令预取队列，可通过总线接口部件从M中读取指令放入指令队列 3.指令译码部件：从指令预取队列中读取指令译码 4.指令执行部件：由ALU、通用R、桶形移位R等组成完成各种逻辑/算术运算 5.段管理部件：对M进行分段管理，将逻辑地址转换为32位线性地址 6.页管理部件">
@@ -319,7 +319,64 @@
 <li>7.高速缓冲部件：可加速指令和数据的访问</li>
 <li>8.浮点运算部件：简称FPU，专门用于浮点运算</li>
 </ul>
-<h2 id="PCI-E总线"><a href="#PCI-E总线" class="headerlink" title="PCI-E总线"></a>PCI-E总线</h2>
+<h2 id="80X86的数据类型"><a href="#80X86的数据类型" class="headerlink" title="80X86的数据类型"></a>80X86的数据类型</h2><ul>
+<li>无符号二进制数</li>
+<li>有符号二进制数</li>
+<li>浮点数</li>
+<li>BCD码<ul>
+<li>压缩BCD码:一个字节存放两个BCD码</li>
+<li>非压缩BCD码:一个字节存放一个BCD码（低4位）</li>
+</ul>
+</li>
+<li>字符串<ul>
+<li>位串</li>
+<li>字节/字/双字串</li>
+</ul>
+</li>
+<li>ASCII码</li>
+<li>指针数据</li>
+</ul>
+<h2 id="80X86寻址方式"><a href="#80X86寻址方式" class="headerlink" title="80X86寻址方式"></a>80X86寻址方式</h2><ul>
+<li>立即寻址</li>
+<li>寄存器寻址</li>
+<li>直接寻址</li>
+<li>寄存器间接寻址</li>
+<li>相对寄存器间接寻址</li>
+<li>基址加变址寻址</li>
+<li>相对基址加变址寻址</li>
+</ul>
+<h2 id="指令格式"><a href="#指令格式" class="headerlink" title="指令格式"></a>指令格式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[标号:]	操作码	[操作数,...]	[;注释]</span><br></pre></td></tr></table></figure>
+<h3 id="运算相关标志位"><a href="#运算相关标志位" class="headerlink" title="运算相关标志位"></a>运算相关标志位</h3><ul>
+<li>CF：进位／借位标志</li>
+<li>AF：辅助进位／借位标志</li>
+<li>OF：溢出标志</li>
+<li>ZF：零标志</li>
+<li>SF：符号标志</li>
+<li>PF：奇偶标志</li>
+</ul>
+<h2 id="指令类型"><a href="#指令类型" class="headerlink" title="指令类型"></a>指令类型</h2><ul>
+<li><p>数据传送类指令</p>
+<p>不影响标志位</p>
+<p>MOV OP1 OP2</p>
+</li>
+<li><p>数据交换类指令</p>
+<p>XCHG OP1 OP2</p>
+</li>
+<li><p>I/O指令IN和OUT</p>
+<p>IN    OP1 OP2</p>
+<p>OUT OP1 OP2</p>
+</li>
+<li><p>堆栈操作</p>
+</li>
+<li><p>标志寄存器传送指令</p>
+</li>
+<li><p>查表转换指令XLAT</p>
+</li>
+<li><p>算术运算指令</p>
+<p>判断溢出标志，最高位和次高位同时进位OF=1，最高位和次高位不同时进位，OF=0</p>
+</li>
+</ul>
+
       
     </div>
     
@@ -474,7 +531,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#80X86的CPU结构"><span class="nav-number">1.</span> <span class="nav-text">80X86的CPU结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PCI-E总线"><span class="nav-number">2.</span> <span class="nav-text">PCI-E总线</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#80X86的CPU结构"><span class="nav-number">1.</span> <span class="nav-text">80X86的CPU结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#80X86的数据类型"><span class="nav-number">2.</span> <span class="nav-text">80X86的数据类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#80X86寻址方式"><span class="nav-number">3.</span> <span class="nav-text">80X86寻址方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#指令格式"><span class="nav-number">4.</span> <span class="nav-text">指令格式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#运算相关标志位"><span class="nav-number">4.1.</span> <span class="nav-text">运算相关标志位</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#指令类型"><span class="nav-number">5.</span> <span class="nav-text">指令类型</span></a></li></ol></div>
             
 
           </div>
