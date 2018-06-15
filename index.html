@@ -323,8 +323,7 @@
 <li>配置docker0网桥(centos对应为172.17.42.1)</li>
 </ul>
 <p><img src="/2018/06/15/Docker容器跨主机网络互联方案实验/docker0网桥.png" alt="docker0网桥"></p>
-<pre><code>配置完后
-</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart docker</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 配置完后, 重启docker 服务</span><br><span class="line">systemctl restart docker</span><br></pre></td></tr></table></figure>
 <ul>
 <li>添加路由打通网络</li>
 </ul>

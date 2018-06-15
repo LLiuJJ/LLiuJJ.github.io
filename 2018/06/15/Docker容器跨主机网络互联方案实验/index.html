@@ -79,22 +79,22 @@
 
 
 
-<meta name="description" content="Linux路由机制打通网络 下图是我实验环境的网络架构   部署记录 虚拟机安装两台centos mini系统，配置宿主机网络环境，设置selinux为disabled 安装docker  1yum install docker-io -y  配置docker0网桥(centos对应为172.17.42.1)   配置完后 1systemctl restart docker  添加路由打通网络">
+<meta name="description" content="Linux路由机制打通网络 下图是我实验环境的网络架构   部署记录 虚拟机安装两台centos mini系统，配置宿主机网络环境，设置selinux为disabled 安装docker  1yum install docker-io -y  配置docker0网桥(centos对应为172.17.42.1)   12# 配置完后, 重启docker 服务systemctl restart doc">
 <meta name="keywords" content="容器云">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Docker容器跨主机网络互联方案实验">
 <meta property="og:url" content="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/index.html">
 <meta property="og:site_name" content="用心感受生活">
-<meta property="og:description" content="Linux路由机制打通网络 下图是我实验环境的网络架构   部署记录 虚拟机安装两台centos mini系统，配置宿主机网络环境，设置selinux为disabled 安装docker  1yum install docker-io -y  配置docker0网桥(centos对应为172.17.42.1)   配置完后 1systemctl restart docker  添加路由打通网络">
+<meta property="og:description" content="Linux路由机制打通网络 下图是我实验环境的网络架构   部署记录 虚拟机安装两台centos mini系统，配置宿主机网络环境，设置selinux为disabled 安装docker  1yum install docker-io -y  配置docker0网桥(centos对应为172.17.42.1)   12# 配置完后, 重启docker 服务systemctl restart doc">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/路由互联架构.png">
 <meta property="og:image" content="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/docker0网桥.png">
 <meta property="og:image" content="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/直接网关1.png">
 <meta property="og:image" content="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/直接网关2.png">
-<meta property="og:updated_time" content="2018-06-15T08:54:33.000Z">
+<meta property="og:updated_time" content="2018-06-15T08:56:56.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Docker容器跨主机网络互联方案实验">
-<meta name="twitter:description" content="Linux路由机制打通网络 下图是我实验环境的网络架构   部署记录 虚拟机安装两台centos mini系统，配置宿主机网络环境，设置selinux为disabled 安装docker  1yum install docker-io -y  配置docker0网桥(centos对应为172.17.42.1)   配置完后 1systemctl restart docker  添加路由打通网络">
+<meta name="twitter:description" content="Linux路由机制打通网络 下图是我实验环境的网络架构   部署记录 虚拟机安装两台centos mini系统，配置宿主机网络环境，设置selinux为disabled 安装docker  1yum install docker-io -y  配置docker0网桥(centos对应为172.17.42.1)   12# 配置完后, 重启docker 服务systemctl restart doc">
 <meta name="twitter:image" content="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/路由互联架构.png">
 
 
@@ -328,8 +328,7 @@
 <li>配置docker0网桥(centos对应为172.17.42.1)</li>
 </ul>
 <p><img src="/2018/06/15/Docker容器跨主机网络互联方案实验/docker0网桥.png" alt="docker0网桥"></p>
-<pre><code>配置完后
-</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart docker</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 配置完后, 重启docker 服务</span><br><span class="line">systemctl restart docker</span><br></pre></td></tr></table></figure>
 <ul>
 <li>添加路由打通网络</li>
 </ul>
