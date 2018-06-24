@@ -239,6 +239,142 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://vajn.github.io/2018/06/24/基于docker的gpu高性能计算云方案/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jie Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="用心感受生活">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/24/基于docker的gpu高性能计算云方案/" itemprop="url">基于docker的gpu高性能计算云方案</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-24T13:10:10+08:00">
+                2018-06-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="系统总体架构"><a href="#系统总体架构" class="headerlink" title="系统总体架构"></a>系统总体架构</h3><p><img src="/2018/06/24/基于docker的gpu高性能计算云方案/GPU云架构.001.jpeg" alt="GPU云架构.001"></p>
+<h4 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h4><p>​    面对Good实验室(<a href="http://good.ncu.edu.cn/good" target="_blank" rel="noopener">http://good.ncu.edu.cn/good</a>) 众多高性能学习计算需求，整个服务集群的环境部署复杂(如各种深度学习计算框架的部署需求)，依赖混乱，GPU资源的资源无法动态分配等问题日益凸显出来。为此，我们搭建了可进行资源编排，负载均衡，以及服务代理等多个功能的简单容器云计算平台。</p>
+<h4 id="架构概述"><a href="#架构概述" class="headerlink" title="架构概述"></a>架构概述</h4><p>​    集群的控制器（Controller）部署在一台提供公网IP的服务器上，外网用户可以通过该节点代理访问内网的GPU计算资源。该节点具有负责web服务的负载均衡，资源控制，代理访问等多个服务进程，相当于整个系统中的总管家。集群中有多个GPU计算节点，GPU节点配备了不同的GPU卡，并且通过nvidia-docker提供了具有gpu访问能力的docker容器，结合docker快速部署，持续集成的特性，我们可以快速部署开发出适合不同高性能计算需求的PAAS平台来。容器之间通过OVS+docker网络方案实现容器间跨主机通信，可以实现一些需要高性能并行计算需求的服务，此处需要物理机之间配备类似Infiniband的高速网络设备，才能发挥多机GPU并行的高性能计算服务。</p>
+<h4 id="搭建配置记录（未详细整理，待续）"><a href="#搭建配置记录（未详细整理，待续）" class="headerlink" title="搭建配置记录（未详细整理，待续）"></a>搭建配置记录（未详细整理，待续）</h4><h5 id="安装Nvidia-docker节点"><a href="#安装Nvidia-docker节点" class="headerlink" title="安装Nvidia-docker节点"></a>安装Nvidia-docker节点</h5><ul>
+<li>安装ubuntu-server16.04操作系统</li>
+<li>关闭ligthdm服务进程</li>
+<li>移除系统自带的显卡驱动</li>
+<li>参考部署脚本(<a href="https://github.com/willkessler/nvidia-docker-novnc" target="_blank" rel="noopener">https://github.com/willkessler/nvidia-docker-novnc</a>)</li>
+</ul>
+<h5 id="控制节点"><a href="#控制节点" class="headerlink" title="控制节点"></a>控制节点</h5><ul>
+<li>部署nginx(nginx version: nginx/1.10.3 (Ubuntu)</li>
+</ul>
+<h5 id="OVS-docker-Network配置"><a href="#OVS-docker-Network配置" class="headerlink" title="OVS+docker Network配置"></a>OVS+docker Network配置</h5><ul>
+<li>待续</li>
+</ul>
+<h4 id="tensorflow多容器进行计算服务展示"><a href="#tensorflow多容器进行计算服务展示" class="headerlink" title="tensorflow多容器进行计算服务展示"></a>tensorflow多容器进行计算服务展示</h4><p><img src="/2018/06/24/基于docker的gpu高性能计算云方案/002.png" alt="002"></p>
+<p><img src="/2018/06/24/基于docker的gpu高性能计算云方案/003.png" alt="003"></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1891,7 +2027,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
