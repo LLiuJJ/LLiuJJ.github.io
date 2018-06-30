@@ -596,6 +596,95 @@
         
           
             <h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a href="https://github.com/gjmzj/kubeasz" target="_blank" rel="noopener">https://github.com/gjmzj/kubeasz</a></p>
+<h3 id="K8S设计架构"><a href="#K8S设计架构" class="headerlink" title="K8S设计架构"></a>K8S设计架构</h3><p>要想成功的部署K8S，需要对K8S的基本组件有一定了解。K8S集群中包含有节点代理kubelet和Master组件(APIs, scheduler, etc)，一切都是基于分布式存储系统。下面就是K8S的架构图</p>
+<p><img src="/2018/06/14/k8s部署总结/architecture.png" alt=""></p>
+<p>Kubernetes主要由以下几个核心组件组成：</p>
+<ul>
+<li>etcd保存了整个集群的状态</li>
+<li>apiserver提供了资源操作的唯一入口，并提供认证、授权、访问控制、API注册和发现等机制</li>
+<li>controller manager负责维护集群的状态，比如故障检测、自动扩展、滚动更新等</li>
+<li>scheduler负责资源的调度，按照预定的调度策略将Pod调度到对应的机器上</li>
+<li>kubelet负责维护容器的生命周期，同时也负责Volume（CVI）和网络（CNI）的管理</li>
+<li>container runtime负责镜像管理以及Pod容器的真正运行（CRI）</li>
+<li>kube-proxy负责为Service提供cluster内部的服务发现和负载均衡</li>
+</ul>
+<p>除了核心组件外，还有一些附加的组件</p>
+<ul>
+<li>Kube-dns负责为整个集群提供DNS服务</li>
+<li>Ingress Controller为服务提供外网入口</li>
+<li>Heapster提供资源监控</li>
+<li>Dashboard提供GUI</li>
+<li>Federation提供跨可用区的集群</li>
+<li>Fluentd-elasticsearch提供集群日志采集、存储与查询</li>
+</ul>
+<p>分层架构</p>
+<p>K8S设计理念和功能其实就是一个类似Linux的分层架构</p>
+<ul>
+<li>核心层：K8S最核心的功能，对外提供API构建高层的应用，对内提供插件式的应用执行环境</li>
+<li>应用层：部署（无状态应用、有状态应用、批处理任务、集群应用等）和路由（服务发现、DNS解析等）</li>
+<li>管理层：系统调度（如基础设施、容器和网络的度量），自动化（如自动扩展、动态Provision等）以及策略管理（RBAC、Quota、PSP、NetworkPolicy等）</li>
+<li>接口层：kubectl命令行工具、客户端SDK</li>
+<li>生态系统：在接口层之上的庞大容器集群管理调度的生态系统，可以划分为两个范畴<ul>
+<li>K8S外部：日志、监控、配置管理、CI、CD、Workflow、Faas、OTS应用、ChatOps等</li>
+<li>K8S内部：CRI、CNI、CVI、镜像仓库、Cloud Provider、集群自身的配置和管理等</li>
+</ul>
+</li>
+</ul>
+<h3 id="部署过程"><a href="#部署过程" class="headerlink" title="部署过程"></a>部署过程</h3><h5 id="使用https-github-com-gjmzj-kubeasz-git项目脚本部署"><a href="#使用https-github-com-gjmzj-kubeasz-git项目脚本部署" class="headerlink" title="使用https://github.com/gjmzj/kubeasz.git项目脚本部署"></a>使用<a href="https://github.com/gjmzj/kubeasz.git项目脚本部署" target="_blank" rel="noopener">https://github.com/gjmzj/kubeasz.git项目脚本部署</a></h5><h6 id="所需节点配置信息"><a href="#所需节点配置信息" class="headerlink" title="所需节点配置信息"></a>所需节点配置信息</h6><ul>
+<li>部署节点 * 1：运行ansible脚本的节点</li>
+<li>etcd节点 * 3：注意etcd集群必须是1，3，5，7…奇数哥节点</li>
+<li>master节点 * 2：根据实际的增加节点数，需要额外的规划一个master VIP（虚地址）</li>
+<li>lb节点 * 2：负责负载均衡节点两个，安装haproxy+keepalived</li>
+<li>node节点 * 3：真正应负载的节点，根据需要增加机器配置和节点数</li>
+</ul>
+<p>多节点的集群，要确保各节点时区设置一致，并使用ntp服务器同步各节点时间</p>
+<h6 id="参考配置-包括-单节点、单主多节点、多主多节点"><a href="#参考配置-包括-单节点、单主多节点、多主多节点" class="headerlink" title="参考配置-包括(单节点、单主多节点、多主多节点)"></a>参考配置-包括(单节点、单主多节点、多主多节点)</h6><p><a href="https://github.com/vajn/kubeasz/tree/master/example" target="_blank" rel="noopener">https://github.com/vajn/kubeasz/tree/master/example</a></p>
+<h3 id="部署步骤"><a href="#部署步骤" class="headerlink" title="部署步骤"></a>部署步骤</h3><p>准备好相应数目的虚拟机，测试搭建一个高可用集群</p>
+<p>1、基础系统配置</p>
+<ul>
+<li>2G／硬盘30G以上</li>
+<li>最小化安装ubuntu server 或者 centos minimal</li>
+<li>配置网络环境、更新源、SSH登录等</li>
+</ul>
+<p>2、在每个节点安装部署脚本的依赖工具</p>
+<p>ubuntu</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 文档中脚本默认均以root用户执行</span><br><span class="line">apt-get update &amp;&amp; apt-get upgrade -y &amp;&amp; apt-get dist-upgrade -y</span><br><span class="line"># 安装python2</span><br><span class="line">apt-get install python2.7</span><br><span class="line"># Ubuntu16.04可能需要配置以下软连接</span><br><span class="line">ln -s /usr/bin/python2.7 /usr/bin/python</span><br></pre></td></tr></table></figure>
+<p>centos7</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 文档中脚本默认均以root用户执行</span><br><span class="line"># 安装 epel 源并更新</span><br><span class="line">yum install epel-release -y</span><br><span class="line">yum update</span><br><span class="line"># 安装python</span><br><span class="line">yum install python -y</span><br></pre></td></tr></table></figure>
+<p>3、在deploy节点安装及准备ansible</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># Ubuntu 16.04 </span><br><span class="line">apt-get install git python-pip -y</span><br><span class="line"># CentOS 7</span><br><span class="line">yum install git python-pip -y</span><br><span class="line"># pip安装ansible(国内如果安装太慢可以直接用pip阿里云加速)</span><br><span class="line">#pip install pip --upgrade</span><br><span class="line">#pip install ansible</span><br><span class="line">pip install pip --upgrade -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com</span><br><span class="line">pip install --no-cache-dir ansible -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com</span><br></pre></td></tr></table></figure>
+<p>ubuntu中会出现的错误</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;/usr/bin/pip&quot;, line 9, in &lt;module&gt;</span><br><span class="line">    from pip import main</span><br><span class="line">ImportError: cannot import name main</span><br></pre></td></tr></table></figure>
+<p>修改/usr/bin/pip</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#原代码</span><br><span class="line">from pip import main</span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    sys.exit(main())</span><br><span class="line"></span><br><span class="line">#修改后</span><br><span class="line">from pip import __main__</span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    sys.exit(__main__._main())</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在delpoy节点配置免密码登录</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 2048 回车 回车 回车</span><br><span class="line">ssh-copy-id $IPs #$IPs为所有节点地址包括自身，按照提示输入yes 和root密码</span><br></pre></td></tr></table></figure>
+<p>4、在delpoy节点编排安装k8s</p>
+<ul>
+<li>4.1 下载项目源码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 方式一：使用git clone</span><br><span class="line">git clone https://github.com/gjmzj/kubeasz.git</span><br><span class="line">mkdir -p /etc/ansible</span><br><span class="line">mv kubeasz/* /etc/ansible</span><br><span class="line"># 方式二：从发布页面 https://github.com/gjmzj/kubeasz/releases 下载源码解压到同样目录</span><br></pre></td></tr></table></figure>
+<ul>
+<li>4.2a 下载二进制文件 请从分享的链接:<a href="https://pan.baidu.com/s/10kEtpzfoWTTJHPKUr6zWrA" target="_blank" rel="noopener">https://pan.baidu.com/s/10kEtpzfoWTTJHPKUr6zWrA</a>  密码:fchr，下载解压到/etc/ansible/bin目录，如果你有合适网络环境也可以按照/down/download.sh自行从官网下载各种tar包</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar zxvf k8s.1-9-8.tar.gz       # 以安装k8s v1.9.8为例</span><br><span class="line">mv bin/* /etc/ansible/bin</span><br></pre></td></tr></table></figure>
+<ul>
+<li>4.2b [可选]下载离线docker镜像 服务器使用内部yum源/apt源，但是无法访问公网情况下，请下载离线docker镜像完成集群安装；从百度云盘把<code>basic_images_kubeasz_x.y.tar.gz</code> 下载解压到<code>/etc/ansible/down</code> 目录</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar zxvf basic_images_kubeasz_0.2.tar.gz -C /etc/ansible/down</span><br></pre></td></tr></table></figure>
+<ul>
+<li>4.3 配置集群参数</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/ansible</span><br><span class="line">cp example/hosts.m-masters.example hosts</span><br><span class="line">vim hosts                       # 根据实际情况修改此hosts文件</span><br><span class="line"># 验证ansible安装，正常能看到每个节点返回 SUCCESS</span><br><span class="line">ansible all -m ping</span><br></pre></td></tr></table></figure>
+<ul>
+<li>4.4 开始安装 </li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># 分步安装</span><br><span class="line">ansible-playbook 01.prepare.yml</span><br><span class="line">ansible-playbook 02.etcd.yml</span><br><span class="line">ansible-playbook 03.docker.yml</span><br><span class="line">ansible-playbook 04.kube-master.yml</span><br><span class="line">ansible-playbook 05.kube-node.yml</span><br><span class="line">ansible-playbook 06.network.yml</span><br><span class="line">ansible-playbook 07.cluster-addon.yml</span><br><span class="line"># 一步安装</span><br><span class="line">#ansible-playbook 90.setup.yml</span><br></pre></td></tr></table></figure>
+<h3 id="访问dashboard"><a href="#访问dashboard" class="headerlink" title="访问dashboard"></a>访问dashboard</h3><p><img src="/2018/06/14/k8s部署总结/k8s1.png" alt=""></p>
+<h3 id="部署简单例子测试"><a href="#部署简单例子测试" class="headerlink" title="部署简单例子测试"></a>部署简单例子测试</h3><p><img src="/2018/06/14/k8s部署总结/k8s2.png" alt=""></p>
+<p><img src="/2018/06/14/k8s部署总结/k8s3.png" alt=""></p>
 
           
         
