@@ -239,6 +239,200 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://vajn.github.io/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jie Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="用心感受生活">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/" itemprop="url">基于Openstack和HDFS的高可用云盘系统设计</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-02T09:12:18+08:00">
+                2018-07-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>面对Good实验室大规模数据存储计算需求，基于Hadoop的HDFS，搭建了一个分布式文件系统。系统基于浪潮NF5270M4存储型服务器上，实验环境总共9个节点，服务器存储选择RAID5的方案，存储空间160TB。服务器上搭建了Openstack，利用虚拟化技术，可以弹性的管理用户需要的存储需求。并基于HDFS开发了一个简易Web网盘系统，方便用户存储和管理HDFS中的文件。</p>
+<h4 id="RAID简介"><a href="#RAID简介" class="headerlink" title="RAID简介"></a>RAID简介</h4><p>​    RAID全称独立磁盘冗余阵列（RAID，redundant array of dependent disks），是把相同的数据存储在多个硬盘的不同地方的方法。通过把数据放在多个硬盘上，输入输出操作能以平衡的方式交叠，改良性能。因此多个硬盘增加了平均故障间隔时间（MTBF），存储冗余数据页增加了容错。</p>
+<p>在系统中我们选择的是RAID5的方案</p>
+<p><img src="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/RAID5.png" alt="RAID5"></p>
+<p>​    RAID5应该是目前最常见的RAID等级，它的原理与RAID4相似，区别在于校验数据分布在阵列中的所有磁盘上，而没有采用专门的磁盘。对于数据和校验数据，它们的写操作可以同时发生在完全不同的磁盘上。因此RAID5不存在RAID4中的并发写操作时的校验盘性能瓶颈问题。另外，RAID5还具备很好的扩展性。当阵列磁盘数量增加时，并行操作量的能力也随之增长，可比RAID4支持更多饿的磁盘，从而拥有更高的性能。</p>
+<p>​    RAID5的磁盘上同事存储数据和校验数据，数据块和对应的校验信息保存在不同的磁盘上，当一个数据盘损坏时，系统可以根据同一条带上的其他数据块和对应的校验数据来重建损坏的数据。与其他RAID等级一样，重建数据时RAID5的性能会受到较大的影响。</p>
+<h4 id="HDFS简介"><a href="#HDFS简介" class="headerlink" title="HDFS简介"></a>HDFS简介</h4><p><img src="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/HDFS架构.png" alt="HDFS架构"></p>
+<p>​    HDFS具有主/从结构。HDFS集群中包含单一的NameNode作为master服务器，用于管理文件系统命名空间，并调节客户端对文件的访问。此外，还有一些DataNodes，通常是集群中每个节点的一个，它们管理连接到运行的节点的存储。HDFS公开了文件系统的命名空间，并允许将用户数据存储在文件中。在内部，文件被分割成一个或多个块，并且这些块被存储在一组DataNodes中。NameNode执行文件系统命名空间操作，如打开，关闭和充命名文件和目录。它还确定块到DataNodes的映射。DataNodes负责从文件系统的客户端提供读取和写入请求。DataNode还可以根据NameNode的指示执行块创建，删除和复制。</p>
+<h6 id="HDFS读取文件流程"><a href="#HDFS读取文件流程" class="headerlink" title="HDFS读取文件流程"></a>HDFS读取文件流程</h6><p><img src="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/读取文件.png" alt="读取文件"></p>
+<ul>
+<li>客户端调用FileSystem对象的open()方法在分布式文件系统中打开要读取的文件。</li>
+<li>分布式系统通过使用RPC（远程过程调用）来调用Namenode，确定文件起始块的位置。</li>
+<li>分布式文件系统的DistributedFileSystem类返回一个支持文件定位输入流FSDataInputStream对象，FSDataInputStream对象接着封装DFSInputStream对象，客户端对这个数据流调用read()方法。</li>
+<li>DFSInputStream连接距离最近的datanode，通过反复调用read方法，将数据从datanode传输到客户端。</li>
+<li>到达块末端时，DFSInputStream关闭与datanode的连接，寻找下一个块的最佳datanode。</li>
+<li>客户端完成读取，对FSDataInputStream调用close()方法关闭连接。</li>
+</ul>
+<h6 id="HDFS文件写入的过程"><a href="#HDFS文件写入的过程" class="headerlink" title="HDFS文件写入的过程"></a>HDFS文件写入的过程</h6><p><img src="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/写入文件.png" alt="写入文件"></p>
+<ul>
+<li>客户端通过对DistributedFileSystem对象调用create()函数来新建文件。</li>
+<li>分布式文件系统对namenode创建一个RPC调用，在文件系统的命名空间中新建一个文件。</li>
+<li>Namenode对新建文件进行检查无误后，分布式文件系统返回给客户端一个FSDataOutputStream对象，FSDataOutputStream对象封装着一个DFSOutPutStream对象，负责处理namenode和datanode之间的通信，客户端开始写入数据。</li>
+<li>FSDataOutputStream将数据分成一个一个数据包，写入内部队列“数据队列”，DataStreamer负责将数据包一次流式传输到由一组namenode构成的管线中。</li>
+<li>DFSOutputStream维护着确认队列来等待datanode收到确认回执，收到管道中所有datanode确认后，数据包从确认队列删除。</li>
+<li>客户端完成数据写入，对数据流调用close()方法。</li>
+<li><p>namenode确认完成。</p>
+<h4 id="整个HDFS-WEB网盘的架构如下"><a href="#整个HDFS-WEB网盘的架构如下" class="headerlink" title="整个HDFS WEB网盘的架构如下"></a>整个HDFS WEB网盘的架构如下</h4></li>
+</ul>
+<p><img src="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/HDFS网盘.001.jpeg" alt="HDFS网盘.001"></p>
+<ul>
+<li>对于底层物理机，做了RAID5的存储方案，这个需要在BIOS和RAID设置管理程序中进行相应设置，具体可参考NF5270M4的文档(<a href="http://www.inspur.com/eportal/fileDir/active_download/userBook/NF5270M4/%E6%B5%AA%E6%BD%AE%E8%8B%B1%E4%BF%A1%E6%9C%8D%E5%8A%A1%E5%99%A8NF5270M4%E7%94%A8%E6%88%B7%E6%89%8B%E5%86%8CV1.0.pdf" target="_blank" rel="noopener">手册下载地址</a>)。</li>
+<li>在物理机上架设了openstack，具体部署方法可参考(<a href="https://github.com/vajn/GoodCloud/tree/master/doc/DeployOpenstack" target="_blank" rel="noopener">GoodCloud项目</a>)</li>
+<li>之后创建虚拟机，在虚拟机上部署hadoop集群，部署方法可参考我整理的一个文档(<a href="https://github.com/vajn/GoodCloudDisk/blob/master/hadoop-ecosystem-installation.pdf" target="_blank" rel="noopener">部署大数据集群</a>)</li>
+</ul>
+<h4 id="WEB-UI-程序编写"><a href="#WEB-UI-程序编写" class="headerlink" title="WEB UI 程序编写"></a>WEB UI 程序编写</h4><h6 id="python-hdfs包"><a href="#python-hdfs包" class="headerlink" title="python hdfs包"></a>python hdfs包</h6><p>要实现web对hdfs操作，我们就要构建基于hdfs的web应用。在这里，我们使用python的hdfs包来操作hdfs，用django对外提供web服务。</p>
+<p><strong>hdfs包的一些基本操作</strong></p>
+<ul>
+<li>安装hdfs</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install hdfs</span><br></pre></td></tr></table></figure>
+<ul>
+<li>连接HDFS</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from hdfs.client import Client</span><br><span class="line"># 50070: NameNode web管理端口</span><br><span class="line">client = Client(&quot;http://localhost:50070&quot;)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>获取路径活着文件的具体信息</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client.status(hdfs_path, strict=True)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>创建目录</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">makedirs(hdfs_path, permission=None)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>删除目录</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">delete(hdfs_path, recursive=False)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>上传数据到hdfs</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">upload(hdfs_path, local_path, overwrite=False, n_threads=1, temp_dir=None, </span><br><span class="line">chunk_size=65536,progress=None, cleanup=True, **kwargs)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>下载hdfs中的数据到本地</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">download(hdfs_path, local_path, overwrite=False, n_threads=1, temp_dir=None, **kwargs)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>从hdfs中读取文件</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">with client.read(&quot;/test/NOTICE.txt&quot;) as reader:  </span><br><span class="line">    print reader.read()</span><br></pre></td></tr></table></figure>
+<ul>
+<li>向hdfs文件系统中写入数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client.write(filepath, data=data_str, encoding=&apos;utf-8&apos;)</span><br></pre></td></tr></table></figure>
+<h6 id="用django构建web服务的核心代码"><a href="#用django构建web服务的核心代码" class="headerlink" title="用django构建web服务的核心代码"></a>用django构建web服务的核心代码</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line">def delete_file_folder(src):</span><br><span class="line">    &apos;&apos;&apos;delete files and folders&apos;&apos;&apos;</span><br><span class="line">    if os.path.isfile(src):</span><br><span class="line">        try:</span><br><span class="line">            os.remove(src)</span><br><span class="line">        except:</span><br><span class="line">            pass</span><br><span class="line">    elif os.path.isdir(src):</span><br><span class="line">        for item in os.listdir(src):</span><br><span class="line">            itemsrc=os.path.join(src,item)</span><br><span class="line">            delete_file_folder(itemsrc) </span><br><span class="line">        try:</span><br><span class="line">            os.rmdir(src)</span><br><span class="line">        except:</span><br><span class="line">            pass</span><br><span class="line"></span><br><span class="line"># Create your views here.</span><br><span class="line">def index(reqeust):</span><br><span class="line">    </span><br><span class="line">    client = Client(&quot;http://192.168.8.111:50070&quot;)</span><br><span class="line">    context = &#123;&apos;filelist&apos;: client.list(&apos;/good_cloud_disk&apos;)&#125;    </span><br><span class="line"></span><br><span class="line">    return render(reqeust, &apos;style_main/index.html&apos;, context)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@csrf_exempt</span><br><span class="line">def upload(request):</span><br><span class="line"></span><br><span class="line">    &apos;&apos;&apos;上传文件到Hdfs&apos;&apos;&apos;</span><br><span class="line">    </span><br><span class="line">    print(&quot;upload_photo&quot;)</span><br><span class="line">    client = Client(&quot;http://192.168.8.111:50070&quot;)</span><br><span class="line">    if request.method == &quot;POST&quot;:</span><br><span class="line">        input_img = request.FILES[&quot;pic_input&quot;)</span><br><span class="line">        fname = &quot;%s/input/%s&quot; % (settings.MEDIA_ROOT, input_img)</span><br><span class="line">        </span><br><span class="line">        with open(fname, &apos;wb&apos;) as pic:</span><br><span class="line">            for c in input_img.chunks():</span><br><span class="line">                pic.write(c)</span><br><span class="line"></span><br><span class="line">    client.upload(&quot;/good_cloud_disk&quot;, fname)  </span><br><span class="line">    delete_file_folder(&quot;%s/input/&quot; % (settings.MEDIA_ROOT))           </span><br><span class="line">    os.makedirs(&quot;%s/input/&quot; % (settings.MEDIA_ROOT))</span><br><span class="line"></span><br><span class="line">    return HttpResponseRedirect(&apos;/&apos;) </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def detail(request):</span><br><span class="line">    </span><br><span class="line">    &apos;&apos;&apos;文件详情&apos;&apos;&apos;</span><br><span class="line"></span><br><span class="line">    client = Client(&quot;http://192.168.8.111:50070&quot;)</span><br><span class="line">     </span><br><span class="line">    filename = request.GET[&apos;filename&apos;]</span><br><span class="line">    print(&quot;/good_cloud_disk/&quot;+filename) </span><br><span class="line">    </span><br><span class="line">    status = client.status(&apos;/good_cloud_disk/%s&apos; % filename.encode(&apos;utf-8&apos;))    </span><br><span class="line"></span><br><span class="line">    context = &#123;&quot;status&quot;: status&#125;</span><br><span class="line"></span><br><span class="line">    return render(request, &apos;style_main/detail.html&apos;, context)</span><br><span class="line"></span><br><span class="line">def download(request):</span><br><span class="line"></span><br><span class="line">    &apos;&apos;&apos;下载文件&apos;&apos;&apos;</span><br><span class="line"></span><br><span class="line">    delete_file_folder(&quot;%s/downloads/&quot; % (settings.MEDIA_ROOT))</span><br><span class="line">    os.makedirs(&quot;%s/downloads/&quot; % (settings.MEDIA_ROOT))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    filename = request.GET[&apos;filename&apos;]</span><br><span class="line">    print(filename)</span><br><span class="line"></span><br><span class="line">    client = Client(&quot;http://192.168.8.111:50070&quot;)</span><br><span class="line">    client.download(&quot;/good_cloud_disk/&quot; + filename.encode(&apos;utf-8&apos;), &quot;%s/downloads/%s&quot; % (settings.MEDIA_ROOT, filename.encode(&apos;utf-8&apos;)))</span><br><span class="line"></span><br><span class="line">    context = &#123;&quot;filename&quot;: filename.encode(&apos;utf-8&apos;)&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    return render(request, &apos;style_main/result.html&apos;, context)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def delete(request):</span><br><span class="line"></span><br><span class="line">    &apos;&apos;&apos;删除文件&apos;&apos;&apos;</span><br><span class="line"></span><br><span class="line">    client = Client(&quot;http://192.168.8.111:50070&quot;)</span><br><span class="line">    filename =&quot;/good_cloud_disk/&quot; + request.GET[&apos;filename&apos;]</span><br><span class="line">    </span><br><span class="line">    client.delete(filename.encode(&apos;utf-8&apos;))</span><br><span class="line">    </span><br><span class="line">    return HttpResponseRedirect(&apos;/&apos;)</span><br></pre></td></tr></table></figure>
+<h4 id="项目效果展示"><a href="#项目效果展示" class="headerlink" title="项目效果展示"></a>项目效果展示</h4><p><img src="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/HDFS-WEB1.png" alt="HDFS-WEB1"></p>
+<p><img src="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/HDFS-WEB2.png" alt="HDFS-WEB2"></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://vajn.github.io/2018/06/24/基于docker的gpu高性能计算云方案/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2116,7 +2310,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
