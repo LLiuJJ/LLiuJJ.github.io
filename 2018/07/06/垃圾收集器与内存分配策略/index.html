@@ -95,7 +95,7 @@
 <meta property="og:image" content="https://vajn.github.io/2018/07/06/垃圾收集器与内存分配策略/ParallelOld.png">
 <meta property="og:image" content="https://vajn.github.io/2018/07/06/垃圾收集器与内存分配策略/CMS.png">
 <meta property="og:image" content="https://vajn.github.io/2018/07/06/垃圾收集器与内存分配策略/g1.png">
-<meta property="og:updated_time" content="2018-07-16T13:15:10.000Z">
+<meta property="og:updated_time" content="2018-07-16T15:04:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="垃圾收集器与内存分配策略">
 <meta name="twitter:description" content="哪些内存需要回收 程序计数器、虚拟机栈、本地方法栈3个区域随线程而生，随线程而灭。 Java堆内存的分配和回收是动态的，垃圾收集器关注的是这部分内存。  怎么样判断对象已死 引用计数法 给对象添加一个引用计数器，每当有一个地方引用它时，计数器值就加1；当引用实效时，计数值就减1；任何时刻计数器为0的对象就是不可能再被使用的。 注意：引用计数很难解决对象之间相互循环引用的问题，例如A对象引用着B对象">
@@ -486,7 +486,7 @@
 </ul>
 </li>
 </ul>
-<p><img src="/2018/07/06/垃圾收集器与内存分配策略/g1.png" alt="CMS"></p>
+<p><img src="/2018/07/06/垃圾收集器与内存分配策略/g1.png" alt="G1"></p>
 <h4 id="内存分配与回收策略"><a href="#内存分配与回收策略" class="headerlink" title="内存分配与回收策略"></a>内存分配与回收策略</h4><h5 id="新建的对象优先在新生代Eden区分配"><a href="#新建的对象优先在新生代Eden区分配" class="headerlink" title="新建的对象优先在新生代Eden区分配"></a>新建的对象优先在新生代Eden区分配</h5><ul>
 <li>分配测试代码</li>
 </ul>
