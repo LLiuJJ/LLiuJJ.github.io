@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="容器云," />
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
@@ -79,23 +79,17 @@
 
 
 
-<meta name="description" content="Linux路由机制打通网络 下图是我实验环境的网络架构   部署记录 虚拟机安装两台centos mini系统，配置宿主机网络环境，设置selinux为disabled 安装docker  1yum install docker-io -y  配置docker0网桥(centos对应为172.17.42.1)   12# 配置完后, 重启docker 服务systemctl restart doc">
-<meta name="keywords" content="容器云">
+<meta name="description" content="青蛙跳台阶一个青蛙一次可以跳上1级台阶，也可以跳上两级台阶。求该青蛙跳上一个n级台阶总共有多少种跳法 跳n级台阶的不同跳法总数为 f(n) = f(n-1) + f(n-2) 如果把条件改成：一只青蛙一次可以跳上1级台阶，也可以跳上2级……它也可以跳上n级，此时该青蛙跳上一个n级台阶总共有多少种跳法？可用数学归纳法证明 f(n) = 2 ^ (n - 1) 二进制中1的个数请实现一个函数，输入一个">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Docker容器跨主机网络互联方案实验">
-<meta property="og:url" content="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/index.html">
+<meta property="og:title" content="剑指offer整理2">
+<meta property="og:url" content="https://vajn.github.io/2018/07/03/剑指offer整理2/index.html">
 <meta property="og:site_name" content="用心感受生活">
-<meta property="og:description" content="Linux路由机制打通网络 下图是我实验环境的网络架构   部署记录 虚拟机安装两台centos mini系统，配置宿主机网络环境，设置selinux为disabled 安装docker  1yum install docker-io -y  配置docker0网桥(centos对应为172.17.42.1)   12# 配置完后, 重启docker 服务systemctl restart doc">
+<meta property="og:description" content="青蛙跳台阶一个青蛙一次可以跳上1级台阶，也可以跳上两级台阶。求该青蛙跳上一个n级台阶总共有多少种跳法 跳n级台阶的不同跳法总数为 f(n) = f(n-1) + f(n-2) 如果把条件改成：一只青蛙一次可以跳上1级台阶，也可以跳上2级……它也可以跳上n级，此时该青蛙跳上一个n级台阶总共有多少种跳法？可用数学归纳法证明 f(n) = 2 ^ (n - 1) 二进制中1的个数请实现一个函数，输入一个">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/路由互联架构.png">
-<meta property="og:image" content="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/docker0网桥.png">
-<meta property="og:image" content="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/直接网关1.png">
-<meta property="og:image" content="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/直接网关2.png">
-<meta property="og:updated_time" content="2018-06-17T01:34:07.000Z">
+<meta property="og:updated_time" content="2018-07-03T13:00:56.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Docker容器跨主机网络互联方案实验">
-<meta name="twitter:description" content="Linux路由机制打通网络 下图是我实验环境的网络架构   部署记录 虚拟机安装两台centos mini系统，配置宿主机网络环境，设置selinux为disabled 安装docker  1yum install docker-io -y  配置docker0网桥(centos对应为172.17.42.1)   12# 配置完后, 重启docker 服务systemctl restart doc">
-<meta name="twitter:image" content="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/路由互联架构.png">
+<meta name="twitter:title" content="剑指offer整理2">
+<meta name="twitter:description" content="青蛙跳台阶一个青蛙一次可以跳上1级台阶，也可以跳上两级台阶。求该青蛙跳上一个n级台阶总共有多少种跳法 跳n级台阶的不同跳法总数为 f(n) = f(n-1) + f(n-2) 如果把条件改成：一只青蛙一次可以跳上1级台阶，也可以跳上2级……它也可以跳上n级，此时该青蛙跳上一个n级台阶总共有多少种跳法？可用数学归纳法证明 f(n) = 2 ^ (n - 1) 二进制中1的个数请实现一个函数，输入一个">
 
 
 
@@ -125,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/"/>
+  <link rel="canonical" href="https://vajn.github.io/2018/07/03/剑指offer整理2/"/>
 
 
 
 
 
-  <title>Docker容器跨主机网络互联方案实验 | 用心感受生活</title>
+  <title>剑指offer整理2 | 用心感受生活</title>
   
 
 
@@ -248,7 +242,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/">
+    <link itemprop="mainEntityOfPage" href="https://vajn.github.io/2018/07/03/剑指offer整理2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jie Liu">
@@ -265,7 +259,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Docker容器跨主机网络互联方案实验</h1>
+          <h1 class="post-title" itemprop="name headline">剑指offer整理2</h1>
         
 
         <div class="post-meta">
@@ -277,8 +271,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-15T16:34:00+08:00">
-                2018-06-15
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-03T15:33:41+08:00">
+                2018-07-03
               </time>
             
 
@@ -315,37 +309,13 @@
       
 
       
-        <h3 id="Linux路由机制打通网络"><a href="#Linux路由机制打通网络" class="headerlink" title="Linux路由机制打通网络"></a>Linux路由机制打通网络</h3><ul>
-<li>下图是我实验环境的网络架构</li>
-</ul>
-<p><img src="/2018/06/15/Docker容器跨主机网络互联方案实验/路由互联架构.png" alt="路由互联架构"></p>
-<h4 id="部署记录"><a href="#部署记录" class="headerlink" title="部署记录"></a>部署记录</h4><ul>
-<li>虚拟机安装两台centos mini系统，配置宿主机网络环境，设置selinux为disabled</li>
-<li>安装docker</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install docker-io -y</span><br></pre></td></tr></table></figure>
-<ul>
-<li>配置docker0网桥(centos对应为172.17.42.1)</li>
-</ul>
-<p><img src="/2018/06/15/Docker容器跨主机网络互联方案实验/docker0网桥.png" alt="docker0网桥"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 配置完后, 重启docker 服务</span><br><span class="line">systemctl restart docker</span><br></pre></td></tr></table></figure>
-<ul>
-<li>添加路由打通网络</li>
-</ul>
-<p>在centos1上</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">route add-net 172.17.0.0/16 gw 192.168.6.202</span><br></pre></td></tr></table></figure>
-<p>在centos2上</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">route add-net 172.18.0.0/16 gw 192.168.6.201</span><br></pre></td></tr></table></figure>
-<ul>
-<li>关闭防火墙限制</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -F ; iptables -t nat -F</span><br></pre></td></tr></table></figure>
-<ul>
-<li>启动两个容器，互相ping测试</li>
-</ul>
-<p><img src="/2018/06/15/Docker容器跨主机网络互联方案实验/直接网关1.png" alt="直接网关1"></p>
-<p><img src="/2018/06/15/Docker容器跨主机网络互联方案实验/直接网关2.png" alt="直接网关2"></p>
-<h3 id="OVS-Docker-打通网络方案"><a href="#OVS-Docker-打通网络方案" class="headerlink" title="OVS + Docker 打通网络方案"></a>OVS + Docker 打通网络方案</h3>
+        <h4 id="青蛙跳台阶"><a href="#青蛙跳台阶" class="headerlink" title="青蛙跳台阶"></a>青蛙跳台阶</h4><p><strong>一个青蛙一次可以跳上1级台阶，也可以跳上两级台阶。求该青蛙跳上一个n级台阶总共有多少种跳法</strong></p>
+<p>跳n级台阶的不同跳法总数为 f(n) = f(n-1) + f(n-2)</p>
+<p>如果把条件改成：一只青蛙一次可以跳上1级台阶，也可以跳上2级……它也可以跳上n级，此时该青蛙跳上一个n级台阶总共有多少种跳法？可用数学归纳法证明 f(n) = 2 ^ (n - 1)</p>
+<h4 id="二进制中1的个数"><a href="#二进制中1的个数" class="headerlink" title="二进制中1的个数"></a>二进制中1的个数</h4><p><strong>请实现一个函数，输入一个整数，输出该数二进制表示中1的个数。例如9表示成二进制为1001, 有两位是1。因此如果输入9，该函数输出2</strong></p>
+<p>把一个整数减去1，再和原整数做与运算，会把该整数最右边一个1变成0。那么一个整数的二进制表示中有多少个1，就可以进行多少次这样的操作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">package com.cx.OfferCode;</span><br><span class="line"></span><br><span class="line">public class NumberOf1InBinary &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args)</span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(NumberOf1(15));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static int NumberOf1(int n)&#123;</span><br><span class="line"></span><br><span class="line">        int count = 0;</span><br><span class="line"></span><br><span class="line">        while (n != 0)&#123;</span><br><span class="line"></span><br><span class="line">            count ++;</span><br><span class="line">            n = (n - 1) &amp; n;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return count;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
       
     </div>
     
@@ -360,12 +330,6 @@
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/tags/容器云/" rel="tag"># 容器云</a>
-          
-        </div>
-      
 
       
       
@@ -375,8 +339,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/06/14/k8s部署总结/" rel="next" title="k8s部署总结">
-                <i class="fa fa-chevron-left"></i> k8s部署总结
+              <a href="/2018/07/02/做过项目整理-美食全站APP/" rel="next" title="做过项目整理-美食全站APP">
+                <i class="fa fa-chevron-left"></i> 做过项目整理-美食全站APP
               </a>
             
           </div>
@@ -385,8 +349,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/06/24/基于docker的gpu高性能计算云方案/" rel="prev" title="基于docker的gpu高性能计算云方案">
-                基于docker的gpu高性能计算云方案 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/07/03/MySQL必会知识整理/" rel="prev" title="MySQL必会知识整理">
+                MySQL必会知识整理 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -510,7 +474,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux路由机制打通网络"><span class="nav-number">1.</span> <span class="nav-text">Linux路由机制打通网络</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#部署记录"><span class="nav-number">1.1.</span> <span class="nav-text">部署记录</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OVS-Docker-打通网络方案"><span class="nav-number">2.</span> <span class="nav-text">OVS + Docker 打通网络方案</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#青蛙跳台阶"><span class="nav-number">1.</span> <span class="nav-text">青蛙跳台阶</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二进制中1的个数"><span class="nav-number">2.</span> <span class="nav-text">二进制中1的个数</span></a></li></ol></div>
             
 
           </div>
