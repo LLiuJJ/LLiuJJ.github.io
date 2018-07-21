@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="用心感受生活">
 <meta property="og:description" content="检索数据mysql检索数据分为行检索，和列检索（检索单个列、检索多个列）。 12345SELECT prod_name FROM products;SELECT prod_id, prod_name, prod_proce FROM products;SELECT * FROM products;SELECT vend_id FROM products;SELECT prod_name FROM">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-07-18T14:38:33.000Z">
+<meta property="og:updated_time" content="2018-07-21T15:34:08.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL必会知识整理">
 <meta name="twitter:description" content="检索数据mysql检索数据分为行检索，和列检索（检索单个列、检索多个列）。 12345SELECT prod_name FROM products;SELECT prod_id, prod_name, prod_proce FROM products;SELECT * FROM products;SELECT vend_id FROM products;SELECT prod_name FROM">
@@ -330,6 +330,11 @@
 <li>IN操作符一般比OR操作符清单执行更快</li>
 <li>IN的最大优点是可以包含其他的SELECT语句，使得可以更动态的建立WHERE子句</li>
 </ul>
+<h4 id="通配符过滤"><a href="#通配符过滤" class="headerlink" title="通配符过滤"></a>通配符过滤</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 百分号（%）通配符</span><br><span class="line">SELECT prod_id, prod_name</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_name LIKE &apos;jet%&apos;;</span><br><span class="line"># 下划</span><br></pre></td></tr></table></figure>
+<ul>
+<li>根据MySQL的配置方式，’%’搜素可以是区分大小写的</li>
+<li>%号通配符可以匹配0个，1个或者多个字符，但是无法匹配NULL</li>
+</ul>
 
       
     </div>
@@ -443,7 +448,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -489,7 +494,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#检索数据"><span class="nav-number">1.</span> <span class="nav-text">检索数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#排序数据"><span class="nav-number">2.</span> <span class="nav-text">排序数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#过滤数据"><span class="nav-number">3.</span> <span class="nav-text">过滤数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据过滤"><span class="nav-number">4.</span> <span class="nav-text">数据过滤</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#检索数据"><span class="nav-number">1.</span> <span class="nav-text">检索数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#排序数据"><span class="nav-number">2.</span> <span class="nav-text">排序数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#过滤数据"><span class="nav-number">3.</span> <span class="nav-text">过滤数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据过滤"><span class="nav-number">4.</span> <span class="nav-text">数据过滤</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通配符过滤"><span class="nav-number">5.</span> <span class="nav-text">通配符过滤</span></a></li></ol></div>
             
 
           </div>
