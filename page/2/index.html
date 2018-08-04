@@ -239,6 +239,152 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://vajn.github.io/2018/07/03/MySQL必会知识整理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jie Liu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="用心感受生活">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/03/MySQL必会知识整理/" itemprop="url">MySQL必会知识整理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-03T21:40:07+08:00">
+                2018-07-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="检索数据"><a href="#检索数据" class="headerlink" title="检索数据"></a>检索数据</h4><p>mysql检索数据分为行检索，和列检索（检索单个列、检索多个列）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_name FROM products;</span><br><span class="line">SELECT prod_id, prod_name, prod_proce FROM products;</span><br><span class="line">SELECT * FROM products;</span><br><span class="line">SELECT vend_id FROM products;</span><br><span class="line">SELECT prod_name FROM products LIMIT 5;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>SQL语句不区分大小写，但一般开发中SQL关键字使用大写，对所有列和表名使用小写，这样做使代码易于阅读和调试。</li>
+<li>一般，除非你需要表中的每个列，否则最好别使用*通配符。虽让使用通配符可能会使你自己省事，但检索不需要的列通常会降低检索和应用程序的性能</li>
+<li>使用DISTINCT关键字可以去除重复行</li>
+</ul>
+<h4 id="排序数据"><a href="#排序数据" class="headerlink" title="排序数据"></a>排序数据</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_name FROM products;</span><br><span class="line">SELECT prod_name FROM products ORDER BY prod_name;</span><br><span class="line">- 按多个列排序</span><br><span class="line">SELECT prod_id, prod_price, prod_name FROM products ORDER BY prod_price, prod_name;</span><br><span class="line">- 指定排序方向排序</span><br><span class="line">SELECT prod_id, prod_price, prod_name FROM products ORDER BY prod_price DESC;</span><br><span class="line">- 用多个列排序</span><br><span class="line">SELECT prod_id, prod_price, prod_name FROM products ORDER BY prod_price DESC, prod_name;</span><br><span class="line">- 和LIMIT结合找出最值</span><br><span class="line">SELECT prod_price FROM products ORDER BY prod_price DESC LIMIT 1;</span><br></pre></td></tr></table></figure>
+<h4 id="过滤数据"><a href="#过滤数据" class="headerlink" title="过滤数据"></a>过滤数据</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">- 使用WHERE子句过滤数据</span><br><span class="line">SELECT prod_name, prod_price </span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_price = 2.50</span><br><span class="line">- WHERE字句的操作符， = &lt;&gt; != &lt; &lt;= &gt; &gt;= BETWEEN</span><br><span class="line">- 检查单个值</span><br><span class="line">SELECT prod_name, prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_name = &apos;fuses&apos;</span><br><span class="line"></span><br><span class="line">SELECT prod_name, prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_price &lt; 10</span><br><span class="line"></span><br><span class="line">- 不匹配检查</span><br><span class="line">SELECT vend_id, prod_name</span><br><span class="line">FROM products </span><br><span class="line">WHERE vend_id &lt;&gt; 1003</span><br><span class="line"></span><br><span class="line">SELECT vend_id, prod_name</span><br><span class="line">FROM products </span><br><span class="line">WHERE vend_id != 1003</span><br><span class="line">- 上面两条SQL语句都是不等于的意思</span><br><span class="line"></span><br><span class="line">- 范围值检查</span><br><span class="line">SELECT prod_name, prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_price BETWEEN 5 AND 10;</span><br><span class="line"></span><br><span class="line">-空值检查</span><br><span class="line">SELECT prod_name</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_price IS NULL</span><br></pre></td></tr></table></figure>
+<ul>
+<li>SQL过滤和应用过滤的对比：让客户机应用（或开发语言）处理数据库将会极大地影响应用的性能，并且使所创建的应用完全不具备可伸缩性。才外在客户机上过滤数据，服务器不得不通过网络发送多余的数据，这将导致网络带宽的浪费。</li>
+<li>同时使用ORDER BY和WHERE字句时，应该让ORDER BY 位于WHERE之后，否则将会产生错误。</li>
+</ul>
+<h4 id="数据过滤"><a href="#数据过滤" class="headerlink" title="数据过滤"></a>数据过滤</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">- AND操作符,检索同时满足多个条件的</span><br><span class="line">SELECT prod_id, prod_price, prod_name</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id = 1003 AND prod_price &lt;= 10 </span><br><span class="line"></span><br><span class="line">- OR操作符</span><br><span class="line">SELECT prod_name, prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id = 1002 OR vend_id = 1003;</span><br><span class="line"></span><br><span class="line">- 计算次序的问题，SQL语句在处理OR操作符之前，优先处理AND操作符</span><br><span class="line">SELECT prod_name, prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id = 1002 OR vend_id = 1003 AND prod_price &gt;= 10</span><br><span class="line"></span><br><span class="line">- 先执行AND判断，相当于</span><br><span class="line">SELECT prod_name, prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id = 1002 OR (vend_id = 1003 AND prod_price &gt;= 10)</span><br><span class="line"></span><br><span class="line">- 所以，如果要先执行OR部分需要</span><br><span class="line">SELECT prod_name, prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE (vend_id = 1002 OR vend_id = 1003) AND prod_price &gt;= 10</span><br><span class="line"></span><br><span class="line">- IN操作符</span><br><span class="line">SELECT prod_name, prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id IN (1002, 1003)</span><br><span class="line">ORDER BY prod_name;</span><br><span class="line">- 上面的语句也可以用OR的句法实现</span><br><span class="line">SELECT prod_name, prod_priceß</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id = 1002 OR vend_id = 1003</span><br><span class="line">ORDER BY. prod_name</span><br><span class="line">- NOT操作符</span><br><span class="line">SELECT prod_name, prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id NOT IN (1002, 1003)</span><br><span class="line">ORDER BY prod_name;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>SQL在处理OR操作符前，优先处理AND操作符</li>
+<li>在使用长的合法选项清单时，IN操作符更清楚、直观</li>
+<li>在使用IN时，计算的次序容易管理</li>
+<li>IN操作符一般比OR操作符清单执行更快</li>
+<li>IN的最大优点是可以包含其他的SELECT语句，使得可以更动态的建立WHERE子句</li>
+</ul>
+<h4 id="通配符过滤"><a href="#通配符过滤" class="headerlink" title="通配符过滤"></a>通配符过滤</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 百分号（%）通配符</span><br><span class="line">SELECT prod_id, prod_name</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_name LIKE &apos;jet%&apos;;</span><br><span class="line"># 下划线（_）通配符</span><br><span class="line">SELECT prod_id, prod_name</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_name LIKE</span><br><span class="line">&apos;_ ton anvil&apos;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>根据MySQL的配置方式，’%’搜素可以是区分大小写的</li>
+<li>%号通配符可以匹配0个，1个或者多个字符，但是无法匹配NULL</li>
+<li>_总是匹配一个字符，不能多也不能少</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://vajn.github.io/2018/07/03/剑指offer整理2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -762,162 +908,16 @@
 </ul>
 <h5 id="控制节点"><a href="#控制节点" class="headerlink" title="控制节点"></a>控制节点</h5><ul>
 <li>部署nginx(nginx version: nginx/1.10.3 (Ubuntu)</li>
+<li>nginx web-socket代理配置参考</li>
 </ul>
-<h5 id="OVS-docker-Network配置"><a href="#OVS-docker-Network配置" class="headerlink" title="OVS+docker Network配置"></a>OVS+docker Network配置</h5><ul>
-<li>待续</li>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">map $http_upgrade $connection_upgrade&#123;</span><br><span class="line">         default upgrade;</span><br><span class="line">         &apos;&apos; close;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">          listen 8086;</span><br><span class="line">          server_name localhost;</span><br><span class="line"></span><br><span class="line">          location / &#123;</span><br><span class="line">      </span><br><span class="line">       			proxy_pass http://192.168.1.99:8080;</span><br><span class="line">  </span><br><span class="line">   				proxy_set_header Upgrade $http_upgrade;                                            </span><br><span class="line">   				</span><br><span class="line">   				proxy_http_version 1.1;</span><br><span class="line"></span><br><span class="line">				proxy_set_header Connection $connection_upgrade;</span><br><span class="line"></span><br><span class="line">				proxy_set_header Origin &quot;&quot;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>jupyter启动参数参考</li>
 </ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nvidia-docker run --restart=always -it -d -p 8080:8080 6fc05d4bdcc9  jupyter notebook --allow-root --ip=0.0.0.0 --port=8080 &gt; log.txt</span><br></pre></td></tr></table></figure>
 <h4 id="tensorflow多容器进行计算服务展示"><a href="#tensorflow多容器进行计算服务展示" class="headerlink" title="tensorflow多容器进行计算服务展示"></a>tensorflow多容器进行计算服务展示</h4><p><img src="/2018/06/24/基于docker的gpu高性能计算云方案/002.png" alt="002"></p>
 <p><img src="/2018/06/24/基于docker的gpu高性能计算云方案/003.png" alt="003"></p>
 
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Jie Liu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="用心感受生活">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/06/15/Docker容器跨主机网络互联方案实验/" itemprop="url">Docker容器跨主机网络互联方案实验</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-15T16:34:00+08:00">
-                2018-06-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Linux路由机制打通网络"><a href="#Linux路由机制打通网络" class="headerlink" title="Linux路由机制打通网络"></a>Linux路由机制打通网络</h3><ul>
-<li>下图是我实验环境的网络架构</li>
-</ul>
-<p><img src="/2018/06/15/Docker容器跨主机网络互联方案实验/路由互联架构.png" alt="路由互联架构"></p>
-<h4 id="部署记录"><a href="#部署记录" class="headerlink" title="部署记录"></a>部署记录</h4><ul>
-<li>虚拟机安装两台centos mini系统，配置宿主机网络环境，设置selinux为disabled</li>
-<li>安装docker</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install docker-io -y</span><br></pre></td></tr></table></figure>
-<ul>
-<li>配置docker0网桥(centos对应为172.17.42.1)</li>
-</ul>
-<p><img src="/2018/06/15/Docker容器跨主机网络互联方案实验/docker0网桥.png" alt="docker0网桥"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 配置完后, 重启docker 服务</span><br><span class="line">systemctl restart docker</span><br></pre></td></tr></table></figure>
-<ul>
-<li>添加路由打通网络</li>
-</ul>
-<p>在centos1上</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">route add-net 172.17.0.0/16 gw 192.168.6.202</span><br></pre></td></tr></table></figure>
-<p>在centos2上</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">route add-net 172.18.0.0/16 gw 192.168.6.201</span><br></pre></td></tr></table></figure>
-<ul>
-<li>关闭防火墙限制</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -F ; iptables -t nat -F</span><br></pre></td></tr></table></figure>
-<ul>
-<li>启动两个容器，互相ping测试</li>
-</ul>
-<p><img src="/2018/06/15/Docker容器跨主机网络互联方案实验/直接网关1.png" alt="直接网关1"></p>
-<p><img src="/2018/06/15/Docker容器跨主机网络互联方案实验/直接网关2.png" alt="直接网关2"></p>
-<h3 id="OVS-Docker-打通网络方案"><a href="#OVS-Docker-打通网络方案" class="headerlink" title="OVS + Docker 打通网络方案"></a>OVS + Docker 打通网络方案</h3>
           
         
       
@@ -1002,7 +1002,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>

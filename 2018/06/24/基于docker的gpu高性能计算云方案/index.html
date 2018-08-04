@@ -89,7 +89,7 @@
 <meta property="og:image" content="https://vajn.github.io/2018/06/24/基于docker的gpu高性能计算云方案/GPU云架构.001.jpeg">
 <meta property="og:image" content="https://vajn.github.io/2018/06/24/基于docker的gpu高性能计算云方案/002.png">
 <meta property="og:image" content="https://vajn.github.io/2018/06/24/基于docker的gpu高性能计算云方案/003.png">
-<meta property="og:updated_time" content="2018-06-24T06:07:02.000Z">
+<meta property="og:updated_time" content="2018-08-04T06:19:31.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于docker的gpu高性能计算云方案">
 <meta name="twitter:description" content="系统总体架构 背景​    面对Good实验室(http://good.ncu.edu.cn/good) 众多高性能学习计算需求，整个服务集群的环境部署复杂(如各种深度学习计算框架的部署需求)，依赖混乱，GPU资源的资源无法动态分配等问题日益凸显出来。为此，我们搭建了可进行资源编排，负载均衡，以及服务代理等多个功能的简单容器云计算平台。 架构概述​    集群的控制器（Controller）部署在">
@@ -324,10 +324,13 @@
 </ul>
 <h5 id="控制节点"><a href="#控制节点" class="headerlink" title="控制节点"></a>控制节点</h5><ul>
 <li>部署nginx(nginx version: nginx/1.10.3 (Ubuntu)</li>
+<li>nginx web-socket代理配置参考</li>
 </ul>
-<h5 id="OVS-docker-Network配置"><a href="#OVS-docker-Network配置" class="headerlink" title="OVS+docker Network配置"></a>OVS+docker Network配置</h5><ul>
-<li>待续</li>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">map $http_upgrade $connection_upgrade&#123;</span><br><span class="line">         default upgrade;</span><br><span class="line">         &apos;&apos; close;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">          listen 8086;</span><br><span class="line">          server_name localhost;</span><br><span class="line"></span><br><span class="line">          location / &#123;</span><br><span class="line">      </span><br><span class="line">       			proxy_pass http://192.168.1.99:8080;</span><br><span class="line">  </span><br><span class="line">   				proxy_set_header Upgrade $http_upgrade;                                            </span><br><span class="line">   				</span><br><span class="line">   				proxy_http_version 1.1;</span><br><span class="line"></span><br><span class="line">				proxy_set_header Connection $connection_upgrade;</span><br><span class="line"></span><br><span class="line">				proxy_set_header Origin &quot;&quot;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>jupyter启动参数参考</li>
 </ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nvidia-docker run --restart=always -it -d -p 8080:8080 6fc05d4bdcc9  jupyter notebook --allow-root --ip=0.0.0.0 --port=8080 &gt; log.txt</span><br></pre></td></tr></table></figure>
 <h4 id="tensorflow多容器进行计算服务展示"><a href="#tensorflow多容器进行计算服务展示" class="headerlink" title="tensorflow多容器进行计算服务展示"></a>tensorflow多容器进行计算服务展示</h4><p><img src="/2018/06/24/基于docker的gpu高性能计算云方案/002.png" alt="002"></p>
 <p><img src="/2018/06/24/基于docker的gpu高性能计算云方案/003.png" alt="003"></p>
 
@@ -443,7 +446,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -489,7 +492,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#系统总体架构"><span class="nav-number">1.</span> <span class="nav-text">系统总体架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#背景"><span class="nav-number">1.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#架构概述"><span class="nav-number">1.2.</span> <span class="nav-text">架构概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#搭建配置记录（未详细整理，待续）"><span class="nav-number">1.3.</span> <span class="nav-text">搭建配置记录（未详细整理，待续）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#安装Nvidia-docker节点"><span class="nav-number">1.3.1.</span> <span class="nav-text">安装Nvidia-docker节点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制节点"><span class="nav-number">1.3.2.</span> <span class="nav-text">控制节点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#OVS-docker-Network配置"><span class="nav-number">1.3.3.</span> <span class="nav-text">OVS+docker Network配置</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#tensorflow多容器进行计算服务展示"><span class="nav-number">1.4.</span> <span class="nav-text">tensorflow多容器进行计算服务展示</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#系统总体架构"><span class="nav-number">1.</span> <span class="nav-text">系统总体架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#背景"><span class="nav-number">1.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#架构概述"><span class="nav-number">1.2.</span> <span class="nav-text">架构概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#搭建配置记录（未详细整理，待续）"><span class="nav-number">1.3.</span> <span class="nav-text">搭建配置记录（未详细整理，待续）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#安装Nvidia-docker节点"><span class="nav-number">1.3.1.</span> <span class="nav-text">安装Nvidia-docker节点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制节点"><span class="nav-number">1.3.2.</span> <span class="nav-text">控制节点</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#tensorflow多容器进行计算服务展示"><span class="nav-number">1.4.</span> <span class="nav-text">tensorflow多容器进行计算服务展示</span></a></li></ol></li></ol></div>
             
 
           </div>
