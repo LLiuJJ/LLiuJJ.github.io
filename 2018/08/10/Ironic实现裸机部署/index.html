@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="容器云," />
+  <meta name="keywords" content="OpenStack Bare Metal," />
 
 
 
@@ -79,23 +79,21 @@
 
 
 
-<meta name="description" content="Linux路由机制打通网络 下图是我实验环境的网络架构   部署记录 虚拟机安装两台centos mini系统，配置宿主机网络环境，设置selinux为disabled 安装docker  1yum install docker-io -y  配置docker0网桥(centos对应为172.17.42.1)   12# 配置完后, 重启docker 服务systemctl restart doc">
-<meta name="keywords" content="容器云">
+<meta name="description" content="实习将近一个月了，期间不断努力，终于算是把OpenStack Ironic项目实现裸机部署的过程理解了一遍，并在小规模集群上成功实践。整理一些这段时间工作的内容，就算是一个阶段性的小项目总结了。 IronicIronic是OpenStack的一个子项目，用于实现在云里像管理虚拟机一样管理裸机。 Ironic在OpenStack中的概念架构图如下  其中Bare Metal就是我们要控制的物理机了，">
+<meta name="keywords" content="OpenStack Bare Metal">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Docker容器跨主机网络互联方案实验">
-<meta property="og:url" content="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/index.html">
+<meta property="og:title" content="Ironic实现裸机部署">
+<meta property="og:url" content="https://vajn.github.io/2018/08/10/Ironic实现裸机部署/index.html">
 <meta property="og:site_name" content="用心感受生活">
-<meta property="og:description" content="Linux路由机制打通网络 下图是我实验环境的网络架构   部署记录 虚拟机安装两台centos mini系统，配置宿主机网络环境，设置selinux为disabled 安装docker  1yum install docker-io -y  配置docker0网桥(centos对应为172.17.42.1)   12# 配置完后, 重启docker 服务systemctl restart doc">
+<meta property="og:description" content="实习将近一个月了，期间不断努力，终于算是把OpenStack Ironic项目实现裸机部署的过程理解了一遍，并在小规模集群上成功实践。整理一些这段时间工作的内容，就算是一个阶段性的小项目总结了。 IronicIronic是OpenStack的一个子项目，用于实现在云里像管理虚拟机一样管理裸机。 Ironic在OpenStack中的概念架构图如下  其中Bare Metal就是我们要控制的物理机了，">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/路由互联架构.png">
-<meta property="og:image" content="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/docker0网桥.png">
-<meta property="og:image" content="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/直接网关1.png">
-<meta property="og:image" content="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/直接网关2.png">
-<meta property="og:updated_time" content="2018-06-17T01:34:07.000Z">
+<meta property="og:image" content="https://vajn.github.io/2018/08/10/Ironic实现裸机部署/conceptual_architecture.png">
+<meta property="og:image" content="https://vajn.github.io/2018/08/10/Ironic实现裸机部署/ironic-process.png">
+<meta property="og:updated_time" content="2018-08-10T16:17:22.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Docker容器跨主机网络互联方案实验">
-<meta name="twitter:description" content="Linux路由机制打通网络 下图是我实验环境的网络架构   部署记录 虚拟机安装两台centos mini系统，配置宿主机网络环境，设置selinux为disabled 安装docker  1yum install docker-io -y  配置docker0网桥(centos对应为172.17.42.1)   12# 配置完后, 重启docker 服务systemctl restart doc">
-<meta name="twitter:image" content="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/路由互联架构.png">
+<meta name="twitter:title" content="Ironic实现裸机部署">
+<meta name="twitter:description" content="实习将近一个月了，期间不断努力，终于算是把OpenStack Ironic项目实现裸机部署的过程理解了一遍，并在小规模集群上成功实践。整理一些这段时间工作的内容，就算是一个阶段性的小项目总结了。 IronicIronic是OpenStack的一个子项目，用于实现在云里像管理虚拟机一样管理裸机。 Ironic在OpenStack中的概念架构图如下  其中Bare Metal就是我们要控制的物理机了，">
+<meta name="twitter:image" content="https://vajn.github.io/2018/08/10/Ironic实现裸机部署/conceptual_architecture.png">
 
 
 
@@ -125,13 +123,13 @@
 
 
 
-  <link rel="canonical" href="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/"/>
+  <link rel="canonical" href="https://vajn.github.io/2018/08/10/Ironic实现裸机部署/"/>
 
 
 
 
 
-  <title>Docker容器跨主机网络互联方案实验 | 用心感受生活</title>
+  <title>Ironic实现裸机部署 | 用心感受生活</title>
   
 
 
@@ -248,7 +246,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://vajn.github.io/2018/06/15/Docker容器跨主机网络互联方案实验/">
+    <link itemprop="mainEntityOfPage" href="https://vajn.github.io/2018/08/10/Ironic实现裸机部署/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jie Liu">
@@ -265,7 +263,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Docker容器跨主机网络互联方案实验</h1>
+          <h1 class="post-title" itemprop="name headline">Ironic实现裸机部署</h1>
         
 
         <div class="post-meta">
@@ -277,8 +275,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-15T16:34:00+08:00">
-                2018-06-15
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-10T22:07:41+08:00">
+                2018-08-10
               </time>
             
 
@@ -315,37 +313,44 @@
       
 
       
-        <h3 id="Linux路由机制打通网络"><a href="#Linux路由机制打通网络" class="headerlink" title="Linux路由机制打通网络"></a>Linux路由机制打通网络</h3><ul>
-<li>下图是我实验环境的网络架构</li>
-</ul>
-<p><img src="/2018/06/15/Docker容器跨主机网络互联方案实验/路由互联架构.png" alt="路由互联架构"></p>
-<h4 id="部署记录"><a href="#部署记录" class="headerlink" title="部署记录"></a>部署记录</h4><ul>
-<li>虚拟机安装两台centos mini系统，配置宿主机网络环境，设置selinux为disabled</li>
-<li>安装docker</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install docker-io -y</span><br></pre></td></tr></table></figure>
+        <p>实习将近一个月了，期间不断努力，终于算是把OpenStack Ironic项目实现裸机部署的过程理解了一遍，并在小规模集群上成功实践。整理一些这段时间工作的内容，就算是一个阶段性的小项目总结了。</p>
+<h4 id="Ironic"><a href="#Ironic" class="headerlink" title="Ironic"></a>Ironic</h4><p>Ironic是OpenStack的一个子项目，用于实现在云里像管理虚拟机一样管理裸机。</p>
+<p><strong><em>Ironic在OpenStack中的概念架构图如下</em></strong></p>
+<p><img src="/2018/08/10/Ironic实现裸机部署/conceptual_architecture.png" alt="conceptual_architecture"></p>
+<p>其中Bare Metal就是我们要控制的物理机了，Neutron为其提供网络服务，Cinder提供块存储服务，Glance则提供裸机部署时的镜像缓存服务，在部署过程中，我们的Ironic模块要和Neutron，Nova，Glance，Keystone这些核心的OpenStack项目配合，才能完美实现裸机部署的过程。</p>
+<p><strong><em>裸机部署过程中用到的一些核心的技术</em></strong></p>
 <ul>
-<li>配置docker0网桥(centos对应为172.17.42.1)</li>
+<li>(PXE) 预引导执行环境，PXE是英特尔和微软开发的Wired for Management(WfM)规范的一部分。PXE使系统的BIOS和网络接口卡(NIC)能够从网络引导计算机而不是磁盘。引导是系统将OS加载到本地存储器的过程，以便处理器可以执行该过程。允许系统通过网络引导这种功能简化了管理员和服务器部署和服务器的管理。</li>
+<li>动态主机配置协议(DHCP) DHCP是用于英特网协议(IP)网络的标准化网络协议，用于动态分配网络配置参数，例如接口和服务的IP地址。使用PXE，BIOS使用DHCP获取网络接口的IP地址，并找到存储网络引导程序(NBP)的服务器。</li>
+<li>网络引导程序(NBP) NBP等同于GRUB(Grand Unified Bootloader)或 LILO(Linux LOader) - 传统上用于本地引导的加载器。与硬件驱动器环境中的引导程序一样，NBP负责将OS那个加载到内存中，以便可以通过网络引导操作系统。</li>
+<li>普通文件传输协议(TFTP) TFTP是一种简单的文件传输协议，通常用于在本地环境中的计算机之间自动传输配置或引导文件。在PXE环境中，TFTP用于使用来自DHCP服务器的信息通过网络下载NBP。</li>
+<li>智能平台管理接口(IPMI) IPMI是系统管理员用于计算机系统的带外管理和监视其操作的标准化计算机系统接口。这是一种通过仅使用于硬件而不是操作系统的网络连接来管理可能无响应或断电的系统的方法。</li>
 </ul>
-<p><img src="/2018/06/15/Docker容器跨主机网络互联方案实验/docker0网桥.png" alt="docker0网桥"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 配置完后, 重启docker 服务</span><br><span class="line">systemctl restart docker</span><br></pre></td></tr></table></figure>
+<p><strong><em>Ironic裸机部署的过程</em></strong></p>
+<p><img src="/2018/08/10/Ironic实现裸机部署/ironic-process.png" alt="ironic-process"></p>
 <ul>
-<li>添加路由打通网络</li>
+<li>核心流程分析<ul>
+<li>1、引导实例请求通过 Nova API 进入，通过消息队列进入 Nova 调度程序。</li>
+<li>2、Nova Scheduler 应用过滤器并查找符合条件的虚拟机监控nova调度程序，还使用flavor的extra_specs（例如 cpu_arch）来匹配目标物理节点。</li>
+<li>3、Nova compute 管理选中hypervisor的资源声明。</li>
+<li>4、Nova compute 管理器根据 nova引导请求中网络接口在Networking服务中创建（未绑定）租户虚拟接口（VIF）。这里需要注意的是，端口的MAC将随机生成，并且当VIF连接到某个节点以对应于节点网络接口卡时MAC将更新。</li>
+<li>5、nova compute创建一个 spawn 任务，它包含所有信息，例如从哪个镜像引导等。它从Nova compute的virt层调用 driver.spawn。在spawn过程中，virt驱动程序执行以下操作: 更新目标ironic节点的deploy镜像，实例UUID，请求的功能和各种flavor属性。通过调用ironic API 验证节点的电源和部署的接口。将之前创建的VIF附加到节点。每个neutron port 可以被附加到任何ironic port和port group，port groups 比 ports有更高的优先级。在Ironic这边，这个工作时由 network interface做的。</li>
+<li>6、Nova 的 ironic驱动程序通过 Ironic API 向服务裸机节点的 Ironic conductor 发出部署请求。</li>
+<li>7、配置虚拟接口，Neutron API更新DHCP端口以设置 PXE/TFTP选项。在使用neutron网络接口的情况下，ironic在网络服务中创建单独的配置端口，在 flat 网络接口的情况下，nova创建的端口用于配置和部署实例网络。</li>
+<li>8、Ironic节点的启动接口准备PXE配置和缓存 deploy kernel和 ramdisk。</li>
+<li>9、Ironic 节点通过 Management interfacec发出命令来启动节点的网络引导。</li>
+<li>10、Ironic 节点的 Deploy Interface 缓存实例镜像(在 iSCSI 部署接口的情况下)，缓存kernel和ramdisk，在netboot的时候需要它。</li>
+<li>11、Ironic节点的Power Interface 指示节点的电源接口通电。</li>
+<li>12、节点引导部署ramdisk</li>
+<li>13、根据确切的驱动程序需求，conductor 将通过iSCSI复制镜像到物理节点。</li>
+<li>14、节点的引导接口将 pxe config切换为引用实例镜像，要求 ramdisk agent 软关闭节点电源，如果ramdisk agent 软关闭电源失败，则通过IPMI/BMS呼叫关机裸机节点电源。</li>
+<li>15、部署接口会触发网络接口，以便在创建时删除配置端口，并将租户端口绑定到节点。然后给节点上电。</li>
+<li>16、裸机节点的 provisioning state更新为active状态。</li>
 </ul>
-<p>在centos1上</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">route add-net 172.17.0.0/16 gw 192.168.6.202</span><br></pre></td></tr></table></figure>
-<p>在centos2上</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">route add-net 172.18.0.0/16 gw 192.168.6.201</span><br></pre></td></tr></table></figure>
-<ul>
-<li>关闭防火墙限制</li>
+</li>
+<li>未完待续</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -F ; iptables -t nat -F</span><br></pre></td></tr></table></figure>
-<ul>
-<li>启动两个容器，互相ping测试</li>
-</ul>
-<p><img src="/2018/06/15/Docker容器跨主机网络互联方案实验/直接网关1.png" alt="直接网关1"></p>
-<p><img src="/2018/06/15/Docker容器跨主机网络互联方案实验/直接网关2.png" alt="直接网关2"></p>
-<h3 id="OVS-Docker-打通网络方案"><a href="#OVS-Docker-打通网络方案" class="headerlink" title="OVS + Docker 打通网络方案"></a>OVS + Docker 打通网络方案</h3>
+
       
     </div>
     
@@ -362,7 +367,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/容器云/" rel="tag"># 容器云</a>
+            <a href="/tags/OpenStack-Bare-Metal/" rel="tag"># OpenStack Bare Metal</a>
           
         </div>
       
@@ -375,8 +380,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/06/14/k8s部署总结/" rel="next" title="k8s部署总结">
-                <i class="fa fa-chevron-left"></i> k8s部署总结
+              <a href="/2018/07/21/kolla部署openstack-all-in-one/" rel="next" title="kolla部署openstack-all-in-one">
+                <i class="fa fa-chevron-left"></i> kolla部署openstack-all-in-one
               </a>
             
           </div>
@@ -384,10 +389,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/06/24/基于docker的gpu高性能计算云方案/" rel="prev" title="基于docker的gpu高性能计算云方案">
-                基于docker的gpu高性能计算云方案 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -510,7 +511,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux路由机制打通网络"><span class="nav-number">1.</span> <span class="nav-text">Linux路由机制打通网络</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#部署记录"><span class="nav-number">1.1.</span> <span class="nav-text">部署记录</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OVS-Docker-打通网络方案"><span class="nav-number">2.</span> <span class="nav-text">OVS + Docker 打通网络方案</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Ironic"><span class="nav-number">1.</span> <span class="nav-text">Ironic</span></a></li></ol></div>
             
 
           </div>
