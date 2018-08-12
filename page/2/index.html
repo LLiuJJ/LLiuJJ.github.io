@@ -206,6 +206,16 @@
           </a>
         </li>
       
+        
+        <li class="menu-item menu-item-guestbook">
+          <a href="/book" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            guestbook
+          </a>
+        </li>
+      
 
       
     </ul>
@@ -283,6 +293,16 @@
           
 
           
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/03/MySQL必会知识整理/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/03/MySQL必会知识整理/" itemprop="commentCount"></span>
+                </a>
+              </span>
             
           
 
@@ -412,6 +432,16 @@ SQL语句不区分大小写，但一般开发中SQL关键字使用大写，对�
           
 
           
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/03/剑指offer整理2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/03/剑指offer整理2/" itemprop="commentCount"></span>
+                </a>
+              </span>
             
           
 
@@ -543,6 +573,16 @@ SQL语句不区分大小写，但一般开发中SQL关键字使用大写，对�
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/02/做过项目整理-美食全站APP/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/02/做过项目整理-美食全站APP/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -671,6 +711,16 @@ SQL语句不区分大小写，但一般开发中SQL关键字使用大写，对�
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -797,6 +847,16 @@ RAID简介​    RAID全称独立磁盘冗余阵列（RAID，redundant array of 
           
 
           
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/06/24/基于docker的gpu高性能计算云方案/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/06/24/基于docker的gpu高性能计算云方案/" itemprop="commentCount"></span>
+                </a>
+              </span>
             
           
 
@@ -1125,6 +1185,28 @@ RAID简介​    RAID全称独立磁盘冗余阵列（RAID，redundant array of 
 
 
 
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'ILqOzWM8jrm21Dhs5Ernxczi-gzGzoHsz',
+        appKey: '7sChUpdXujjsSpdpukXYva9P',
+        placeholder: 'Welcome',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
 
 
 

@@ -84,7 +84,7 @@
 <meta property="og:url" content="https://vajn.github.io/guestbook/index.html">
 <meta property="og:site_name" content="用心感受生活">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-08-12T01:52:23.000Z">
+<meta property="og:updated_time" content="2018-08-12T02:16:58.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="guestbook">
 
@@ -208,7 +208,7 @@
       
         
         <li class="menu-item menu-item-guestbook">
-          <a href="/guestbook" rel="section">
+          <a href="/book" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
             
@@ -254,7 +254,7 @@
       <div class="post-body">
         
         
-          <iframe frameborder="0" src="https://www.baidu.com" name="myboard" scrolling="no"><br><br></iframe>
+          
         
       </div>
       
@@ -273,6 +273,9 @@
 
           
 
+  
+    <div class="comments" id="comments">
+    </div>
   
 
 
@@ -523,6 +526,28 @@
 
 
 
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'ILqOzWM8jrm21Dhs5Ernxczi-gzGzoHsz',
+        appKey: '7sChUpdXujjsSpdpukXYva9P',
+        placeholder: 'Welcome',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
 
 
 
