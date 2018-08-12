@@ -87,7 +87,7 @@
 <meta property="og:description" content="Java平台无关性的基石 各种不同平台的虚拟机与所有平台都统一使用的程序存储格式—字节码是构成平台无关性的基石   Class类文件的结构 Class文件是一组以8位字节为基础单位的二进制流，各个数据项目严格按照顺序紧凑的排列在Class文件之中，中间没有任何分隔符 魔数的作用：确定这个文件是否是一个能被虚拟机接受的Class文件 前4个字节存储的是Class文件的版本号，5，6个字节存储的是次版">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://vajn.github.io/2018/07/17/虚拟机类文件结构/字节码文件.png">
-<meta property="og:updated_time" content="2018-07-17T14:21:53.000Z">
+<meta property="og:updated_time" content="2018-08-12T15:04:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="虚拟机类文件结构">
 <meta name="twitter:description" content="Java平台无关性的基石 各种不同平台的虚拟机与所有平台都统一使用的程序存储格式—字节码是构成平台无关性的基石   Class类文件的结构 Class文件是一组以8位字节为基础单位的二进制流，各个数据项目严格按照顺序紧凑的排列在Class文件之中，中间没有任何分隔符 魔数的作用：确定这个文件是否是一个能被虚拟机接受的Class文件 前4个字节存储的是Class文件的版本号，5，6个字节存储的是次版">
@@ -339,8 +339,23 @@
 <li>Class文件是一组以8位字节为基础单位的二进制流，各个数据项目严格按照顺序紧凑的排列在Class文件之中，中间没有任何分隔符</li>
 <li>魔数的作用：确定这个文件是否是一个能被虚拟机接受的Class文件</li>
 <li>前4个字节存储的是Class文件的版本号，5，6个字节存储的是次版本号，7，8个字节存储的是主版本号。</li>
-<li>紧接着主次版本号之后是常量池</li>
 </ul>
+<h5 id="常量池"><a href="#常量池" class="headerlink" title="常量池"></a>常量池</h5><p>版本号结束后，紧接着是常量池</p>
+<ul>
+<li>常量池主要是存放了两大类常量：字面量和符号引用，包括<ul>
+<li>类和接口的全局限定名(Fully Qualified Name)</li>
+<li>字段的名称和描述符(Descriptor)</li>
+<li>方法的名称和描述符</li>
+</ul>
+</li>
+<li>常量池中的项目类型</li>
+</ul>
+<p>JDK1.7种规定了14项常量池的项目类型</p>
+<p>UTF-8 编码的字符串、整型字面量、浮点型字面量、长整型字面量、双精度浮点型字面量、类或接口的符号引用、字符串类型的字面量、字段的符号引用、类中方法的符号引用、接口中方法的符号引用、字段或者方法的部分符号引用、表示方法句柄、标识方法类型、表示一个动态的方法调用点</p>
+<p>使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">javap -verbose +class文件名</span><br></pre></td></tr></table></figure>
+<p>分析class中的常量表</p>
+<h5 id="访问标志"><a href="#访问标志" class="headerlink" title="访问标志"></a>访问标志</h5><p>常量池结束后，紧接着是两个字节代表的访问标志（access_flags）, 这个标志用于识别一些类或者接口层次的访问信息，包括：Class是类还是接口；是否定义为public类型；是否定义为abstract类型；如果是类的话，是否被声明为final等。</p>
 
       
     </div>
@@ -503,7 +518,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Java平台无关性的基石"><span class="nav-number">1.</span> <span class="nav-text">Java平台无关性的基石</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Class类文件的结构"><span class="nav-number">2.</span> <span class="nav-text">Class类文件的结构</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Java平台无关性的基石"><span class="nav-number">1.</span> <span class="nav-text">Java平台无关性的基石</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Class类文件的结构"><span class="nav-number">2.</span> <span class="nav-text">Class类文件的结构</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#常量池"><span class="nav-number">2.1.</span> <span class="nav-text">常量池</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#访问标志"><span class="nav-number">2.2.</span> <span class="nav-text">访问标志</span></a></li></ol></li></ol></div>
             
 
           </div>
