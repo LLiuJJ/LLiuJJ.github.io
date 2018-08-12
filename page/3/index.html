@@ -310,38 +310,33 @@
       
         
           
-            <h3 id="Linux路由机制打通网络"><a href="#Linux路由机制打通网络" class="headerlink" title="Linux路由机制打通网络"></a>Linux路由机制打通网络</h3><ul>
-<li>下图是我实验环境的网络架构</li>
-</ul>
-<p><img src="/2018/06/15/Docker容器跨主机网络互联方案实验/路由互联架构.png" alt="路由互联架构"></p>
-<h4 id="部署记录"><a href="#部署记录" class="headerlink" title="部署记录"></a>部署记录</h4><ul>
-<li>虚拟机安装两台centos mini系统，配置宿主机网络环境，设置selinux为disabled</li>
-<li>安装docker</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install docker-io -y</span><br></pre></td></tr></table></figure>
-<ul>
-<li>配置docker0网桥(centos对应为172.17.42.1)</li>
-</ul>
-<p><img src="/2018/06/15/Docker容器跨主机网络互联方案实验/docker0网桥.png" alt="docker0网桥"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 配置完后, 重启docker 服务</span><br><span class="line">systemctl restart docker</span><br></pre></td></tr></table></figure>
-<ul>
-<li>添加路由打通网络</li>
-</ul>
-<p>在centos1上</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">route add-net 172.17.0.0/16 gw 192.168.6.202</span><br></pre></td></tr></table></figure>
-<p>在centos2上</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">route add-net 172.18.0.0/16 gw 192.168.6.201</span><br></pre></td></tr></table></figure>
-<ul>
-<li>关闭防火墙限制</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -F ; iptables -t nat -F</span><br></pre></td></tr></table></figure>
-<ul>
-<li>启动两个容器，互相ping测试</li>
-</ul>
-<p><img src="/2018/06/15/Docker容器跨主机网络互联方案实验/直接网关1.png" alt="直接网关1"></p>
-<p><img src="/2018/06/15/Docker容器跨主机网络互联方案实验/直接网关2.png" alt="直接网关2"></p>
-<h3 id="OVS-Docker-打通网络方案"><a href="#OVS-Docker-打通网络方案" class="headerlink" title="OVS + Docker 打通网络方案"></a>OVS + Docker 打通网络方案</h3>
-          
+          Linux路由机制打通网络
+下图是我实验环境的网络架构
+
+
+部署记录
+虚拟机安装两台centos mini系统，配置宿主机网络环境，设置selinux为disabled
+安装docker
+
+1yum install docker-io -y
+
+配置docker0网桥(centos对应为172.17.42.1)
+
+
+12# 配置完后, 重启docker 服务systemctl restart docker
+
+添加路由打通网络
+
+在centos1上
+1route add-net 172.17.0.0/16 gw 192
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/06/15/Docker容器跨主机网络互联方案实验/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -459,98 +454,22 @@
       
         
           
-            <h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a href="https://github.com/gjmzj/kubeasz" target="_blank" rel="noopener">https://github.com/gjmzj/kubeasz</a></p>
-<h3 id="K8S设计架构"><a href="#K8S设计架构" class="headerlink" title="K8S设计架构"></a>K8S设计架构</h3><p>要想成功的部署K8S，需要对K8S的基本组件有一定了解。K8S集群中包含有节点代理kubelet和Master组件(APIs, scheduler, etc)，一切都是基于分布式存储系统。下面就是K8S的架构图</p>
-<p><img src="/2018/06/14/k8s部署总结/architecture.png" alt=""></p>
-<p>Kubernetes主要由以下几个核心组件组成：</p>
-<ul>
-<li>etcd保存了整个集群的状态</li>
-<li>apiserver提供了资源操作的唯一入口，并提供认证、授权、访问控制、API注册和发现等机制</li>
-<li>controller manager负责维护集群的状态，比如故障检测、自动扩展、滚动更新等</li>
-<li>scheduler负责资源的调度，按照预定的调度策略将Pod调度到对应的机器上</li>
-<li>kubelet负责维护容器的生命周期，同时也负责Volume（CVI）和网络（CNI）的管理</li>
-<li>container runtime负责镜像管理以及Pod容器的真正运行（CRI）</li>
-<li>kube-proxy负责为Service提供cluster内部的服务发现和负载均衡</li>
-</ul>
-<p>除了核心组件外，还有一些附加的组件</p>
-<ul>
-<li>Kube-dns负责为整个集群提供DNS服务</li>
-<li>Ingress Controller为服务提供外网入口</li>
-<li>Heapster提供资源监控</li>
-<li>Dashboard提供GUI</li>
-<li>Federation提供跨可用区的集群</li>
-<li>Fluentd-elasticsearch提供集群日志采集、存储与查询</li>
-</ul>
-<p>分层架构</p>
-<p>K8S设计理念和功能其实就是一个类似Linux的分层架构</p>
-<ul>
-<li>核心层：K8S最核心的功能，对外提供API构建高层的应用，对内提供插件式的应用执行环境</li>
-<li>应用层：部署（无状态应用、有状态应用、批处理任务、集群应用等）和路由（服务发现、DNS解析等）</li>
-<li>管理层：系统调度（如基础设施、容器和网络的度量），自动化（如自动扩展、动态Provision等）以及策略管理（RBAC、Quota、PSP、NetworkPolicy等）</li>
-<li>接口层：kubectl命令行工具、客户端SDK</li>
-<li>生态系统：在接口层之上的庞大容器集群管理调度的生态系统，可以划分为两个范畴<ul>
-<li>K8S外部：日志、监控、配置管理、CI、CD、Workflow、Faas、OTS应用、ChatOps等</li>
-<li>K8S内部：CRI、CNI、CVI、镜像仓库、Cloud Provider、集群自身的配置和管理等</li>
-</ul>
-</li>
-</ul>
-<h3 id="部署过程"><a href="#部署过程" class="headerlink" title="部署过程"></a>部署过程</h3><h5 id="使用https-github-com-gjmzj-kubeasz-git项目脚本部署"><a href="#使用https-github-com-gjmzj-kubeasz-git项目脚本部署" class="headerlink" title="使用https://github.com/gjmzj/kubeasz.git项目脚本部署"></a>使用<a href="https://github.com/gjmzj/kubeasz.git项目脚本部署" target="_blank" rel="noopener">https://github.com/gjmzj/kubeasz.git项目脚本部署</a></h5><h6 id="所需节点配置信息"><a href="#所需节点配置信息" class="headerlink" title="所需节点配置信息"></a>所需节点配置信息</h6><ul>
-<li>部署节点 * 1：运行ansible脚本的节点</li>
-<li>etcd节点 * 3：注意etcd集群必须是1，3，5，7…奇数哥节点</li>
-<li>master节点 * 2：根据实际的增加节点数，需要额外的规划一个master VIP（虚地址）</li>
-<li>lb节点 * 2：负责负载均衡节点两个，安装haproxy+keepalived</li>
-<li>node节点 * 3：真正应负载的节点，根据需要增加机器配置和节点数</li>
-</ul>
-<p>多节点的集群，要确保各节点时区设置一致，并使用ntp服务器同步各节点时间</p>
-<h6 id="参考配置-包括-单节点、单主多节点、多主多节点"><a href="#参考配置-包括-单节点、单主多节点、多主多节点" class="headerlink" title="参考配置-包括(单节点、单主多节点、多主多节点)"></a>参考配置-包括(单节点、单主多节点、多主多节点)</h6><p><a href="https://github.com/vajn/kubeasz/tree/master/example" target="_blank" rel="noopener">https://github.com/vajn/kubeasz/tree/master/example</a></p>
-<h3 id="部署步骤"><a href="#部署步骤" class="headerlink" title="部署步骤"></a>部署步骤</h3><p>准备好相应数目的虚拟机，测试搭建一个高可用集群</p>
-<p>1、基础系统配置</p>
-<ul>
-<li>2G／硬盘30G以上</li>
-<li>最小化安装ubuntu server 或者 centos minimal</li>
-<li>配置网络环境、更新源、SSH登录等</li>
-</ul>
-<p>2、在每个节点安装部署脚本的依赖工具</p>
-<p>ubuntu</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 文档中脚本默认均以root用户执行</span><br><span class="line">apt-get update &amp;&amp; apt-get upgrade -y &amp;&amp; apt-get dist-upgrade -y</span><br><span class="line"># 安装python2</span><br><span class="line">apt-get install python2.7</span><br><span class="line"># Ubuntu16.04可能需要配置以下软连接</span><br><span class="line">ln -s /usr/bin/python2.7 /usr/bin/python</span><br></pre></td></tr></table></figure>
-<p>centos7</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 文档中脚本默认均以root用户执行</span><br><span class="line"># 安装 epel 源并更新</span><br><span class="line">yum install epel-release -y</span><br><span class="line">yum update</span><br><span class="line"># 安装python</span><br><span class="line">yum install python -y</span><br></pre></td></tr></table></figure>
-<p>3、在deploy节点安装及准备ansible</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># Ubuntu 16.04 </span><br><span class="line">apt-get install git python-pip -y</span><br><span class="line"># CentOS 7</span><br><span class="line">yum install git python-pip -y</span><br><span class="line"># pip安装ansible(国内如果安装太慢可以直接用pip阿里云加速)</span><br><span class="line">#pip install pip --upgrade</span><br><span class="line">#pip install ansible</span><br><span class="line">pip install pip --upgrade -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com</span><br><span class="line">pip install --no-cache-dir ansible -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com</span><br></pre></td></tr></table></figure>
-<p>ubuntu中会出现的错误</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;/usr/bin/pip&quot;, line 9, in &lt;module&gt;</span><br><span class="line">    from pip import main</span><br><span class="line">ImportError: cannot import name main</span><br></pre></td></tr></table></figure>
-<p>修改/usr/bin/pip</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#原代码</span><br><span class="line">from pip import main</span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    sys.exit(main())</span><br><span class="line"></span><br><span class="line">#修改后</span><br><span class="line">from pip import __main__</span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    sys.exit(__main__._main())</span><br></pre></td></tr></table></figure>
-<ul>
-<li>在delpoy节点配置免密码登录</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 2048 回车 回车 回车</span><br><span class="line">ssh-copy-id $IPs #$IPs为所有节点地址包括自身，按照提示输入yes 和root密码</span><br></pre></td></tr></table></figure>
-<p>4、在delpoy节点编排安装k8s</p>
-<ul>
-<li>4.1 下载项目源码</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 方式一：使用git clone</span><br><span class="line">git clone https://github.com/gjmzj/kubeasz.git</span><br><span class="line">mkdir -p /etc/ansible</span><br><span class="line">mv kubeasz/* /etc/ansible</span><br><span class="line"># 方式二：从发布页面 https://github.com/gjmzj/kubeasz/releases 下载源码解压到同样目录</span><br></pre></td></tr></table></figure>
-<ul>
-<li>4.2a 下载二进制文件 请从分享的链接:<a href="https://pan.baidu.com/s/10kEtpzfoWTTJHPKUr6zWrA" target="_blank" rel="noopener">https://pan.baidu.com/s/10kEtpzfoWTTJHPKUr6zWrA</a>  密码:fchr，下载解压到/etc/ansible/bin目录，如果你有合适网络环境也可以按照/down/download.sh自行从官网下载各种tar包</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar zxvf k8s.1-9-8.tar.gz       # 以安装k8s v1.9.8为例</span><br><span class="line">mv bin/* /etc/ansible/bin</span><br></pre></td></tr></table></figure>
-<ul>
-<li>4.2b [可选]下载离线docker镜像 服务器使用内部yum源/apt源，但是无法访问公网情况下，请下载离线docker镜像完成集群安装；从百度云盘把<code>basic_images_kubeasz_x.y.tar.gz</code> 下载解压到<code>/etc/ansible/down</code> 目录</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar zxvf basic_images_kubeasz_0.2.tar.gz -C /etc/ansible/down</span><br></pre></td></tr></table></figure>
-<ul>
-<li>4.3 配置集群参数</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/ansible</span><br><span class="line">cp example/hosts.m-masters.example hosts</span><br><span class="line">vim hosts                       # 根据实际情况修改此hosts文件</span><br><span class="line"># 验证ansible安装，正常能看到每个节点返回 SUCCESS</span><br><span class="line">ansible all -m ping</span><br></pre></td></tr></table></figure>
-<ul>
-<li>4.4 开始安装 </li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># 分步安装</span><br><span class="line">ansible-playbook 01.prepare.yml</span><br><span class="line">ansible-playbook 02.etcd.yml</span><br><span class="line">ansible-playbook 03.docker.yml</span><br><span class="line">ansible-playbook 04.kube-master.yml</span><br><span class="line">ansible-playbook 05.kube-node.yml</span><br><span class="line">ansible-playbook 06.network.yml</span><br><span class="line">ansible-playbook 07.cluster-addon.yml</span><br><span class="line"># 一步安装</span><br><span class="line">#ansible-playbook 90.setup.yml</span><br></pre></td></tr></table></figure>
-<h3 id="访问dashboard"><a href="#访问dashboard" class="headerlink" title="访问dashboard"></a>访问dashboard</h3><p><img src="/2018/06/14/k8s部署总结/k8s1.png" alt=""></p>
-<h3 id="部署简单例子测试"><a href="#部署简单例子测试" class="headerlink" title="部署简单例子测试"></a>部署简单例子测试</h3><p><img src="/2018/06/14/k8s部署总结/k8s2.png" alt=""></p>
-<p><img src="/2018/06/14/k8s部署总结/k8s3.png" alt=""></p>
+          参考资料https://github.com/gjmzj/kubeasz
+K8S设计架构要想成功的部署K8S，需要对K8S的基本组件有一定了解。K8S集群中包含有节点代理kubelet和Master组件(APIs, scheduler, etc)，一切都是基于分布式存储系统。下面就是K8S的架构图
 
-          
+Kubernetes主要由以下几个核心组件组成：
+
+etcd保存了整个集群的状态
+apiserver提供了资源操作的唯一入口，并提供认证、授权、访问控制、API注册和发现等机制
+controller manager负责
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/06/14/k8s部署总结/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -668,73 +587,22 @@
       
         
           
-            <h2 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h2><p>单例模式（Singleton Pattern）是Java中最简单的设计模式之一。它属于创建型模式，提供了一种创建对象的最佳方式。</p>
-<p>这种模式涉及到一个单一的类，该类负责创建自己的对象，同时确保只有单个对象被创建。这个类提供了一种访问其唯一对象的方式，可以直接访问，不需要实例化该类的对象。</p>
-<p>1、单例类只能有一个实例。</p>
-<p>2、单例类必须自己创建自己的唯一实例。</p>
-<p>3、单例类必须要给所有其他对象提供这一实例。</p>
-<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><ul>
-<li>意图：保证一个类仅有一个实例，并提供一个访问它的全局访问点。</li>
-<li>主要解决：一个全局使用的类频繁地创建与销毁。</li>
-<li>何时使用：当你想控制实例数目，节省系统资源的时候。</li>
-<li>如何解决：判断系统是否已有这个单例，如果有则返回，如果没有则创建。</li>
-<li>代码关键点：将构造函数私有化。</li>
-<li>模式优点：<ul>
-<li>在内存里只有一个实例，减少了内存的开销，尤其是频繁的创建和销毁的实例。</li>
-<li>避免对资源的多重占用</li>
-</ul>
-</li>
-<li>使用场景：<ul>
-<li>1、要求生产唯一序列号。</li>
-<li>2、WEB中的计数器，不用每次刷新都在数据库里面加一次，用单例先缓存起来。</li>
-<li>3、创建一个对象需要消耗的资源过多，比如I/O与数据库的连接等。</li>
-</ul>
-</li>
-<li>注意事项：<ul>
-<li>getInstance() 方法中需要使用同步锁synchronized(Singleton.class)方式多线程同时进入造成instance被多次实例化。</li>
-</ul>
-</li>
-</ul>
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">package com.cx.SinglePattern;</span><br><span class="line"></span><br><span class="line">public class SingleObject &#123;</span><br><span class="line"></span><br><span class="line">    //创建SingleObject的一个对象</span><br><span class="line">    private static SingleObject instance = new SingleObject();</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 让构造函数私有化，这样该类就不会被外部实例化</span><br><span class="line">     */</span><br><span class="line">    private SingleObject()&#123;&#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 获取唯一可用的实例</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public static SingleObject getInstance()&#123;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void showMessage()&#123;</span><br><span class="line">        System.out.println(&quot;Hello World!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.SinglePattern;</span><br><span class="line"></span><br><span class="line">public class SingletonPatternDemo &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line"></span><br><span class="line">        SingleObject object = SingleObject.getInstance();</span><br><span class="line"></span><br><span class="line">        object.showMessage();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="单例模式的几种实现方式"><a href="#单例模式的几种实现方式" class="headerlink" title="单例模式的几种实现方式"></a>单例模式的几种实现方式</h3><h4 id="1、懒汉式，线程不安全"><a href="#1、懒汉式，线程不安全" class="headerlink" title="1、懒汉式，线程不安全"></a>1、懒汉式，线程不安全</h4><p>是否Lazy初始化：是</p>
-<p>是否多线程安全：否</p>
-<p>实现难度：易</p>
-<p>描述：这种方式是最基本的实现方式，该实现方式最大的问题就是不支持多线程。因为没有加锁synchronized，所以严格意义上它并不算单例模式。</p>
-<p>这种方式lazy loading很明显，不要求线程安全，在多线程下不能正常工作。</p>
-<p><strong>代码示例</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class Singleton&#123;</span><br><span class="line">    private static Singleton instance;</span><br><span class="line">    private Singleton()&#123;&#125;</span><br><span class="line">    </span><br><span class="line">    public static Singleton getInstance()&#123;</span><br><span class="line">        if(instance == null)&#123;</span><br><span class="line">            instance = new Singleton();</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="2、懒汉式，线程安全"><a href="#2、懒汉式，线程安全" class="headerlink" title="2、懒汉式，线程安全"></a>2、懒汉式，线程安全</h4><p>是否Lazy初始化：是</p>
-<p>是否多线程安全：是</p>
-<p>实现难度：易</p>
-<p>描述：这种方式具备很好的lazy loading，能够在多线程中很好的工作，但是效率很低，99%情况下不需要同步。</p>
-<p>优点：第一次调用才初始化，避免内存浪费。</p>
-<p>缺点：必须加锁synchronized才能保证单例，单加锁会影响效率。getInstance()的性能对应用程序不是很关键(该方法使用不太频繁)。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class Singleton&#123;</span><br><span class="line">    private static Singleton instance;</span><br><span class="line">    private Singleton()&#123;&#125;</span><br><span class="line">    </span><br><span class="line">    public static synchronized Singleton getInstance()&#123;</span><br><span class="line">        if(instance == null)&#123;</span><br><span class="line">            instance = new Singleton();</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="3、饿汉式"><a href="#3、饿汉式" class="headerlink" title="3、饿汉式"></a>3、饿汉式</h4><p>是否Lazy初始化：否</p>
-<p>是否多线程安全：是</p>
-<p>实现难度：易</p>
-<p>描述：这种方式比较常用，单容易产生垃圾对象</p>
-<p>优点：没有加锁，执行效率会提高。</p>
-<p>缺点：类加载时就初始化，浪费内存。</p>
-<p>特点：它基于classloader几种避免了多线程的同步问题，不过，instance在类装载时就实例化，虽然导致类装载的原因有很多种，在单例模式中大多数都是调用getInstance方法，但是也不能确定有其他的方式（或者其他静态方法）导致类装载，这时候初始化instance显然没有达到lazy loading的效果。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class Singleton &#123;</span><br><span class="line">    private static Singleton instance = new Singleton();</span><br><span class="line">    private Singleton()&#123;&#125;</span><br><span class="line">    public static Singleton getInstance()&#123;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="4、双检锁／双重校验锁"><a href="#4、双检锁／双重校验锁" class="headerlink" title="4、双检锁／双重校验锁"></a>4、双检锁／双重校验锁</h4><p>JDK版本：JDK1.5起</p>
-<p>是否Lazy初始化：是</p>
-<p>是否多线程安全：是</p>
-<p>实现难度：较复杂</p>
-<p>描述：这种方式采用双锁机制，安全且在多线程情况下能保持高性能。getInstance()的性能对应用程序很关键。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class Singleton &#123;</span><br><span class="line">    private volatile static Singleton singleton;</span><br><span class="line">    private Singleton()&#123;&#125;</span><br><span class="line">    public static Singleton getSingleton()&#123;</span><br><span class="line">        if(singleton == null)&#123;</span><br><span class="line">            synchronized (Singleton.class)&#123;</span><br><span class="line">                if(singleton == null)&#123;</span><br><span class="line">                    singleton = new Singleton();</span><br><span class="line">                &#125; </span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="5、登记式／静态内部类"><a href="#5、登记式／静态内部类" class="headerlink" title="5、登记式／静态内部类"></a>5、登记式／静态内部类</h4><p>是否Lazy初始化：是</p>
-<p>是否多线程安全：是</p>
-<p>实现难度：一般</p>
-<p>描述：</p>
-<p>这种方式能达到双检锁方式一样的功效，但实现更简单。对静态域使用延迟初始化，应使用这种方式而不是双检锁方式。这种方式值适用于静态域的情况，双检锁方式可在实例域需要延迟初始化时使用。</p>
-<p>这种方式同样利用了classloader机制来保证初始化instance时只有一个线程，它跟第三种方式不同的是：第三种方式只要Singleton类被装载了，那么instance就会被实例化，而这种方式是Singleton类被装载了，instance不一定被初始化。因为SingletonHolder类没有被主动使用，只有通过显示调用getInstance方法时，才会显示装载SingletonHolder类，从而实例化instance。想象一下，如果实例化instance很消耗资源，所以想让它延迟加载时，另一方面，又不希望在Singleton类加载时就实例化，因为不能确保Singleton类还可能在其他地方被主动使用从而被加载，那么这个时候实例化instance显然是不合适的。这个时候，这种方式相比第3钟方式就显得很合理。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public class Singleton &#123;</span><br><span class="line">    private static class SingletonHolder &#123;</span><br><span class="line">        private static final Singleton INSTANCE = new Singleton();</span><br><span class="line">    &#125;</span><br><span class="line">    private Singleton() &#123;&#125;</span><br><span class="line">    public static final Singleton getInstance()&#123;</span><br><span class="line">        return SingletonHolder.INSTANCE;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>经验</strong></p>
-<p>一般情况下，不建议使用第一种和第二种懒汉方式，建议使用第三种饿汉方式。只有在明确实现lazy loading效果时，才会使用第五种登记方式。</p>
-
-          
+          单例模式单例模式（Singleton Pattern）是Java中最简单的设计模式之一。它属于创建型模式，提供了一种创建对象的最佳方式。
+这种模式涉及到一个单一的类，该类负责创建自己的对象，同时确保只有单个对象被创建。这个类提供了一种访问其唯一对象的方式，可以直接访问，不需要实例化该类的对象。
+1、单例类只能有一个实例。
+2、单例类必须自己创建自己的唯一实例。
+3、单例类必须要给所有其他对象提供这一实例。
+介绍
+意图：保证一个类仅有一个实例，并提供一个访问它的全局访问点。
+主要解决：一个全局使用的类频繁地创建与销毁
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/06/11/desgin-pattern3/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -852,75 +720,23 @@
       
         
           
-            <h2 id="80X86的CPU结构"><a href="#80X86的CPU结构" class="headerlink" title="80X86的CPU结构"></a>80X86的CPU结构</h2><ul>
-<li>1.总线接口部件：管理地址、数据和控制总线，完成指令预取、读/写数据等总线操作</li>
-<li>2.指令预取部件：含有32字节的指令预取队列，可通过总线接口部件从M中读取指令放入指令队列</li>
-<li>3.指令译码部件：从指令预取队列中读取指令译码</li>
-<li>4.指令执行部件：由ALU、通用R、桶形移位R等组成完成各种逻辑/算术运算</li>
-<li>5.段管理部件：对M进行分段管理，将逻辑地址转换为32位线性地址</li>
-<li>6.页管理部件：对M进行分页管理，将线性地址变换为M的32位物理地址</li>
-<li>7.高速缓冲部件：可加速指令和数据的访问</li>
-<li>8.浮点运算部件：简称FPU，专门用于浮点运算</li>
-</ul>
-<h2 id="80X86的数据类型"><a href="#80X86的数据类型" class="headerlink" title="80X86的数据类型"></a>80X86的数据类型</h2><ul>
-<li>无符号二进制数</li>
-<li>有符号二进制数</li>
-<li>浮点数</li>
-<li>BCD码<ul>
-<li>压缩BCD码:一个字节存放两个BCD码</li>
-<li>非压缩BCD码:一个字节存放一个BCD码（低4位）</li>
-</ul>
-</li>
-<li>字符串<ul>
-<li>位串</li>
-<li>字节/字/双字串</li>
-</ul>
-</li>
-<li>ASCII码</li>
-<li>指针数据</li>
-</ul>
-<h2 id="80X86寻址方式"><a href="#80X86寻址方式" class="headerlink" title="80X86寻址方式"></a>80X86寻址方式</h2><ul>
-<li>立即寻址</li>
-<li>寄存器寻址</li>
-<li>直接寻址</li>
-<li>寄存器间接寻址</li>
-<li>相对寄存器间接寻址</li>
-<li>基址加变址寻址</li>
-<li>相对基址加变址寻址</li>
-</ul>
-<h2 id="指令格式"><a href="#指令格式" class="headerlink" title="指令格式"></a>指令格式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[标号:]	操作码	[操作数,...]	[;注释]</span><br></pre></td></tr></table></figure>
-<h3 id="运算相关标志位"><a href="#运算相关标志位" class="headerlink" title="运算相关标志位"></a>运算相关标志位</h3><ul>
-<li>CF：进位／借位标志</li>
-<li>AF：辅助进位／借位标志</li>
-<li>OF：溢出标志</li>
-<li>ZF：零标志</li>
-<li>SF：符号标志</li>
-<li>PF：奇偶标志</li>
-</ul>
-<h2 id="指令类型"><a href="#指令类型" class="headerlink" title="指令类型"></a>指令类型</h2><ul>
-<li><p>数据传送类指令</p>
-<p>不影响标志位</p>
-<p>MOV OP1 OP2</p>
-</li>
-<li><p>数据交换类指令</p>
-<p>XCHG OP1 OP2</p>
-</li>
-<li><p>I/O指令IN和OUT</p>
-<p>IN    OP1 OP2</p>
-<p>OUT OP1 OP2</p>
-</li>
-<li><p>堆栈操作</p>
-</li>
-<li><p>标志寄存器传送指令</p>
-</li>
-<li><p>查表转换指令XLAT</p>
-</li>
-<li><p>算术运算指令</p>
-<p>判断溢出标志，最高位和次高位同时进位OF=1，最高位和次高位不同时进位，OF=0</p>
-</li>
-</ul>
-
-          
+          80X86的CPU结构
+1.总线接口部件：管理地址、数据和控制总线，完成指令预取、读/写数据等总线操作
+2.指令预取部件：含有32字节的指令预取队列，可通过总线接口部件从M中读取指令放入指令队列
+3.指令译码部件：从指令预取队列中读取指令译码
+4.指令执行部件：由ALU、通用R、桶形移位R等组成完成各种逻辑/算术运算
+5.段管理部件：对M进行分段管理，将逻辑地址转换为32位线性地址
+6.页管理部件：对M进行分页管理，将线性地址变换为M的32位物理地址
+7.高速缓冲部件：可加速指令和数据的访问
+8.浮点运算部件：简称
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/06/06/微机原理/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1038,218 +854,16 @@
       
         
           
-            <h1 id="建造者模式"><a href="#建造者模式" class="headerlink" title="建造者模式"></a>建造者模式</h1><h3 id="模式动机"><a href="#模式动机" class="headerlink" title="模式动机"></a>模式动机</h3><p>无论是在现实世界还是软件系统中，都存在着一些复杂对象，它们拥有多个组成部分，如汽车，它包括车轮、方向盘、发动机等各种部件。而对于大多数用户而言，无须知道这些部件装配的细节，也几乎不会使用单独某个部件，而是使用一整辆完整的汽车，可以通过建造者模式来对其进行设计和描述，建造者模式可以将部件和其组装过程分开，一步一步创建一个复杂的对象。用户只需要指定复杂对象的类型就可以得到该对象，而无须知道其内部构造细节。</p>
-<p>在软件开发中，也存在大量类似汽车一样的复杂对象，它们拥有一系列成员属性，这些成员属性中有些则是引用类型的成员对象。而且在这些复杂兑现高中，还可能存在一些限制条件，如某些属性没有复制则复杂对象不能最为一个完整的产品使用；有些属性必须按照某个顺序赋值，一个属性没有赋值前，另一个属性可能无法赋值等。</p>
-<p>复杂对象相当于一辆有待构造的汽车，而对象的属性相当于汽车的部件，建造产品的过程就相当于组合部件的过程。由于组合部件过程很复杂，因此，这些部件的组合过程往往被“外部化”到一个称为建造者的对象里，建造者返回客户端的是一个构造完毕的完整产品对象，而用户无须关心该对象所包含的属性以及它们的组装方式，这就是建造者模式的模式动机。</p>
-<h3 id="模式结构"><a href="#模式结构" class="headerlink" title="模式结构"></a>模式结构</h3><p>建造者模式包含如下角色：</p>
-<ul>
-<li>Builder：抽象建造者</li>
-<li>ConcreteBuilder：具体建造者</li>
-<li>Director：指挥者</li>
-<li>Product：产品角色</li>
-</ul>
-<p><img src="/2018/06/06/desgin-pattern2/建造者模式.png" alt="建造者模式"></p>
-<ul>
-<li>示例代码</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line">package com.cx.BuilderPattern;</span><br><span class="line"></span><br><span class="line">public class Director &#123;</span><br><span class="line"></span><br><span class="line">    public void Construct(Builder builder)&#123;</span><br><span class="line">        builder.buildPartA();</span><br><span class="line">        builder.buildPartB();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.BuilderPattern;</span><br><span class="line"></span><br><span class="line">public abstract class Builder &#123;</span><br><span class="line"></span><br><span class="line">    public abstract void buildPartA();</span><br><span class="line"></span><br><span class="line">    public abstract void buildPartB();</span><br><span class="line"></span><br><span class="line">    public abstract Product getResult();</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.BuilderPattern;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class ConcrateBuilder1 extends Builder &#123;</span><br><span class="line"></span><br><span class="line">    private Product product = new Product();</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void buildPartA() &#123;</span><br><span class="line">        product.add(&quot;部件A&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void buildPartB() &#123;</span><br><span class="line">        product.add(&quot;部件B&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Product getResult() &#123;</span><br><span class="line">        return product;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.BuilderPattern;</span><br><span class="line"></span><br><span class="line">public class ConcrateBuilder2 extends Builder &#123;</span><br><span class="line"></span><br><span class="line">    private Product product = new Product();</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void buildPartA() &#123;</span><br><span class="line">        product.add(&quot;部件X&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void buildPartB() &#123;</span><br><span class="line">        product.add(&quot;部件Y&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Product getResult() &#123;</span><br><span class="line">        return product;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.BuilderPattern;</span><br><span class="line"></span><br><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.List;</span><br><span class="line"></span><br><span class="line">public class Product &#123;</span><br><span class="line"></span><br><span class="line">    private List&lt;String&gt; parts = new ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    public void add(String part)&#123;</span><br><span class="line">        parts.add(part);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void show()&#123;</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;创建产品&quot;);</span><br><span class="line">        for (String part : parts)&#123;</span><br><span class="line">            System.out.println(part);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">package com.cx.BuilderPattern;</span><br><span class="line"></span><br><span class="line">public class Client &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line"></span><br><span class="line">        Director director = new Director();</span><br><span class="line">        Builder builder1 = new ConcrateBuilder1();</span><br><span class="line">        Builder builder2 = new ConcrateBuilder2();</span><br><span class="line"></span><br><span class="line">        director.Construct(builder1);</span><br><span class="line">        Product product1 = builder1.getResult();</span><br><span class="line">        product1.show();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        director.Construct(builder2);</span><br><span class="line">        Product product2 = builder2.getResult();</span><br><span class="line">        product2.show();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>测试输出</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">创建产品</span><br><span class="line">部件A</span><br><span class="line">部件B</span><br><span class="line">创建产品</span><br><span class="line">部件X</span><br><span class="line">部件Y</span><br></pre></td></tr></table></figure>
-<h3 id="模式分析"><a href="#模式分析" class="headerlink" title="模式分析"></a>模式分析</h3><p>抽象建造者类中定义了产品的创建方法和返回方法</p>
-<p>建造者模式结构中海引入了一个指挥类Director，该类的作用主要有两个：一方面它隔离了客户与生产过程；另一方面它负责控制产品的生产过程。指挥者真独一抽象建造者编程，客户端只需要知道具体建造者的类型，即可通过指挥者类调用建造者的相关方法，返回一个完整的产品对象</p>
-<p>在客户端代码中，无须关系产品对象的具体组装过程，只需要确定具体建造者类型即可，建造者模式将复杂对象的构建与对象的表现分离开来，这样使得同样的构建过程可以创建出不同的表现</p>
-<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><p>在建造者模式中，客户端不必知道产品内部组成的细节，将产品本身与产品的创建过程解耦，使得相同的创建过程可以创建不同的产品对象</p>
-<p>每一个具体建造者都相对独立，而与其他的具体构造者无关，因此可以很方便地替换具体建造者或者增加新的具体建造者，用户使用不同的具体建造者即可得到不同的产品对象</p>
-<p>可以更加精细的控制产品的创建过程。将复杂产品的创建步骤分解在不同的方法中，使得创建过程更加清晰，也更方便使用程序来控制创建过程</p>
-<p>增加新的具体建造者无须修改原有类库的代码，指挥者类针对抽象建造者类编程，系统扩展方便，符合“开闭原则”</p>
-<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><p>建造者模式所创建的产品一般具有较多的共同点，其组成部分相似，如果产品之间的差异性很大，则不适合使用建造者模式，因此其适用范围受到一定限制</p>
-<p>如果产品的内部变化复杂，可能会导致需要定义很多建造者类来实现这种变化，导致系统变得很庞大</p>
-<h3 id="适用环境"><a href="#适用环境" class="headerlink" title="适用环境"></a>适用环境</h3><ul>
-<li>需要生成的产品对象有复杂的内部结构，这些产品对象通常包含多个成员属性</li>
-<li>需要生成的产品对象的属性相互依赖，需要指定其生成顺序</li>
-<li>对象的创建过程独立于创建该对象的类。在建造者模式中引入了指挥者类，将创建过程封装在指挥者类中，而不在建造者类中</li>
-<li>隔离复杂对象的创建和使用，并使得相同的创建过程可以创建不同的产品</li>
-</ul>
-<h2 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h2><h3 id="模式动机-1"><a href="#模式动机-1" class="headerlink" title="模式动机"></a>模式动机</h3><p>建立一种对象与对象之间的依赖关系，一个对象发生改变时将自动通知其他对象，其他对象将相应作出反应。在此，发生改变的对象称为观察目标，而被通知的对象称为观察者，一个观察目标可以对应多个观察者，而且这些观察者之间没有相互联系，可以根据需要增加和删除观察者，使得系统更易于扩展，这就是观察者模式的模式动机。</p>
-<h3 id="模式定义"><a href="#模式定义" class="headerlink" title="模式定义"></a>模式定义</h3><p>观察者模式(Observer Pattern)：定义对象间的一种一对多依赖关系，使得每当一个对象状态发生改变时，其相关依赖对象皆得到通知并被自动更新。观察者模式又叫做发布订阅(Publish/Subscribe)模式、模型-视图(Model/View)模式、源-监听器(Source/Listener)模式或从属者(Dependents)模式。观察者模式是一种对象行为型模式。</p>
-<h3 id="模式结构-1"><a href="#模式结构-1" class="headerlink" title="模式结构"></a>模式结构</h3><p>观察者模式包含如下角色：</p>
-<ul>
-<li>Subject：目标</li>
-<li>ConcreteSubject：具体目标</li>
-<li>Observer：观察者</li>
-<li>ConcreteObserver：具体观察者</li>
-</ul>
-<p><img src="/2018/06/06/desgin-pattern2/观察者模式.png" alt="观察者模式"></p>
-<p><strong>示例代码</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br></pre></td><td class="code"><pre><span class="line">package com.cx.ObseverPattern;</span><br><span class="line"></span><br><span class="line">public abstract class Observer &#123;</span><br><span class="line"></span><br><span class="line">    public abstract void update();</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.ObseverPattern;</span><br><span class="line"></span><br><span class="line">public class ConcrateObserver extends Observer&#123;</span><br><span class="line"></span><br><span class="line">    private String mName;</span><br><span class="line">    private String mObserverState;</span><br><span class="line">    private ConcrateSubject mSubject;</span><br><span class="line"></span><br><span class="line">    public ConcrateObserver(ConcrateSubject subject, String name)&#123;</span><br><span class="line">        mSubject = subject;</span><br><span class="line">        mName = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void update() &#123;</span><br><span class="line">        mObserverState = mSubject.getmSubjectState();</span><br><span class="line">        String format = String.format(&quot;观察者%s的新状态是%s&quot;, mName, mObserverState);</span><br><span class="line">        System.out.println(format);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public ConcrateSubject getmSubject() &#123;</span><br><span class="line">        return mSubject;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setmSubject(ConcrateSubject mSubject) &#123;</span><br><span class="line">        this.mSubject = mSubject;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.ObseverPattern;</span><br><span class="line"></span><br><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.List;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> *</span><br><span class="line"> * 主题/抽象通知者</span><br><span class="line"> *</span><br><span class="line"> * @author jie liu</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">public class Subject &#123;</span><br><span class="line"></span><br><span class="line">    private List&lt;Observer&gt; observers = new ArrayList&lt;Observer&gt;();</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 添加观察者</span><br><span class="line">     *</span><br><span class="line">     * @param observer</span><br><span class="line">     */</span><br><span class="line"></span><br><span class="line">    public void attach(Observer observer)&#123;</span><br><span class="line">        observers.add(observer);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 移除观察者</span><br><span class="line">     * @param observer</span><br><span class="line">     */</span><br><span class="line"></span><br><span class="line">    public void detach(Observer observer)&#123;</span><br><span class="line">        observers.remove(observer);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 通知</span><br><span class="line">     */</span><br><span class="line"></span><br><span class="line">    public void notification()&#123;</span><br><span class="line"></span><br><span class="line">        for (Observer observer : observers)&#123;</span><br><span class="line">            observer.update();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.ObseverPattern;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> *</span><br><span class="line"> * 具体主题/具体通知者</span><br><span class="line"> *</span><br><span class="line"> * @author jie liu</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">public class ConcrateSubject extends Subject &#123;</span><br><span class="line"></span><br><span class="line">    private String mSubjectState;</span><br><span class="line"></span><br><span class="line">    public String getmSubjectState() &#123;</span><br><span class="line">        return mSubjectState;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setmSubjectState(String mSubjectState) &#123;</span><br><span class="line">        this.mSubjectState = mSubjectState;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.ObseverPattern;</span><br><span class="line"></span><br><span class="line">public class Client &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line"></span><br><span class="line">        ConcrateSubject concrateSubject = new ConcrateSubject();</span><br><span class="line"></span><br><span class="line">        ConcrateObserver observerX = new ConcrateObserver(concrateSubject, &quot;X&quot;);</span><br><span class="line">        ConcrateObserver observerY = new ConcrateObserver(concrateSubject, &quot;Y&quot;);</span><br><span class="line">        ConcrateObserver observerZ = new ConcrateObserver(concrateSubject, &quot;Z&quot;);</span><br><span class="line"></span><br><span class="line">        concrateSubject.attach(observerX);</span><br><span class="line">        concrateSubject.attach(observerY);</span><br><span class="line">        concrateSubject.attach(observerZ);</span><br><span class="line"></span><br><span class="line">        concrateSubject.setmSubjectState(&quot;ABC&quot;);</span><br><span class="line">        concrateSubject.notification();</span><br><span class="line"></span><br><span class="line">        concrateSubject.detach(observerZ);</span><br><span class="line">        concrateSubject.setmSubjectState(&quot;DEF&quot;);</span><br><span class="line">        concrateSubject.notification();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>测试输出</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">观察者X的新状态是ABC</span><br><span class="line">观察者Y的新状态是ABC</span><br><span class="line">观察者Z的新状态是ABC</span><br><span class="line">观察者X的新状态是DEF</span><br><span class="line">观察者Y的新状态是DEF</span><br></pre></td></tr></table></figure>
-<h3 id="模式分析-1"><a href="#模式分析-1" class="headerlink" title="模式分析"></a>模式分析</h3><ul>
-<li>观察者模式描述了如何建立对象与对象之间的依赖关系，如何构造满足这种需求的系统</li>
-<li>这一模式中的关键对象是观察目标和观察者，一个目标可以有任意数目的与之相依赖的观察者，一旦目标的状态发生改变，所有观察者都将得到通知</li>
-<li>作为对这个通知的响应，每个观察者都将即时更新自己的状态，以与目标状态同步，这种交互称为发布-订阅(publish-subscribe)。目标是通知的发布者，它发出通知时并不需要知道谁是它的观察者，可以有任意数目的观察者订阅它并接收通</li>
-</ul>
-<h3 id="优点-1"><a href="#优点-1" class="headerlink" title="优点"></a>优点</h3><ul>
-<li>观察者模式可以实现表现层和数据逻辑层的分离，并定义了稳定的消息传递机制，抽象了更新接口，使得可以有各种各样不同的表示层为具体观察者角色</li>
-<li>如果观察者和观察目标之间有循环依赖的话，观察目标会触发它们之间进行循环调用，可能导致系统崩溃、</li>
-<li>观察者模式没有相应的机制让观察者知道所观察的目标对象是怎么发生变化的，而仅仅是知道观察目标发生了变化</li>
-</ul>
-<h3 id="使用环境"><a href="#使用环境" class="headerlink" title="使用环境"></a>使用环境</h3><ul>
-<li>一个抽象模型有两个方面，其中一个方面依赖于另一个方面。将这些方面封装在独立的对象中使他们可以各自独立地改变和复用</li>
-<li>一个对象的改变将导致其他一个或多个对象也发生改变，而不知道具体有多少对象将发生改变，可以降低对象之间的耦合度</li>
-<li>一个对象必须通知其他对象，而并不知道这些对象是谁</li>
-<li>需要在系统中创建一个触发链，A对象的行为将影响B对象，B对象的行为将影响C对象……，可以使用观察者模式创建一种链式触发机制</li>
-</ul>
-<h3 id="模式应用"><a href="#模式应用" class="headerlink" title="模式应用"></a>模式应用</h3><p>观察者模式在软件开发中应用非常广泛，如某电子商务网站可以在执行发送操作后给用户多个发送商品打折信息，某团队战斗中某队友牺牲将给所有成员提示信息等等，凡事涉及到一对一或者一对多的对象交互场景都可以使用观察者模式。</p>
-<h3 id="模式扩展"><a href="#模式扩展" class="headerlink" title="模式扩展"></a>模式扩展</h3><ul>
-<li>MVC模式</li>
-</ul>
-<p>MVC是一种架构模式，它包含三个角色：模型（Model），视图（View）和控制器（Controller）。观察者模式可以用来实现MVC模式，观察者模式中的观察目标就是MVC模式中的模型（Model），而观察者就是MVC中的视图（View），控制器（Controller）充当两者之间的中介者（Mediator）。当模型层的数据发生改变时，视图层将自动改变其显示内容</p>
-<h2 id="抽象工厂模式"><a href="#抽象工厂模式" class="headerlink" title="抽象工厂模式"></a>抽象工厂模式</h2><h3 id="模式动机-2"><a href="#模式动机-2" class="headerlink" title="模式动机"></a>模式动机</h3><ul>
-<li>在工厂方法模式中具体工厂负责生产具体的产品，每一个具体工厂对应一种具体产品，工厂方法也具有唯一性，一般情况下，一个具体工厂中只有一个工厂方法或者一组重载的工厂方法。但是有时候我们需要一个工厂可以提供多个产品对象，而不是单一的产品对象。<ul>
-<li>产品等级结构：产品等级结构即产品的继承结构，如一个抽象类是电视机，其子类有海尔电视机、海信电视机、TCL电视机，则抽象电视机与具体品牌的电视机之间构成了一个产品等级结构，抽象电视机是父类，而具体品牌的电视机是其子类。</li>
-<li>产品族：在抽象工厂模式中，产品族是指由同一个工厂生产的，位于不同产品等级结构中的一组产品，如海尔电器工厂生产的海尔电视机、海尔电冰箱，海尔电视机位于电视机产品等级结构中，海尔电冰箱位于电冰箱产品等级结构中。</li>
-</ul>
-</li>
-<li>当系统所提供的工厂所需要生产的具体产品并不是一个简单的对象，而是多个位于不同产品等级结构中属于不同类型的具体产品时需要使用抽象工厂模式。</li>
-<li>抽象工厂模式是所有形式的工厂模式中最为抽象和最为一般性的一种形态。</li>
-<li>抽象工厂模式于工厂方法模式最大的区别在于，工厂方法模式针对的是一个产品等级结构，而抽象工厂模式则需要面对多个产品等级结构，一个工厂等级结构可以负责多个不同产品等级结构中的产品对象的创建。当一个工厂等级结构可以创建出分属于不同产品等级结构的一个产品族中的所有对象时，抽象工厂模式比工厂方法模式更简单，更有效。</li>
-</ul>
-<h3 id="模式定义-1"><a href="#模式定义-1" class="headerlink" title="模式定义"></a>模式定义</h3><p>抽象工厂模式：提供一个创建一系列相关或者相互依赖对象的接口，而无须指定它们具体的类。抽象工厂模式又称为kit模式，属于对象创建型模式。</p>
-<h3 id="模式结构-2"><a href="#模式结构-2" class="headerlink" title="模式结构"></a>模式结构</h3><ul>
-<li>AbstractFactory：抽象工厂</li>
-<li>ConcreteFactory：具体工厂</li>
-<li>AbstractProduct：抽象产品</li>
-<li>Product：具体产品</li>
-</ul>
-<p><img src="/2018/06/06/desgin-pattern2/抽象工厂模式.png" alt="抽象工厂模式"></p>
-<ul>
-<li>示例代码</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br></pre></td><td class="code"><pre><span class="line">package com.cx.AbstractFactoryPattern;</span><br><span class="line"></span><br><span class="line">public class User &#123;</span><br><span class="line">    private int mID;</span><br><span class="line">    private String mName;</span><br><span class="line"></span><br><span class="line">    public int getmID() &#123;</span><br><span class="line">        return mID;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setmID(int mID) &#123;</span><br><span class="line">        this.mID = mID;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getmName() &#123;</span><br><span class="line">        return mName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setmName(String mName) &#123;</span><br><span class="line">        this.mName = mName;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">package com.cx.AbstractFactoryPattern;</span><br><span class="line"></span><br><span class="line">public interface IUser &#123;</span><br><span class="line"></span><br><span class="line">    void insert(User user);</span><br><span class="line"></span><br><span class="line">    User getUser(int id);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.AbstractFactoryPattern;</span><br><span class="line"></span><br><span class="line">public class AccessUser implements IUser &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void insert(User user) &#123;</span><br><span class="line">        System.out.println(&quot;在Access中给User表增加一条记录&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public User getUser(int id) &#123;</span><br><span class="line">        System.out.println(&quot;在Access中根据ID得到User表一条记录&quot;);</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.AbstractFactoryPattern;</span><br><span class="line"></span><br><span class="line">public class SqlserverUser implements IUser &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void insert(User user) &#123;</span><br><span class="line">        System.out.println(&quot;在SQL Server中给User表添加一条记录&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public User getUser(int id) &#123;</span><br><span class="line">        System.out.println(&quot;在SQL Server中根据ID得到User表一条记录&quot;);</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.AbstractFactoryPattern;</span><br><span class="line"></span><br><span class="line">public class Department &#123;</span><br><span class="line"></span><br><span class="line">    private int mID;</span><br><span class="line">    private String mDeptName;</span><br><span class="line"></span><br><span class="line">    public int getmID() &#123;</span><br><span class="line">        return mID;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setmID(int mID) &#123;</span><br><span class="line">        this.mID = mID;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getmDeptName() &#123;</span><br><span class="line">        return mDeptName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setmDeptName(String mDeptName) &#123;</span><br><span class="line">        this.mDeptName = mDeptName;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.AbstractFactoryPattern;</span><br><span class="line"></span><br><span class="line">public interface IDepartment &#123;</span><br><span class="line"></span><br><span class="line">    public void insert(Department department);</span><br><span class="line"></span><br><span class="line">    public Department getDepartment(int id);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.AbstractFactoryPattern;</span><br><span class="line"></span><br><span class="line">public class AccessDepartment implements IDepartment &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void insert(Department department) &#123;</span><br><span class="line">        System.out.println(&quot;在Access中给Department表增加一条记录&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Department getDepartment(int id) &#123;</span><br><span class="line">        System.out.println(&quot;在Access中根据ID得到Department表一条记录&quot;);</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.AbstractFactoryPattern;</span><br><span class="line"></span><br><span class="line">public class SqlserverDepartment implements IDepartment &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void insert(Department department) &#123;</span><br><span class="line">        System.out.println(&quot;在SQL Server中给Department表添加一条记录&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Department getDepartment(int id) &#123;</span><br><span class="line">        System.out.println(&quot;在SQL Server中根据ID得到Department表的一条记录&quot;);</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.AbstractFactoryPattern;</span><br><span class="line"></span><br><span class="line">public interface IFactory &#123;</span><br><span class="line"></span><br><span class="line">    IUser createUser();</span><br><span class="line"></span><br><span class="line">    IDepartment createDepartment();</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.AbstractFactoryPattern;</span><br><span class="line"></span><br><span class="line">public class AccessFactory implements IFactory &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public IUser createUser() &#123;</span><br><span class="line">        return new AccessUser();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public IDepartment createDepartment() &#123;</span><br><span class="line">        return new AccessDepartment();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.AbstractFactoryPattern;</span><br><span class="line"></span><br><span class="line">public class SqlserverFactory implements IFactory &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public IUser createUser() &#123;</span><br><span class="line"></span><br><span class="line">        return new SqlserverUser();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public IDepartment createDepartment() &#123;</span><br><span class="line">        return new SqlserverDepartment();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">package com.cx.AbstractFactoryPattern;</span><br><span class="line"></span><br><span class="line">public class Client &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line"></span><br><span class="line">        User user = new User();</span><br><span class="line">        Department department = new Department();</span><br><span class="line"></span><br><span class="line">//        IFactory factory = new SqlserverFactory();</span><br><span class="line"></span><br><span class="line">        IFactory factory = new AccessFactory();</span><br><span class="line"></span><br><span class="line">        IUser iu = factory.createUser();</span><br><span class="line">        iu.insert(user);</span><br><span class="line">        iu.getUser(1);</span><br><span class="line"></span><br><span class="line">        IDepartment iDepartment = factory.createDepartment();</span><br><span class="line">        iDepartment.insert(department);</span><br><span class="line">        iDepartment.getDepartment(1);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>运行测试</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//AccessFactory</span><br><span class="line">在Access中给User表增加一条记录</span><br><span class="line">在Access中根据ID得到User表一条记录</span><br><span class="line">在Access中给Department表增加一条记录</span><br><span class="line">在Access中根据ID得到Department表一条记录</span><br><span class="line"></span><br><span class="line">//SqlserverFactory</span><br><span class="line">在SQL Server中给User表添加一条记录</span><br><span class="line">在SQL Server中根据ID得到User表一条记录</span><br><span class="line">在SQL Server中给Department表添加一条记录</span><br><span class="line">在SQL Server中根据ID得到Department表的一条记录</span><br></pre></td></tr></table></figure>
-<h3 id="优点-2"><a href="#优点-2" class="headerlink" title="优点"></a>优点</h3><ul>
-<li>抽象工厂模式隔离了具体类的生成，使得客户端并不需要知道什么被创建。由于这种隔离，更换一个具体工厂就变得相对容易。所有的具体工厂都实现了抽象工厂中定义的那些公共接口，因此只需改变具体工厂的实例，就可以杂剧某种程度上改变整个软件系统的行为。另外，应用抽象工厂模式可以实现高内聚低耦合的设计目的，因此抽象工厂模式得到了广泛的应用。</li>
-<li>当一个产品族中的多个对象被设计成一起工作时，它能够保证客户端始终只使用同一个产品族中的对象。这对一些需要根据当前环境来决定其行为的软件系统来说，是一种非常实用的设计模式。</li>
-<li>增加新的具体工厂和产品族很方便，无须修改已有系统，符合”开闭原则”</li>
-</ul>
-<h3 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h3><ul>
-<li>在添加的产品对象时，难以扩展抽象工厂生成新种类产品，这是因为在抽象工厂角色中规定了所有可能创建的产品集合，要支持新种类的产品就意味着要对该接口进行扩展，而这将涉及到都抽象工厂角色及其所有子类的修改，显然会带来较大的不便。</li>
-<li>开闭原则的倾斜性（增加新的工厂和产品族容易，增加新的产品等级结构麻烦）。</li>
-</ul>
-<h3 id="适用环境-1"><a href="#适用环境-1" class="headerlink" title="适用环境"></a>适用环境</h3><ul>
-<li>一个系统不应当依赖于产品类实例如何被创建、组合和表达的细节，这对于所有类型的工厂模式都是重要的。</li>
-<li>系统中有多于一个的产品族，而每次只使用其中某一个产品族。</li>
-<li>属于同一个产品族的产品将在一起使用，这一约束必须在系统的设计中体现出来。</li>
-<li>系统提供一个产品类的库，所有的产品以同样的接口出现，从而使得客户端不依赖于具体实现。</li>
-</ul>
-<h2 id="状态模式"><a href="#状态模式" class="headerlink" title="状态模式"></a>状态模式</h2><h3 id="模式动机-3"><a href="#模式动机-3" class="headerlink" title="模式动机"></a>模式动机</h3><p>在很多情况下，一个对象的行为取决于一个或者多个动态变化的属性，这样的属性叫做状态，这样的对象叫做有状态对象，这样的对象状态时从事先定义好的一系列值中取出的。当一个这样的对象与外部事件产生互动时，其内部状态就会改变，从而使得系统的行为随之发生变化。</p>
-<h3 id="模式定义-2"><a href="#模式定义-2" class="headerlink" title="模式定义"></a>模式定义</h3><p>状态模式(State Pattern)：允许一个对象在其内部状态改变它的行为，对象看起来似乎修改了它的类。其别名为状态对象，状态模式是一种对象行为型模式。</p>
-<h3 id="模式结构-3"><a href="#模式结构-3" class="headerlink" title="模式结构"></a>模式结构</h3><ul>
-<li>Context：环境类</li>
-<li>State：抽象状态类</li>
-<li>ConcreteState：具体状态类</li>
-</ul>
-<p><img src="/2018/06/06/desgin-pattern2/状态模式.png" alt="状态模式"></p>
-<ul>
-<li>示例代码</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br></pre></td><td class="code"><pre><span class="line">package com.cx.StatePattern.demo;</span><br><span class="line"></span><br><span class="line">public abstract class State &#123;</span><br><span class="line">    public abstract void WriteProgram(Work w);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.StatePattern.demo;</span><br><span class="line"></span><br><span class="line">public class ForenoonState extends State &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void WriteProgram(Work w) &#123;</span><br><span class="line">        if (w.getHour() &lt; 12)&#123;</span><br><span class="line">            System.out.println(&quot;当前时间&quot;+w.getHour()+&quot;上午工作&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            w.setState(new NoonState());</span><br><span class="line">            w.WriteProgram();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.StatePattern.demo;</span><br><span class="line"></span><br><span class="line">public class NoonState extends State &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void WriteProgram(Work w) &#123;</span><br><span class="line">        if (w.getHour() &lt; 13)&#123;</span><br><span class="line">            System.out.println(&quot;当前时间：&quot;+ w.getHour());</span><br><span class="line">        &#125;else &#123;</span><br><span class="line">            w.setState(new AfternoonState());</span><br><span class="line">            w.WriteProgram();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.StatePattern.demo;</span><br><span class="line"></span><br><span class="line">public class AfternoonState extends State &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void WriteProgram(Work w) &#123;</span><br><span class="line"></span><br><span class="line">        if (w.getHour() &lt; 17) &#123;</span><br><span class="line">            System.out.println(&quot;当前时间：&quot; + w.getHour());</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            w.setState(new EveningState());</span><br><span class="line">            w.WriteProgram();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.StatePattern.demo;</span><br><span class="line"></span><br><span class="line">public class EveningState extends State&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void WriteProgram(Work w) &#123;</span><br><span class="line"></span><br><span class="line">        if (w.isFinish())&#123;</span><br><span class="line">            w.setState(new RestState());</span><br><span class="line">            w.WriteProgram();</span><br><span class="line">        &#125;else &#123;</span><br><span class="line">            if (w.getHour() &lt; 21)&#123;</span><br><span class="line">                System.out.println(&quot;当前时间：&quot;+w.getHour() + &quot;加班&quot;);</span><br><span class="line">            &#125;else &#123;</span><br><span class="line">                w.setState(new SleepingState());</span><br><span class="line">                w.WriteProgram();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.StatePattern.demo;</span><br><span class="line"></span><br><span class="line">public class SleepingState extends State &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void WriteProgram(Work w) &#123;</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;当前时间：&quot;+ w.getHour() + &quot;睡着了&quot;);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.StatePattern.demo;</span><br><span class="line"></span><br><span class="line">public class RestState extends State &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void WriteProgram(Work w) &#123;</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;当前时间：&quot; + w.getHour() + &quot;下班回家&quot;);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.StatePattern.demo;</span><br><span class="line"></span><br><span class="line">public class Work &#123;</span><br><span class="line"></span><br><span class="line">    private State current;</span><br><span class="line">    private double hour;</span><br><span class="line">    private boolean finish = false;</span><br><span class="line"></span><br><span class="line">    public Work()&#123;</span><br><span class="line">        //工作初始化为上午工作状态</span><br><span class="line">        current = new ForenoonState();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public State getState() &#123;</span><br><span class="line">        return current;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setState(State s) &#123;</span><br><span class="line">        this.current = s;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public double getHour() &#123;</span><br><span class="line">        return hour;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setHour(double hour) &#123;</span><br><span class="line">        this.hour = hour;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public boolean isFinish() &#123;</span><br><span class="line">        return finish;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setFinish(boolean finish) &#123;</span><br><span class="line">        this.finish = finish;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void WriteProgram()&#123;</span><br><span class="line">        current.WriteProgram(this);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.StatePattern.demo;</span><br><span class="line"></span><br><span class="line">public class Client &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line"></span><br><span class="line">        Work emergencyProjects = new Work();</span><br><span class="line">        emergencyProjects.setHour(9);</span><br><span class="line">        emergencyProjects.WriteProgram();</span><br><span class="line">        emergencyProjects.setHour(10);</span><br><span class="line">        emergencyProjects.WriteProgram();</span><br><span class="line">        emergencyProjects.setHour(12);</span><br><span class="line">        emergencyProjects.WriteProgram();</span><br><span class="line">        emergencyProjects.setHour(13);</span><br><span class="line">        emergencyProjects.WriteProgram();</span><br><span class="line">        emergencyProjects.setHour(14);</span><br><span class="line">        emergencyProjects.WriteProgram();</span><br><span class="line"></span><br><span class="line">        emergencyProjects.setHour(17);</span><br><span class="line">        emergencyProjects.setFinish(false);</span><br><span class="line"></span><br><span class="line">        emergencyProjects.WriteProgram();</span><br><span class="line">        emergencyProjects.setHour(19);</span><br><span class="line">        emergencyProjects.WriteProgram();</span><br><span class="line">        emergencyProjects.setHour(22);</span><br><span class="line">        emergencyProjects.WriteProgram();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>测试输出</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">当前时间9.0上午工作</span><br><span class="line">当前时间10.0上午工作</span><br><span class="line">当前时间：12.0</span><br><span class="line">当前时间：13.0</span><br><span class="line">当前时间：14.0</span><br><span class="line">当前时间：17.0加班</span><br><span class="line">当前时间：19.0加班</span><br><span class="line">当前时间：22.0睡着了</span><br></pre></td></tr></table></figure>
-<h3 id="模式分析-2"><a href="#模式分析-2" class="headerlink" title="模式分析"></a>模式分析</h3><ul>
-<li>状态模式描述了对象状态的变化以及对象如何在每一种状态下表现出不同的行为</li>
-<li>状态模式的关键是引入了一个抽象类来专门表示对象的状态，这个类我们叫做抽象状态类，而对象的每一种具体状态类都继承了该类，并在不同的具体状态类中实现了不同状态的行为，包括各种状态之间的转换</li>
-<li>环境类实际上就是拥有状态的对象，环境类有时候可以充当状态管理器(State Manager)的角色，可以在环境类中对状态进行切换操作</li>
-<li>抽象状态类可以是抽象类，也可以是接口，不同状态类就是继承这个父类的不同子类，状态类的产生是由于环境类存在多个状态，同时海满足两个条件：这些状态要经常切换，在不同的状态下对象的行为不同。因此可以将不同对象下的行为单独提取出来封装在具体的状态类中，使得环境类对象在其内部状态改变时可以改变它的行为，对象看起来似乎修改了它的类，而实际上是由于切换到不同的具体状态类实现的。由于环境类可以设置任意一个具体的状态类，因此它针对抽象状态类进行编程，在程序运行时可以将任一具体状态的对象设置到环境类中，从而使得环境类可以改变内部状态，并且改变行为</li>
-</ul>
-<h2 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h2><h3 id="模式动机-4"><a href="#模式动机-4" class="headerlink" title="模式动机"></a>模式动机</h3><ul>
-<li>在软件开发中采用类似电源适配器的设计和编码技巧被称为适配器模式</li>
-<li>通常情况下，客户端可以通过目标类的接口访问它所提供的服务。有时，现有的类可以满足客户类的功能需要，但是它所提供的接口不一定是客户类所期望的，这可能是因为现有类中方法名与目标类中定义的方法名不一致等原因所导致的</li>
-<li>在这种情况下，现有的接口需要转化为客户类所期望的接口，这样保证了对现有类的重用。如果不进行这样的转化，客户类就不能利用现有类所提供的功能，适配器模式可以完成这样的转换</li>
-<li>在适配器模式中可以定义一个包装类，包装不兼容接口的对象，这个包装类指的就是适配器(Adapter)，它所包装的对象就是适配器(Adaptee)，即被适配的类</li>
-<li>适配器提供客户类需要的接口，适配器的实现就是吧客户类的请求转化为对适配者的相应接口的调用。也就是说：当客户类调用适配器方法时，在适配器类的内部将调用适配者类的方法，而这个过程对客户类是透明的，客户类并不直接访问适配者类。因此，适配器可以使由于接口不兼容而不能交互的类可以一起工作。这就是适配器模式的模式动机</li>
-</ul>
-<h3 id="模式定义-3"><a href="#模式定义-3" class="headerlink" title="模式定义"></a>模式定义</h3><p>适配器模式(Adapter Pattern)：将一个接口转换成客户端希望的另一个接口，适配器模式使接口不兼容的那些类可以一起工作，其别名为包装器。适配器模式既可以作为类结构型模式，也可以作为对象结构型模式。</p>
-<h3 id="模式结构-4"><a href="#模式结构-4" class="headerlink" title="模式结构"></a>模式结构</h3><ul>
-<li>Target：目标抽象类</li>
-<li>Adapter：适配器类</li>
-<li>Adaptee：适配者类</li>
-<li>Client：客户端</li>
-</ul>
-<p><img src="/2018/06/06/desgin-pattern2/适配器模式.png" alt="适配器模式"></p>
-<ul>
-<li>示例代码</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">package com.cx.AdapterPattern;</span><br><span class="line"></span><br><span class="line">public class Target &#123;</span><br><span class="line"></span><br><span class="line">    public void request()&#123;</span><br><span class="line">        System.out.println(&quot;普通请求&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.AdapterPattern;</span><br><span class="line"></span><br><span class="line">public class Adapter extends Target &#123;</span><br><span class="line"></span><br><span class="line">    private Adaptee adaptee = new Adaptee();</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void request() &#123;</span><br><span class="line">        adaptee.specificRequest();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.AdapterPattern;</span><br><span class="line"></span><br><span class="line">public class Adaptee &#123;</span><br><span class="line"></span><br><span class="line">    public void specificRequest()&#123;</span><br><span class="line">        System.out.println(&quot;特殊请求&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.AdapterPattern;</span><br><span class="line"></span><br><span class="line">public class Client &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line"></span><br><span class="line">        Target target = new Adapter();</span><br><span class="line">        target.request();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="优点-3"><a href="#优点-3" class="headerlink" title="优点"></a>优点</h3><ul>
-<li>将目标类与适配器者类解耦，通过引入一个适配器类来重用现有的适配者类，而无须修改原有代码</li>
-<li>增加了类的透明性和复用性，将具体的实现封装在适配者类中，对于客户端类来说是透明的，而且提高了适配者的复用性</li>
-<li>灵活性和扩展性都非常好，通过使用配置文件，可以很方便地更换适配器，也可以在不修改原有代码的基础上增加新的适配器类，完全符合“开闭原则”</li>
-</ul>
-<h3 id="适用环境-2"><a href="#适用环境-2" class="headerlink" title="适用环境"></a>适用环境</h3><ul>
-<li>系统需要适用现有的类，而这些类的接口不符合系统的需要</li>
-<li>想要建立一个可以重复使用的类，用于与一些彼此之间没有太大关联的一些类，包括一些可能在将来引进的类一起工作</li>
-</ul>
-<h2 id="组合模式"><a href="#组合模式" class="headerlink" title="组合模式"></a>组合模式</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>组合模式(Composite Pattern)，又叫部分整体模式，是用于把一组相似的对象当作一个单一的对象。组合模式依据树形结构来组合对象，用来表示部分以及整体层次。这种设计模式属于结构型模式，它创建了对象组的树形结构。这种模式创建了一个包含自己对象组的类。该类提供了修改相同对象组的方式。</p>
-<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><ul>
-<li>意图：将对象组合成树形结构以表示“部分-整体”的层次结构。组合模式使得用户对单个对象和组合对象的使用具有一致性。</li>
-<li>主要解决：它在我们树型结构的问题中，模糊了简单元素和复杂元素概念，客户程序可以向处理简单元素一样来处理复杂元素，从而使得客户程序与复杂元素的内部结构解耦。</li>
-<li>何时使用：1、你想表示对象的部分-整体层次结构（树形结构）。2、你希望用户忽略组合对象和单个对象的不同，用户将统一的使用组合结构中所有的对象。</li>
-<li>如何解决：树枝和叶子实现统一接口，树枝内部组合该接口。</li>
-<li>关键代码：树枝内部组合该接口开，并且含有内部属性List，里面放Component。</li>
-<li>应用实例：1、算术表达树包括操作数、操作符合另一个操作数，其中，另一个操作数也可以是操作数、操作符和另一个操作数。2、在JAVA AWT和SWING中，对于Button和Checkbox是树叶，Container是树枝。</li>
-<li>优点：1、高层模块调用简单。2、节点自由增加。</li>
-<li>缺点：在使用组合模式时，其叶子和树枝的声明都是实现类，而不是接口，违反了依赖倒置的原则。</li>
-<li>使用场景：部分、整体场景，如树形菜单，文件、文件夹管理。</li>
-<li>注意事项：定义时为具体类。</li>
-</ul>
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p><img src="/2018/06/06/desgin-pattern2/组合模式.jpg" alt="组合模式"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line">package com.cx.CompositePattern;</span><br><span class="line"></span><br><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.List;</span><br><span class="line"></span><br><span class="line">public class Employee &#123;</span><br><span class="line"></span><br><span class="line">    private String name;</span><br><span class="line">    private String dept;</span><br><span class="line">    private int salary;</span><br><span class="line">    private List&lt;Employee&gt; subordinates;</span><br><span class="line"></span><br><span class="line">    public Employee(String name, String dept, int salary) &#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">        this.dept = dept;</span><br><span class="line">        this.salary = salary;</span><br><span class="line">        subordinates = new ArrayList&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void add(Employee e)&#123;</span><br><span class="line">        subordinates.add(e);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void remove(Employee e)&#123;</span><br><span class="line">        subordinates.remove(e);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public List&lt;Employee&gt; getSubordinates()&#123;</span><br><span class="line">        return subordinates;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;Employee&#123;&quot; +</span><br><span class="line">                &quot;name=&apos;&quot; + name + &apos;\&apos;&apos; +</span><br><span class="line">                &quot;, dept=&apos;&quot; + dept + &apos;\&apos;&apos; +</span><br><span class="line">                &quot;, salary=&quot; + salary +</span><br><span class="line">                &quot;, subordinates=&quot; + subordinates +</span><br><span class="line">                &apos;&#125;&apos;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">package com.cx.CompositePattern;</span><br><span class="line"></span><br><span class="line">public class CompositePatternDemo &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line"></span><br><span class="line">        Employee CEO = new Employee(&quot;John&quot;, &quot;CEO&quot; , 30000);</span><br><span class="line"></span><br><span class="line">        Employee headSales = new Employee(&quot;Robert&quot;, &quot;Head Sales&quot;, 20000);</span><br><span class="line"></span><br><span class="line">        Employee headMarketing = new Employee(&quot;Michel&quot;, &quot;Head Marketing&quot;, 20000);</span><br><span class="line"></span><br><span class="line">        Employee clerk1 = new Employee(&quot;Laura&quot;, &quot;Marketing&quot;, 10000);</span><br><span class="line"></span><br><span class="line">        Employee clerk2 = new Employee(&quot;Bob&quot;, &quot;Marketing&quot;, 10000);</span><br><span class="line"></span><br><span class="line">        Employee salesExecutive1 = new Employee(&quot;Richard&quot;, &quot;Sales&quot;, 10000);</span><br><span class="line">        Employee salesExecutive2 = new Employee(&quot;Bob&quot;, &quot;Sales&quot;, 10000);</span><br><span class="line"></span><br><span class="line">        CEO.add(headSales);</span><br><span class="line">        CEO.add(headMarketing);</span><br><span class="line"></span><br><span class="line">        headSales.add(salesExecutive1);</span><br><span class="line">        headSales.add(salesExecutive2);</span><br><span class="line"></span><br><span class="line">        headMarketing.add(clerk1);</span><br><span class="line">        headMarketing.add(clerk2);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        //打印组织的所有员工</span><br><span class="line">        System.out.println(CEO);</span><br><span class="line"></span><br><span class="line">        for (Employee headEmployee : CEO.getSubordinates())&#123;</span><br><span class="line"></span><br><span class="line">            System.out.println(headEmployee);</span><br><span class="line">            for (Employee employee : headEmployee.getSubordinates())&#123;</span><br><span class="line">                System.out.println(employee);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>测试输出</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Employee&#123;name=&apos;John&apos;, dept=&apos;CEO&apos;, salary=30000, subordinates=[Employee&#123;name=&apos;Robert&apos;, dept=&apos;Head Sales&apos;, salary=20000, subordinates=[Employee&#123;name=&apos;Richard&apos;, dept=&apos;Sales&apos;, salary=10000, subordinates=[]&#125;, Employee&#123;name=&apos;Bob&apos;, dept=&apos;Sales&apos;, salary=10000, subordinates=[]&#125;]&#125;, Employee&#123;name=&apos;Michel&apos;, dept=&apos;Head Marketing&apos;, salary=20000, subordinates=[Employee&#123;name=&apos;Laura&apos;, dept=&apos;Marketing&apos;, salary=10000, subordinates=[]&#125;, Employee&#123;name=&apos;Bob&apos;, dept=&apos;Marketing&apos;, salary=10000, subordinates=[]&#125;]&#125;]&#125;</span><br><span class="line">Employee&#123;name=&apos;Robert&apos;, dept=&apos;Head Sales&apos;, salary=20000, subordinates=[Employee&#123;name=&apos;Richard&apos;, dept=&apos;Sales&apos;, salary=10000, subordinates=[]&#125;, Employee&#123;name=&apos;Bob&apos;, dept=&apos;Sales&apos;, salary=10000, subordinates=[]&#125;]&#125;</span><br><span class="line">Employee&#123;name=&apos;Richard&apos;, dept=&apos;Sales&apos;, salary=10000, subordinates=[]&#125;</span><br><span class="line">Employee&#123;name=&apos;Bob&apos;, dept=&apos;Sales&apos;, salary=10000, subordinates=[]&#125;</span><br><span class="line">Employee&#123;name=&apos;Michel&apos;, dept=&apos;Head Marketing&apos;, salary=20000, subordinates=[Employee&#123;name=&apos;Laura&apos;, dept=&apos;Marketing&apos;, salary=10000, subordinates=[]&#125;, Employee&#123;name=&apos;Bob&apos;, dept=&apos;Marketing&apos;, salary=10000, subordinates=[]&#125;]&#125;</span><br><span class="line">Employee&#123;name=&apos;Laura&apos;, dept=&apos;Marketing&apos;, salary=10000, subordinates=[]&#125;</span><br><span class="line">Employee&#123;name=&apos;Bob&apos;, dept=&apos;Marketing&apos;, salary=10000, subordinates=[]&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="迭代器模式"><a href="#迭代器模式" class="headerlink" title="迭代器模式"></a>迭代器模式</h2><p>迭代器模式(Iterator Pattern)是Java中非常常用的设计模式。这种模式用于顺序访问集合对象的元素，不需要知道集合对象的底层表示。迭代器模式属于行为型模式。</p>
-<h3 id="介绍-1"><a href="#介绍-1" class="headerlink" title="介绍"></a>介绍</h3><ul>
-<li>意图：提供一种方法顺序访问一个聚合对象中各个元素，而又无须暴露该对象的内部表示。</li>
-<li>主要解决：不同的方式来遍历整个整合对象。</li>
-<li>何时使用：遍历一个聚合对象。</li>
-<li>如何解决：把在元素之间游走的责任交给迭代器，而不是聚合对象。</li>
-<li>关键代码：定义接口：hasNext, next。</li>
-<li>应用实例：JAVA中的iterator。</li>
-<li>优点：<ul>
-<li>1、它支持以不同的方式便利一个聚合对象。</li>
-<li>2、迭代器简化了聚合类。</li>
-<li>3、在同一个聚合上可以有多个遍历。</li>
-<li>4、在迭代器模式中，增加新的聚合类和迭代器都很方便，无须修改原有代码。</li>
-</ul>
-</li>
-<li>缺点：由于迭代器模式将存储数据和遍历数据职责分离，增加新的聚合类需要对象增加新的迭代器类，类的个数成对增加，这在一定程度上增加了系统的复杂性。</li>
-<li>使用场景：<ul>
-<li>1、访问一个聚合对象的内容而无须暴露它的内部表示。</li>
-<li>2、需要为聚合对象提供多种遍历方式。</li>
-<li>3、为遍历不同的聚合结构提供一个统一的接口。</li>
-</ul>
-</li>
-<li>注意事项：迭代器模式就是分离了集合对象的遍历行为，抽象出一个迭代器类来负责，这样既可以做到不暴露集合的内部结构，又可以让外部代码透明的访问集合内部的数据。</li>
-</ul>
-<h3 id="实现-1"><a href="#实现-1" class="headerlink" title="实现"></a>实现</h3><p><img src="/2018/06/06/desgin-pattern2/迭代器模式.jpg" alt="迭代器模式"></p>
-<p>测试代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">package com.cx.IteratorPattern;</span><br><span class="line"></span><br><span class="line">public interface Container &#123;</span><br><span class="line"></span><br><span class="line">    public Iterator getIterator();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">package com.cx.IteratorPattern;</span><br><span class="line"></span><br><span class="line">public interface Iterator &#123;</span><br><span class="line"></span><br><span class="line">    public boolean hasNext();</span><br><span class="line">    public Object next();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">package com.cx.IteratorPattern;</span><br><span class="line"></span><br><span class="line">public class NameRepository implements Container &#123;</span><br><span class="line"></span><br><span class="line">    public String names[] = &#123;&quot;Robert&quot;, &quot;John&quot;, &quot;Julie&quot;, &quot;Lora&quot;&#125;;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Iterator getIterator() &#123;</span><br><span class="line">        return new NameIterator();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private class NameIterator implements Iterator&#123;</span><br><span class="line"></span><br><span class="line">        int index;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public boolean hasNext() &#123;</span><br><span class="line">            if (index &lt; names.length)&#123;</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public Object next() &#123;</span><br><span class="line">            if (this.hasNext())&#123;</span><br><span class="line">                return names[index++];</span><br><span class="line">            &#125;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">package com.cx.IteratorPattern;</span><br><span class="line"></span><br><span class="line">public class IteratorPatternDemo &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        NameRepository nameRepository = new NameRepository();</span><br><span class="line"></span><br><span class="line">        for (Iterator iter = nameRepository.getIterator(); iter.hasNext();)&#123;</span><br><span class="line">            String name = (String)iter.next();</span><br><span class="line">            System.out.println(&quot;Name :&quot; + name);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>测试输出</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Name :Robert</span><br><span class="line">Name :John</span><br><span class="line">Name :Julie</span><br><span class="line">Name :Lora</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
-
-          
+          建造者模式模式动机无论是在现实世界还是软件系统中，都存在着一些复杂对象，它们拥有多个组成部分，如汽车，它包括车轮、方向盘、发动机等各种部件。而对于大多数用户而言，无须知道这些部件装配的细节，也几乎不会使用单独某个部件，而是使用一整辆完整的汽车，可以通过建造者模式来对其进行设计和描述，建造者模式可以将部件和其组装过程分开，一步一步创建一个复杂的对象。用户只需要指定复杂对象的类型就可以得到该对象，而无须知道其内部构造细节。
+在软件开发中，也存在大量类似汽车一样的复杂对象，它们拥有一系列成员属性，这些成员属性中有些则是引
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/06/06/desgin-pattern2/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>

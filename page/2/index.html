@@ -310,35 +310,18 @@
       
         
           
-            <h4 id="检索数据"><a href="#检索数据" class="headerlink" title="检索数据"></a>检索数据</h4><p>mysql检索数据分为行检索，和列检索（检索单个列、检索多个列）。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_name FROM products;</span><br><span class="line">SELECT prod_id, prod_name, prod_proce FROM products;</span><br><span class="line">SELECT * FROM products;</span><br><span class="line">SELECT vend_id FROM products;</span><br><span class="line">SELECT prod_name FROM products LIMIT 5;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>SQL语句不区分大小写，但一般开发中SQL关键字使用大写，对所有列和表名使用小写，这样做使代码易于阅读和调试。</li>
-<li>一般，除非你需要表中的每个列，否则最好别使用*通配符。虽让使用通配符可能会使你自己省事，但检索不需要的列通常会降低检索和应用程序的性能</li>
-<li>使用DISTINCT关键字可以去除重复行</li>
-</ul>
-<h4 id="排序数据"><a href="#排序数据" class="headerlink" title="排序数据"></a>排序数据</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_name FROM products;</span><br><span class="line">SELECT prod_name FROM products ORDER BY prod_name;</span><br><span class="line">- 按多个列排序</span><br><span class="line">SELECT prod_id, prod_price, prod_name FROM products ORDER BY prod_price, prod_name;</span><br><span class="line">- 指定排序方向排序</span><br><span class="line">SELECT prod_id, prod_price, prod_name FROM products ORDER BY prod_price DESC;</span><br><span class="line">- 用多个列排序</span><br><span class="line">SELECT prod_id, prod_price, prod_name FROM products ORDER BY prod_price DESC, prod_name;</span><br><span class="line">- 和LIMIT结合找出最值</span><br><span class="line">SELECT prod_price FROM products ORDER BY prod_price DESC LIMIT 1;</span><br></pre></td></tr></table></figure>
-<h4 id="过滤数据"><a href="#过滤数据" class="headerlink" title="过滤数据"></a>过滤数据</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">- 使用WHERE子句过滤数据</span><br><span class="line">SELECT prod_name, prod_price </span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_price = 2.50</span><br><span class="line">- WHERE字句的操作符， = &lt;&gt; != &lt; &lt;= &gt; &gt;= BETWEEN</span><br><span class="line">- 检查单个值</span><br><span class="line">SELECT prod_name, prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_name = &apos;fuses&apos;</span><br><span class="line"></span><br><span class="line">SELECT prod_name, prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_price &lt; 10</span><br><span class="line"></span><br><span class="line">- 不匹配检查</span><br><span class="line">SELECT vend_id, prod_name</span><br><span class="line">FROM products </span><br><span class="line">WHERE vend_id &lt;&gt; 1003</span><br><span class="line"></span><br><span class="line">SELECT vend_id, prod_name</span><br><span class="line">FROM products </span><br><span class="line">WHERE vend_id != 1003</span><br><span class="line">- 上面两条SQL语句都是不等于的意思</span><br><span class="line"></span><br><span class="line">- 范围值检查</span><br><span class="line">SELECT prod_name, prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_price BETWEEN 5 AND 10;</span><br><span class="line"></span><br><span class="line">-空值检查</span><br><span class="line">SELECT prod_name</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_price IS NULL</span><br></pre></td></tr></table></figure>
-<ul>
-<li>SQL过滤和应用过滤的对比：让客户机应用（或开发语言）处理数据库将会极大地影响应用的性能，并且使所创建的应用完全不具备可伸缩性。才外在客户机上过滤数据，服务器不得不通过网络发送多余的数据，这将导致网络带宽的浪费。</li>
-<li>同时使用ORDER BY和WHERE字句时，应该让ORDER BY 位于WHERE之后，否则将会产生错误。</li>
-</ul>
-<h4 id="数据过滤"><a href="#数据过滤" class="headerlink" title="数据过滤"></a>数据过滤</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">- AND操作符,检索同时满足多个条件的</span><br><span class="line">SELECT prod_id, prod_price, prod_name</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id = 1003 AND prod_price &lt;= 10 </span><br><span class="line"></span><br><span class="line">- OR操作符</span><br><span class="line">SELECT prod_name, prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id = 1002 OR vend_id = 1003;</span><br><span class="line"></span><br><span class="line">- 计算次序的问题，SQL语句在处理OR操作符之前，优先处理AND操作符</span><br><span class="line">SELECT prod_name, prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id = 1002 OR vend_id = 1003 AND prod_price &gt;= 10</span><br><span class="line"></span><br><span class="line">- 先执行AND判断，相当于</span><br><span class="line">SELECT prod_name, prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id = 1002 OR (vend_id = 1003 AND prod_price &gt;= 10)</span><br><span class="line"></span><br><span class="line">- 所以，如果要先执行OR部分需要</span><br><span class="line">SELECT prod_name, prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE (vend_id = 1002 OR vend_id = 1003) AND prod_price &gt;= 10</span><br><span class="line"></span><br><span class="line">- IN操作符</span><br><span class="line">SELECT prod_name, prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id IN (1002, 1003)</span><br><span class="line">ORDER BY prod_name;</span><br><span class="line">- 上面的语句也可以用OR的句法实现</span><br><span class="line">SELECT prod_name, prod_priceß</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id = 1002 OR vend_id = 1003</span><br><span class="line">ORDER BY. prod_name</span><br><span class="line">- NOT操作符</span><br><span class="line">SELECT prod_name, prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id NOT IN (1002, 1003)</span><br><span class="line">ORDER BY prod_name;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>SQL在处理OR操作符前，优先处理AND操作符</li>
-<li>在使用长的合法选项清单时，IN操作符更清楚、直观</li>
-<li>在使用IN时，计算的次序容易管理</li>
-<li>IN操作符一般比OR操作符清单执行更快</li>
-<li>IN的最大优点是可以包含其他的SELECT语句，使得可以更动态的建立WHERE子句</li>
-</ul>
-<h4 id="通配符过滤"><a href="#通配符过滤" class="headerlink" title="通配符过滤"></a>通配符过滤</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 百分号（%）通配符</span><br><span class="line">SELECT prod_id, prod_name</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_name LIKE &apos;jet%&apos;;</span><br><span class="line"># 下划线（_）通配符</span><br><span class="line">SELECT prod_id, prod_name</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_name LIKE</span><br><span class="line">&apos;_ ton anvil&apos;;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>根据MySQL的配置方式，’%’搜素可以是区分大小写的</li>
-<li>%号通配符可以匹配0个，1个或者多个字符，但是无法匹配NULL</li>
-<li>_总是匹配一个字符，不能多也不能少</li>
-</ul>
+          检索数据mysql检索数据分为行检索，和列检索（检索单个列、检索多个列）。
+12345SELECT prod_name FROM products;SELECT prod_id, prod_name, prod_proce FROM products;SELECT * FROM products;SELECT vend_id FROM products;SELECT prod_name FROM products LIMIT 5;
 
-          
+SQL语句不区分大小写，但一般开发中SQL关键字使用大写，对所有列和表名使用小写，
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/07/03/MySQL必会知识整理/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -456,14 +439,19 @@
       
         
           
-            <h4 id="青蛙跳台阶"><a href="#青蛙跳台阶" class="headerlink" title="青蛙跳台阶"></a>青蛙跳台阶</h4><p><strong>一个青蛙一次可以跳上1级台阶，也可以跳上两级台阶。求该青蛙跳上一个n级台阶总共有多少种跳法</strong></p>
-<p>跳n级台阶的不同跳法总数为 f(n) = f(n-1) + f(n-2)</p>
-<p>如果把条件改成：一只青蛙一次可以跳上1级台阶，也可以跳上2级……它也可以跳上n级，此时该青蛙跳上一个n级台阶总共有多少种跳法？可用数学归纳法证明 f(n) = 2 ^ (n - 1)</p>
-<h4 id="二进制中1的个数"><a href="#二进制中1的个数" class="headerlink" title="二进制中1的个数"></a>二进制中1的个数</h4><p><strong>请实现一个函数，输入一个整数，输出该数二进制表示中1的个数。例如9表示成二进制为1001, 有两位是1。因此如果输入9，该函数输出2</strong></p>
-<p>把一个整数减去1，再和原整数做与运算，会把该整数最右边一个1变成0。那么一个整数的二进制表示中有多少个1，就可以进行多少次这样的操作。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">package com.cx.OfferCode;</span><br><span class="line"></span><br><span class="line">public class NumberOf1InBinary &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args)</span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(NumberOf1(15));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static int NumberOf1(int n)&#123;</span><br><span class="line"></span><br><span class="line">        int count = 0;</span><br><span class="line"></span><br><span class="line">        while (n != 0)&#123;</span><br><span class="line"></span><br><span class="line">            count ++;</span><br><span class="line">            n = (n - 1) &amp; n;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return count;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-          
+          青蛙跳台阶一个青蛙一次可以跳上1级台阶，也可以跳上两级台阶。求该青蛙跳上一个n级台阶总共有多少种跳法
+跳n级台阶的不同跳法总数为 f(n) = f(n-1) + f(n-2)
+如果把条件改成：一只青蛙一次可以跳上1级台阶，也可以跳上2级……它也可以跳上n级，此时该青蛙跳上一个n级台阶总共有多少种跳法？可用数学归纳法证明 f(n) = 2 ^ (n - 1)
+二进制中1的个数请实现一个函数，输入一个整数，输出该数二进制表示中1的个数。例如9表示成二进制为1001, 有两位是1。因此如果输入9，该函数输出2
+把一个整数
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/07/03/剑指offer整理2/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -581,10 +569,17 @@
       
         
           
-            <p><img src="/2018/07/02/做过项目整理-美食全站APP/app1.png" alt="app1"></p>
-<h6 id="代码仓库"><a href="#代码仓库" class="headerlink" title="代码仓库"></a>代码仓库</h6><p><a href="https://github.com/vajn/DaDouMiApp" target="_blank" rel="noopener">仓库地址</a></p>
+          
+代码仓库仓库地址
 
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/07/02/做过项目整理-美食全站APP/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -702,84 +697,16 @@
       
         
           
-            <h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>面对Good实验室大规模数据存储计算需求，基于Hadoop的HDFS，搭建了一个分布式文件系统。系统基于浪潮NF5270M4存储型服务器上，实验环境总共9个节点，服务器存储选择RAID5的方案，存储空间160TB。服务器上搭建了Openstack，利用虚拟化技术，可以弹性的管理用户需要的存储需求。并基于HDFS开发了一个简易Web网盘系统，方便用户存储和管理HDFS中的文件。</p>
-<h4 id="RAID简介"><a href="#RAID简介" class="headerlink" title="RAID简介"></a>RAID简介</h4><p>​    RAID全称独立磁盘冗余阵列（RAID，redundant array of dependent disks），是把相同的数据存储在多个硬盘的不同地方的方法。通过把数据放在多个硬盘上，输入输出操作能以平衡的方式交叠，改良性能。因此多个硬盘增加了平均故障间隔时间（MTBF），存储冗余数据页增加了容错。</p>
-<p>在系统中我们选择的是RAID5的方案</p>
-<p><img src="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/RAID5.png" alt="RAID5"></p>
-<p>​    RAID5应该是目前最常见的RAID等级，它的原理与RAID4相似，区别在于校验数据分布在阵列中的所有磁盘上，而没有采用专门的磁盘。对于数据和校验数据，它们的写操作可以同时发生在完全不同的磁盘上。因此RAID5不存在RAID4中的并发写操作时的校验盘性能瓶颈问题。另外，RAID5还具备很好的扩展性。当阵列磁盘数量增加时，并行操作量的能力也随之增长，可比RAID4支持更多饿的磁盘，从而拥有更高的性能。</p>
-<p>​    RAID5的磁盘上同事存储数据和校验数据，数据块和对应的校验信息保存在不同的磁盘上，当一个数据盘损坏时，系统可以根据同一条带上的其他数据块和对应的校验数据来重建损坏的数据。与其他RAID等级一样，重建数据时RAID5的性能会受到较大的影响。</p>
-<h4 id="HDFS简介"><a href="#HDFS简介" class="headerlink" title="HDFS简介"></a>HDFS简介</h4><p><img src="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/HDFS架构.png" alt="HDFS架构"></p>
-<p>​    HDFS具有主/从结构。HDFS集群中包含单一的NameNode作为master服务器，用于管理文件系统命名空间，并调节客户端对文件的访问。此外，还有一些DataNodes，通常是集群中每个节点的一个，它们管理连接到运行的节点的存储。HDFS公开了文件系统的命名空间，并允许将用户数据存储在文件中。在内部，文件被分割成一个或多个块，并且这些块被存储在一组DataNodes中。NameNode执行文件系统命名空间操作，如打开，关闭和充命名文件和目录。它还确定块到DataNodes的映射。DataNodes负责从文件系统的客户端提供读取和写入请求。DataNode还可以根据NameNode的指示执行块创建，删除和复制。</p>
-<h6 id="HDFS读取文件流程"><a href="#HDFS读取文件流程" class="headerlink" title="HDFS读取文件流程"></a>HDFS读取文件流程</h6><p><img src="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/读取文件.png" alt="读取文件"></p>
-<ul>
-<li>客户端调用FileSystem对象的open()方法在分布式文件系统中打开要读取的文件。</li>
-<li>分布式系统通过使用RPC（远程过程调用）来调用Namenode，确定文件起始块的位置。</li>
-<li>分布式文件系统的DistributedFileSystem类返回一个支持文件定位输入流FSDataInputStream对象，FSDataInputStream对象接着封装DFSInputStream对象，客户端对这个数据流调用read()方法。</li>
-<li>DFSInputStream连接距离最近的datanode，通过反复调用read方法，将数据从datanode传输到客户端。</li>
-<li>到达块末端时，DFSInputStream关闭与datanode的连接，寻找下一个块的最佳datanode。</li>
-<li>客户端完成读取，对FSDataInputStream调用close()方法关闭连接。</li>
-</ul>
-<h6 id="HDFS文件写入的过程"><a href="#HDFS文件写入的过程" class="headerlink" title="HDFS文件写入的过程"></a>HDFS文件写入的过程</h6><p><img src="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/写入文件.png" alt="写入文件"></p>
-<ul>
-<li>客户端通过对DistributedFileSystem对象调用create()函数来新建文件。</li>
-<li>分布式文件系统对namenode创建一个RPC调用，在文件系统的命名空间中新建一个文件。</li>
-<li>Namenode对新建文件进行检查无误后，分布式文件系统返回给客户端一个FSDataOutputStream对象，FSDataOutputStream对象封装着一个DFSOutPutStream对象，负责处理namenode和datanode之间的通信，客户端开始写入数据。</li>
-<li>FSDataOutputStream将数据分成一个一个数据包，写入内部队列“数据队列”，DataStreamer负责将数据包一次流式传输到由一组namenode构成的管线中。</li>
-<li>DFSOutputStream维护着确认队列来等待datanode收到确认回执，收到管道中所有datanode确认后，数据包从确认队列删除。</li>
-<li>客户端完成数据写入，对数据流调用close()方法。</li>
-<li><p>namenode确认完成。</p>
-<h4 id="整个HDFS-WEB网盘的架构如下"><a href="#整个HDFS-WEB网盘的架构如下" class="headerlink" title="整个HDFS WEB网盘的架构如下"></a>整个HDFS WEB网盘的架构如下</h4></li>
-</ul>
-<p><img src="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/HDFS网盘.001.jpeg" alt="HDFS网盘.001"></p>
-<ul>
-<li>对于底层物理机，做了RAID5的存储方案，这个需要在BIOS和RAID设置管理程序中进行相应设置，具体可参考NF5270M4的文档(<a href="http://www.inspur.com/eportal/fileDir/active_download/userBook/NF5270M4/%E6%B5%AA%E6%BD%AE%E8%8B%B1%E4%BF%A1%E6%9C%8D%E5%8A%A1%E5%99%A8NF5270M4%E7%94%A8%E6%88%B7%E6%89%8B%E5%86%8CV1.0.pdf" target="_blank" rel="noopener">手册下载地址</a>)。</li>
-<li>在物理机上架设了openstack，具体部署方法可参考(<a href="https://github.com/vajn/GoodCloud/tree/master/doc/DeployOpenstack" target="_blank" rel="noopener">GoodCloud项目</a>)</li>
-<li>之后创建虚拟机，在虚拟机上部署hadoop集群，部署方法可参考我整理的一个文档(<a href="https://github.com/vajn/GoodCloudDisk/blob/master/hadoop-ecosystem-installation.pdf" target="_blank" rel="noopener">部署大数据集群</a>)</li>
-</ul>
-<h4 id="WEB-UI-程序编写"><a href="#WEB-UI-程序编写" class="headerlink" title="WEB UI 程序编写"></a>WEB UI 程序编写</h4><h6 id="python-hdfs包"><a href="#python-hdfs包" class="headerlink" title="python hdfs包"></a>python hdfs包</h6><p>要实现web对hdfs操作，我们就要构建基于hdfs的web应用。在这里，我们使用python的hdfs包来操作hdfs，用django对外提供web服务。</p>
-<p><strong>hdfs包的一些基本操作</strong></p>
-<ul>
-<li>安装hdfs</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install hdfs</span><br></pre></td></tr></table></figure>
-<ul>
-<li>连接HDFS</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from hdfs.client import Client</span><br><span class="line"># 50070: NameNode web管理端口</span><br><span class="line">client = Client(&quot;http://localhost:50070&quot;)</span><br></pre></td></tr></table></figure>
-<ul>
-<li>获取路径活着文件的具体信息</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client.status(hdfs_path, strict=True)</span><br></pre></td></tr></table></figure>
-<ul>
-<li>创建目录</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">makedirs(hdfs_path, permission=None)</span><br></pre></td></tr></table></figure>
-<ul>
-<li>删除目录</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">delete(hdfs_path, recursive=False)</span><br></pre></td></tr></table></figure>
-<ul>
-<li>上传数据到hdfs</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">upload(hdfs_path, local_path, overwrite=False, n_threads=1, temp_dir=None, </span><br><span class="line">chunk_size=65536,progress=None, cleanup=True, **kwargs)</span><br></pre></td></tr></table></figure>
-<ul>
-<li>下载hdfs中的数据到本地</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">download(hdfs_path, local_path, overwrite=False, n_threads=1, temp_dir=None, **kwargs)</span><br></pre></td></tr></table></figure>
-<ul>
-<li>从hdfs中读取文件</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">with client.read(&quot;/test/NOTICE.txt&quot;) as reader:  </span><br><span class="line">    print reader.read()</span><br></pre></td></tr></table></figure>
-<ul>
-<li>向hdfs文件系统中写入数据</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client.write(filepath, data=data_str, encoding=&apos;utf-8&apos;)</span><br></pre></td></tr></table></figure>
-<h6 id="用django构建web服务的核心代码"><a href="#用django构建web服务的核心代码" class="headerlink" title="用django构建web服务的核心代码"></a>用django构建web服务的核心代码</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line">def delete_file_folder(src):</span><br><span class="line">    &apos;&apos;&apos;delete files and folders&apos;&apos;&apos;</span><br><span class="line">    if os.path.isfile(src):</span><br><span class="line">        try:</span><br><span class="line">            os.remove(src)</span><br><span class="line">        except:</span><br><span class="line">            pass</span><br><span class="line">    elif os.path.isdir(src):</span><br><span class="line">        for item in os.listdir(src):</span><br><span class="line">            itemsrc=os.path.join(src,item)</span><br><span class="line">            delete_file_folder(itemsrc) </span><br><span class="line">        try:</span><br><span class="line">            os.rmdir(src)</span><br><span class="line">        except:</span><br><span class="line">            pass</span><br><span class="line"></span><br><span class="line"># Create your views here.</span><br><span class="line">def index(reqeust):</span><br><span class="line">    </span><br><span class="line">    client = Client(&quot;http://192.168.8.111:50070&quot;)</span><br><span class="line">    context = &#123;&apos;filelist&apos;: client.list(&apos;/good_cloud_disk&apos;)&#125;    </span><br><span class="line"></span><br><span class="line">    return render(reqeust, &apos;style_main/index.html&apos;, context)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@csrf_exempt</span><br><span class="line">def upload(request):</span><br><span class="line"></span><br><span class="line">    &apos;&apos;&apos;上传文件到Hdfs&apos;&apos;&apos;</span><br><span class="line">    </span><br><span class="line">    print(&quot;upload_photo&quot;)</span><br><span class="line">    client = Client(&quot;http://192.168.8.111:50070&quot;)</span><br><span class="line">    if request.method == &quot;POST&quot;:</span><br><span class="line">        input_img = request.FILES[&quot;pic_input&quot;)</span><br><span class="line">        fname = &quot;%s/input/%s&quot; % (settings.MEDIA_ROOT, input_img)</span><br><span class="line">        </span><br><span class="line">        with open(fname, &apos;wb&apos;) as pic:</span><br><span class="line">            for c in input_img.chunks():</span><br><span class="line">                pic.write(c)</span><br><span class="line"></span><br><span class="line">    client.upload(&quot;/good_cloud_disk&quot;, fname)  </span><br><span class="line">    delete_file_folder(&quot;%s/input/&quot; % (settings.MEDIA_ROOT))           </span><br><span class="line">    os.makedirs(&quot;%s/input/&quot; % (settings.MEDIA_ROOT))</span><br><span class="line"></span><br><span class="line">    return HttpResponseRedirect(&apos;/&apos;) </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def detail(request):</span><br><span class="line">    </span><br><span class="line">    &apos;&apos;&apos;文件详情&apos;&apos;&apos;</span><br><span class="line"></span><br><span class="line">    client = Client(&quot;http://192.168.8.111:50070&quot;)</span><br><span class="line">     </span><br><span class="line">    filename = request.GET[&apos;filename&apos;]</span><br><span class="line">    print(&quot;/good_cloud_disk/&quot;+filename) </span><br><span class="line">    </span><br><span class="line">    status = client.status(&apos;/good_cloud_disk/%s&apos; % filename.encode(&apos;utf-8&apos;))    </span><br><span class="line"></span><br><span class="line">    context = &#123;&quot;status&quot;: status&#125;</span><br><span class="line"></span><br><span class="line">    return render(request, &apos;style_main/detail.html&apos;, context)</span><br><span class="line"></span><br><span class="line">def download(request):</span><br><span class="line"></span><br><span class="line">    &apos;&apos;&apos;下载文件&apos;&apos;&apos;</span><br><span class="line"></span><br><span class="line">    delete_file_folder(&quot;%s/downloads/&quot; % (settings.MEDIA_ROOT))</span><br><span class="line">    os.makedirs(&quot;%s/downloads/&quot; % (settings.MEDIA_ROOT))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    filename = request.GET[&apos;filename&apos;]</span><br><span class="line">    print(filename)</span><br><span class="line"></span><br><span class="line">    client = Client(&quot;http://192.168.8.111:50070&quot;)</span><br><span class="line">    client.download(&quot;/good_cloud_disk/&quot; + filename.encode(&apos;utf-8&apos;), &quot;%s/downloads/%s&quot; % (settings.MEDIA_ROOT, filename.encode(&apos;utf-8&apos;)))</span><br><span class="line"></span><br><span class="line">    context = &#123;&quot;filename&quot;: filename.encode(&apos;utf-8&apos;)&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    return render(request, &apos;style_main/result.html&apos;, context)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def delete(request):</span><br><span class="line"></span><br><span class="line">    &apos;&apos;&apos;删除文件&apos;&apos;&apos;</span><br><span class="line"></span><br><span class="line">    client = Client(&quot;http://192.168.8.111:50070&quot;)</span><br><span class="line">    filename =&quot;/good_cloud_disk/&quot; + request.GET[&apos;filename&apos;]</span><br><span class="line">    </span><br><span class="line">    client.delete(filename.encode(&apos;utf-8&apos;))</span><br><span class="line">    </span><br><span class="line">    return HttpResponseRedirect(&apos;/&apos;)</span><br></pre></td></tr></table></figure>
-<h4 id="项目效果展示"><a href="#项目效果展示" class="headerlink" title="项目效果展示"></a>项目效果展示</h4><p><img src="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/HDFS-WEB1.png" alt="HDFS-WEB1"></p>
-<p><img src="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/HDFS-WEB2.png" alt="HDFS-WEB2"></p>
-<h6 id="项目完整代码"><a href="#项目完整代码" class="headerlink" title="项目完整代码"></a>项目完整代码</h6><p><a href="https://github.com/vajn/GoodCloudDisk" target="_blank" rel="noopener">项目代码仓库地址</a></p>
-
-          
+          概述面对Good实验室大规模数据存储计算需求，基于Hadoop的HDFS，搭建了一个分布式文件系统。系统基于浪潮NF5270M4存储型服务器上，实验环境总共9个节点，服务器存储选择RAID5的方案，存储空间160TB。服务器上搭建了Openstack，利用虚拟化技术，可以弹性的管理用户需要的存储需求。并基于HDFS开发了一个简易Web网盘系统，方便用户存储和管理HDFS中的文件。
+RAID简介​    RAID全称独立磁盘冗余阵列（RAID，redundant array of dependent disks），是
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -897,28 +824,17 @@
       
         
           
-            <h3 id="系统总体架构"><a href="#系统总体架构" class="headerlink" title="系统总体架构"></a>系统总体架构</h3><p><img src="/2018/06/24/基于docker的gpu高性能计算云方案/GPU云架构.001.jpeg" alt="GPU云架构.001"></p>
-<h4 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h4><p>​    面对Good实验室(<a href="http://good.ncu.edu.cn/good" target="_blank" rel="noopener">http://good.ncu.edu.cn/good</a>) 众多高性能学习计算需求，整个服务集群的环境部署复杂(如各种深度学习计算框架的部署需求)，依赖混乱，GPU资源的资源无法动态分配等问题日益凸显出来。为此，我们搭建了可进行资源编排，负载均衡，以及服务代理等多个功能的简单容器云计算平台。</p>
-<h4 id="架构概述"><a href="#架构概述" class="headerlink" title="架构概述"></a>架构概述</h4><p>​    集群的控制器（Controller）部署在一台提供公网IP的服务器上，外网用户可以通过该节点代理访问内网的GPU计算资源。该节点具有负责web服务的负载均衡，资源控制，代理访问等多个服务进程，相当于整个系统中的总管家。集群中有多个GPU计算节点，GPU节点配备了不同的GPU卡，并且通过nvidia-docker提供了具有gpu访问能力的docker容器，结合docker快速部署，持续集成的特性，我们可以快速部署开发出适合不同高性能计算需求的PAAS平台来。容器之间通过OVS+docker网络方案实现容器间跨主机通信，可以实现一些需要高性能并行计算需求的服务，此处需要物理机之间配备类似Infiniband的高速网络设备，才能发挥多机GPU并行的高性能计算服务。</p>
-<h4 id="搭建配置记录（未详细整理，待续）"><a href="#搭建配置记录（未详细整理，待续）" class="headerlink" title="搭建配置记录（未详细整理，待续）"></a>搭建配置记录（未详细整理，待续）</h4><h5 id="安装Nvidia-docker节点"><a href="#安装Nvidia-docker节点" class="headerlink" title="安装Nvidia-docker节点"></a>安装Nvidia-docker节点</h5><ul>
-<li>安装ubuntu-server16.04操作系统</li>
-<li>关闭ligthdm服务进程</li>
-<li>移除系统自带的显卡驱动</li>
-<li>参考部署脚本(<a href="https://github.com/willkessler/nvidia-docker-novnc" target="_blank" rel="noopener">https://github.com/willkessler/nvidia-docker-novnc</a>)</li>
-</ul>
-<h5 id="控制节点"><a href="#控制节点" class="headerlink" title="控制节点"></a>控制节点</h5><ul>
-<li>部署nginx(nginx version: nginx/1.10.3 (Ubuntu)</li>
-<li>nginx web-socket代理配置参考</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">map $http_upgrade $connection_upgrade&#123;</span><br><span class="line">         default upgrade;</span><br><span class="line">         &apos;&apos; close;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">          listen 8086;</span><br><span class="line">          server_name localhost;</span><br><span class="line"></span><br><span class="line">          location / &#123;</span><br><span class="line">      </span><br><span class="line">       			proxy_pass http://192.168.1.99:8080;</span><br><span class="line">  </span><br><span class="line">   				proxy_set_header Upgrade $http_upgrade;                                            </span><br><span class="line">   				</span><br><span class="line">   				proxy_http_version 1.1;</span><br><span class="line"></span><br><span class="line">				proxy_set_header Connection $connection_upgrade;</span><br><span class="line"></span><br><span class="line">				proxy_set_header Origin &quot;&quot;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>jupyter启动参数参考</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nvidia-docker run --restart=always -it -d -p 8080:8080 6fc05d4bdcc9  jupyter notebook --allow-root --ip=0.0.0.0 --port=8080 &gt; log.txt</span><br></pre></td></tr></table></figure>
-<h4 id="tensorflow多容器进行计算服务展示"><a href="#tensorflow多容器进行计算服务展示" class="headerlink" title="tensorflow多容器进行计算服务展示"></a>tensorflow多容器进行计算服务展示</h4><p><img src="/2018/06/24/基于docker的gpu高性能计算云方案/002.png" alt="002"></p>
-<p><img src="/2018/06/24/基于docker的gpu高性能计算云方案/003.png" alt="003"></p>
-
-          
+          系统总体架构
+背景​    面对Good实验室(http://good.ncu.edu.cn/good) 众多高性能学习计算需求，整个服务集群的环境部署复杂(如各种深度学习计算框架的部署需求)，依赖混乱，GPU资源的资源无法动态分配等问题日益凸显出来。为此，我们搭建了可进行资源编排，负载均衡，以及服务代理等多个功能的简单容器云计算平台。
+架构概述​    集群的控制器（Controller）部署在一台提供公网IP的服务器上，外网用户可以通过该节点代理访问内网的GPU计算资源。该节点具有负责web服务的负载均衡，资源
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/06/24/基于docker的gpu高性能计算云方案/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
