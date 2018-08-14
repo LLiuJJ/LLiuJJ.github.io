@@ -86,13 +86,18 @@
 <meta property="og:site_name" content="用心感受生活">
 <meta property="og:description" content="TCP与UDP定义 TCP是面向连接的、可靠的流协议。TCP为提供可靠性传输，实行“顺序控制”或“重发控制”机制。此外还具备“流量控制”、“拥塞控制”、提高网络利用率等众多功能。 UDP是不具有可靠性的数据传输协议。在UDP的情况下，虽然可以确保发送消息的大小，缺不能保证消息一定会到达。因此，应用有时会根据自己的需要进行重发处理。  TCP与UDP的区分 TCP用于在传输层有必要实现可靠传输的情况">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/序列号确认号1.png">
+<meta property="og:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/序列号与确认应答实现TCP可靠通信.svg">
 <meta property="og:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/TCP丢包.svg">
-<meta property="og:updated_time" content="2018-08-14T15:22:38.000Z">
+<meta property="og:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/服务端丢失确认应答.svg">
+<meta property="og:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/序列号.svg">
+<meta property="og:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/TCP连接建立和释放的过程.svg">
+<meta property="og:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/单个段通信.svg">
+<meta property="og:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/滑动窗口机制.svg">
+<meta property="og:updated_time" content="2018-08-14T16:37:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TCP与UDP基本">
 <meta name="twitter:description" content="TCP与UDP定义 TCP是面向连接的、可靠的流协议。TCP为提供可靠性传输，实行“顺序控制”或“重发控制”机制。此外还具备“流量控制”、“拥塞控制”、提高网络利用率等众多功能。 UDP是不具有可靠性的数据传输协议。在UDP的情况下，虽然可以确保发送消息的大小，缺不能保证消息一定会到达。因此，应用有时会根据自己的需要进行重发处理。  TCP与UDP的区分 TCP用于在传输层有必要实现可靠传输的情况">
-<meta name="twitter:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/序列号确认号1.png">
+<meta name="twitter:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/序列号与确认应答实现TCP可靠通信.svg">
 
 
 
@@ -388,9 +393,36 @@
 <ul>
 <li>通过序列号的确认应答提高可靠性</li>
 </ul>
-<p><img src="/2018/08/14/TCP与UDP基本/序列号确认号1.png" alt="序列号确认号1"></p>
+<p><img src="/2018/08/14/TCP与UDP基本/序列号与确认应答实现TCP可靠通信.svg" alt="序列号与确认应答实现TCP可靠通信"></p>
 <p>TCP通过肯定的确认应答(ACK)来实现可靠的数据传输。</p>
 <p><img src="/2018/08/14/TCP与UDP基本/TCP丢包.svg" alt="TCP丢包"></p>
+<p>数据包丢失，主机A会在特定的时间后重发数据</p>
+<p><img src="/2018/08/14/TCP与UDP基本/服务端丢失确认应答.svg" alt="服务端丢失确认应答"></p>
+<p>确认应答丢失，主机A也会在特定的时间内重发数据。</p>
+<ul>
+<li>序列号是按顺序给每一个字节都标上的编号</li>
+</ul>
+<p><img src="/2018/08/14/TCP与UDP基本/序列号.svg" alt="序列号"></p>
+<ul>
+<li>重发超时的时间间隔确定</li>
+</ul>
+<p>在每次发包时都会计算往返时间及其偏差，将这个往返时间和偏差相加，重发超时的时间就是这个综合要稍大一点的值。</p>
+<ul>
+<li>连接的管理</li>
+</ul>
+<p><img src="/2018/08/14/TCP与UDP基本/TCP连接建立和释放的过程.svg" alt="TCP连接建立和释放的过程"></p>
+<ul>
+<li>关于MSS(Maximum Segment Size)</li>
+</ul>
+<p>MSS是在三次握手的时候，在双端主机之间计算得出。双端的主机在发出建立连接请求的时候，会在TCP首部写入MSS选项，高速对方自己的接口能适应的MSS的大小。然后会在两者之间选择一个较小的值使用。</p>
+<h4 id="窗口控制"><a href="#窗口控制" class="headerlink" title="窗口控制"></a>窗口控制</h4><ul>
+<li>当TCP以一个段为单位发送数据的时候，通信性能低下</li>
+</ul>
+<p><img src="/2018/08/14/TCP与UDP基本/单个段通信.svg" alt="单个段通信"></p>
+<ul>
+<li>多个段使用滑动窗口机制可提高数据传输效率</li>
+</ul>
+<p><img src="/2018/08/14/TCP与UDP基本/滑动窗口机制.svg" alt="滑动窗口机制"></p>
 
       
     </div>
@@ -549,7 +581,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP与UDP定义"><span class="nav-number">1.</span> <span class="nav-text">TCP与UDP定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP与UDP的区分"><span class="nav-number">2.</span> <span class="nav-text">TCP与UDP的区分</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#端口号"><span class="nav-number">3.</span> <span class="nav-text">端口号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#UDP特点及应用"><span class="nav-number">4.</span> <span class="nav-text">UDP特点及应用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP的特点及目的"><span class="nav-number">5.</span> <span class="nav-text">TCP的特点及目的</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP与UDP定义"><span class="nav-number">1.</span> <span class="nav-text">TCP与UDP定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP与UDP的区分"><span class="nav-number">2.</span> <span class="nav-text">TCP与UDP的区分</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#端口号"><span class="nav-number">3.</span> <span class="nav-text">端口号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#UDP特点及应用"><span class="nav-number">4.</span> <span class="nav-text">UDP特点及应用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP的特点及目的"><span class="nav-number">5.</span> <span class="nav-text">TCP的特点及目的</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#窗口控制"><span class="nav-number">6.</span> <span class="nav-text">窗口控制</span></a></li></ol></div>
             
 
           </div>
