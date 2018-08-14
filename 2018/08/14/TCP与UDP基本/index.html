@@ -79,21 +79,20 @@
 
 
 
-<meta name="description" content="系统总体架构 背景​    面对Good实验室(http://good.ncu.edu.cn/good) 众多高性能学习计算需求，整个服务集群的环境部署复杂(如各种深度学习计算框架的部署需求)，依赖混乱，GPU资源的资源无法动态分配等问题日益凸显出来。为此，我们搭建了可进行资源编排，负载均衡，以及服务代理等多个功能的简单容器云计算平台。 架构概述​    集群的控制器（Controller）部署在">
+<meta name="description" content="TCP与UDP定义 TCP是面向连接的、可靠的流协议。TCP为提供可靠性传输，实行“顺序控制”或“重发控制”机制。此外还具备“流量控制”、“拥塞控制”、提高网络利用率等众多功能。 UDP是不具有可靠性的数据传输协议。在UDP的情况下，虽然可以确保发送消息的大小，缺不能保证消息一定会到达。因此，应用有时会根据自己的需要进行重发处理。  TCP与UDP的区分 TCP用于在传输层有必要实现可靠传输的情况">
 <meta property="og:type" content="article">
-<meta property="og:title" content="基于docker的gpu高性能计算云方案">
-<meta property="og:url" content="https://vajn.github.io/2018/06/24/基于docker的gpu高性能计算云方案/index.html">
+<meta property="og:title" content="TCP与UDP基本">
+<meta property="og:url" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/index.html">
 <meta property="og:site_name" content="用心感受生活">
-<meta property="og:description" content="系统总体架构 背景​    面对Good实验室(http://good.ncu.edu.cn/good) 众多高性能学习计算需求，整个服务集群的环境部署复杂(如各种深度学习计算框架的部署需求)，依赖混乱，GPU资源的资源无法动态分配等问题日益凸显出来。为此，我们搭建了可进行资源编排，负载均衡，以及服务代理等多个功能的简单容器云计算平台。 架构概述​    集群的控制器（Controller）部署在">
+<meta property="og:description" content="TCP与UDP定义 TCP是面向连接的、可靠的流协议。TCP为提供可靠性传输，实行“顺序控制”或“重发控制”机制。此外还具备“流量控制”、“拥塞控制”、提高网络利用率等众多功能。 UDP是不具有可靠性的数据传输协议。在UDP的情况下，虽然可以确保发送消息的大小，缺不能保证消息一定会到达。因此，应用有时会根据自己的需要进行重发处理。  TCP与UDP的区分 TCP用于在传输层有必要实现可靠传输的情况">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://vajn.github.io/2018/06/24/基于docker的gpu高性能计算云方案/GPU云架构.001.jpeg">
-<meta property="og:image" content="https://vajn.github.io/2018/06/24/基于docker的gpu高性能计算云方案/002.png">
-<meta property="og:image" content="https://vajn.github.io/2018/06/24/基于docker的gpu高性能计算云方案/003.png">
-<meta property="og:updated_time" content="2018-08-04T06:19:31.000Z">
+<meta property="og:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/序列号确认号1.png">
+<meta property="og:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/TCP丢包.svg">
+<meta property="og:updated_time" content="2018-08-14T15:22:38.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="基于docker的gpu高性能计算云方案">
-<meta name="twitter:description" content="系统总体架构 背景​    面对Good实验室(http://good.ncu.edu.cn/good) 众多高性能学习计算需求，整个服务集群的环境部署复杂(如各种深度学习计算框架的部署需求)，依赖混乱，GPU资源的资源无法动态分配等问题日益凸显出来。为此，我们搭建了可进行资源编排，负载均衡，以及服务代理等多个功能的简单容器云计算平台。 架构概述​    集群的控制器（Controller）部署在">
-<meta name="twitter:image" content="https://vajn.github.io/2018/06/24/基于docker的gpu高性能计算云方案/GPU云架构.001.jpeg">
+<meta name="twitter:title" content="TCP与UDP基本">
+<meta name="twitter:description" content="TCP与UDP定义 TCP是面向连接的、可靠的流协议。TCP为提供可靠性传输，实行“顺序控制”或“重发控制”机制。此外还具备“流量控制”、“拥塞控制”、提高网络利用率等众多功能。 UDP是不具有可靠性的数据传输协议。在UDP的情况下，虽然可以确保发送消息的大小，缺不能保证消息一定会到达。因此，应用有时会根据自己的需要进行重发处理。  TCP与UDP的区分 TCP用于在传输层有必要实现可靠传输的情况">
+<meta name="twitter:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/序列号确认号1.png">
 
 
 
@@ -123,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="https://vajn.github.io/2018/06/24/基于docker的gpu高性能计算云方案/"/>
+  <link rel="canonical" href="https://vajn.github.io/2018/08/14/TCP与UDP基本/"/>
 
 
 
 
 
-  <title>基于docker的gpu高性能计算云方案 | 用心感受生活</title>
+  <title>TCP与UDP基本 | 用心感受生活</title>
   
 
 
@@ -266,7 +265,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://vajn.github.io/2018/06/24/基于docker的gpu高性能计算云方案/">
+    <link itemprop="mainEntityOfPage" href="https://vajn.github.io/2018/08/14/TCP与UDP基本/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jie Liu">
@@ -283,7 +282,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">基于docker的gpu高性能计算云方案</h1>
+          <h1 class="post-title" itemprop="name headline">TCP与UDP基本</h1>
         
 
         <div class="post-meta">
@@ -295,8 +294,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-24T13:10:10+08:00">
-                2018-06-24
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-14T22:09:28+08:00">
+                2018-08-14
               </time>
             
 
@@ -314,8 +313,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2018/06/24/基于docker的gpu高性能计算云方案/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/06/24/基于docker的gpu高性能计算云方案/" itemprop="commentCount"></span>
+                <a href="/2018/08/14/TCP与UDP基本/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/08/14/TCP与UDP基本/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -343,26 +342,55 @@
       
 
       
-        <h3 id="系统总体架构"><a href="#系统总体架构" class="headerlink" title="系统总体架构"></a>系统总体架构</h3><p><img src="/2018/06/24/基于docker的gpu高性能计算云方案/GPU云架构.001.jpeg" alt="GPU云架构.001"></p>
-<h4 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h4><p>​    面对Good实验室(<a href="http://good.ncu.edu.cn/good" target="_blank" rel="noopener">http://good.ncu.edu.cn/good</a>) 众多高性能学习计算需求，整个服务集群的环境部署复杂(如各种深度学习计算框架的部署需求)，依赖混乱，GPU资源的资源无法动态分配等问题日益凸显出来。为此，我们搭建了可进行资源编排，负载均衡，以及服务代理等多个功能的简单容器云计算平台。</p>
-<h4 id="架构概述"><a href="#架构概述" class="headerlink" title="架构概述"></a>架构概述</h4><p>​    集群的控制器（Controller）部署在一台提供公网IP的服务器上，外网用户可以通过该节点代理访问内网的GPU计算资源。该节点具有负责web服务的负载均衡，资源控制，代理访问等多个服务进程，相当于整个系统中的总管家。集群中有多个GPU计算节点，GPU节点配备了不同的GPU卡，并且通过nvidia-docker提供了具有gpu访问能力的docker容器，结合docker快速部署，持续集成的特性，我们可以快速部署开发出适合不同高性能计算需求的PAAS平台来。容器之间通过OVS+docker网络方案实现容器间跨主机通信，可以实现一些需要高性能并行计算需求的服务，此处需要物理机之间配备类似Infiniband的高速网络设备，才能发挥多机GPU并行的高性能计算服务。</p>
-<h4 id="搭建配置记录（未详细整理，待续）"><a href="#搭建配置记录（未详细整理，待续）" class="headerlink" title="搭建配置记录（未详细整理，待续）"></a>搭建配置记录（未详细整理，待续）</h4><h5 id="安装Nvidia-docker节点"><a href="#安装Nvidia-docker节点" class="headerlink" title="安装Nvidia-docker节点"></a>安装Nvidia-docker节点</h5><ul>
-<li>安装ubuntu-server16.04操作系统</li>
-<li>关闭ligthdm服务进程</li>
-<li>移除系统自带的显卡驱动</li>
-<li>参考部署脚本(<a href="https://github.com/willkessler/nvidia-docker-novnc" target="_blank" rel="noopener">https://github.com/willkessler/nvidia-docker-novnc</a>)</li>
+        <h4 id="TCP与UDP定义"><a href="#TCP与UDP定义" class="headerlink" title="TCP与UDP定义"></a>TCP与UDP定义</h4><ul>
+<li>TCP是面向连接的、可靠的流协议。TCP为提供可靠性传输，实行“顺序控制”或“重发控制”机制。此外还具备“流量控制”、“拥塞控制”、提高网络利用率等众多功能。</li>
+<li>UDP是不具有可靠性的数据传输协议。在UDP的情况下，虽然可以确保发送消息的大小，缺不能保证消息一定会到达。因此，应用有时会根据自己的需要进行重发处理。</li>
 </ul>
-<h5 id="控制节点"><a href="#控制节点" class="headerlink" title="控制节点"></a>控制节点</h5><ul>
-<li>部署nginx(nginx version: nginx/1.10.3 (Ubuntu)</li>
-<li>nginx web-socket代理配置参考</li>
+<h4 id="TCP与UDP的区分"><a href="#TCP与UDP的区分" class="headerlink" title="TCP与UDP的区分"></a>TCP与UDP的区分</h4><ul>
+<li>TCP用于在传输层有必要实现可靠传输的情况。</li>
+<li>UDP主要用于那些对高速传输和实时性有较高要求的通信或广播通信。</li>
+<li>TCP和UDP的优劣无法绝对比较，应在具体的应用场景使用特定的协议。</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">map $http_upgrade $connection_upgrade&#123;</span><br><span class="line">         default upgrade;</span><br><span class="line">         &apos;&apos; close;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">          listen 8086;</span><br><span class="line">          server_name localhost;</span><br><span class="line"></span><br><span class="line">          location / &#123;</span><br><span class="line">      </span><br><span class="line">       			proxy_pass http://192.168.1.99:8080;</span><br><span class="line">  </span><br><span class="line">   				proxy_set_header Upgrade $http_upgrade;                                            </span><br><span class="line">   				</span><br><span class="line">   				proxy_http_version 1.1;</span><br><span class="line"></span><br><span class="line">				proxy_set_header Connection $connection_upgrade;</span><br><span class="line"></span><br><span class="line">				proxy_set_header Origin &quot;&quot;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="端口号"><a href="#端口号" class="headerlink" title="端口号"></a>端口号</h4><ul>
+<li>端口号用来识别同一台计算机中进行通信的不同应用程序。</li>
+<li>TCP/IP或者UDP/IP通信中通常采用来“源IP地址”、“目标IP地址”、“协议号”、“源端口号”、“目标端口号”识别一个通信。</li>
+<li>常用端口号<ul>
+<li>21:FTP</li>
+<li>22:SSH</li>
+<li>23:Telnet</li>
+<li>25:SMTP</li>
+<li>53:DNS(UDP)</li>
+<li>69:TFTP</li>
+<li>80:HTTP</li>
+<li>110:POP3</li>
+<li>111:RPC远程调用过程</li>
+<li>113:windows验证服务</li>
+<li>443:HTTPS</li>
+<li>1080:socks代理服务</li>
+<li>3306:mysql</li>
+<li>1433:sqlserver</li>
+<li>1521:oracle</li>
+<li>5432:PostgreSQL</li>
+</ul>
+</li>
+</ul>
+<h4 id="UDP特点及应用"><a href="#UDP特点及应用" class="headerlink" title="UDP特点及应用"></a>UDP特点及应用</h4><p>UDP不提供复杂的控制机制，利用IP提供面向无连接的通信服务。并且它是将应用程序发来的数据在收到的那一刻，立即按照原样发送到网络上的一种机制。</p>
 <ul>
-<li>jupyter启动参数参考</li>
+<li>应用<ul>
+<li>包总量较少的通信</li>
+<li>视频、音频等多媒体通信</li>
+<li>限定于LAN等特定网络中的应用通信</li>
+<li>广播通信</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nvidia-docker run --restart=always -it -d -p 8080:8080 6fc05d4bdcc9  jupyter notebook --allow-root --ip=0.0.0.0 --port=8080 &gt; log.txt</span><br></pre></td></tr></table></figure>
-<h4 id="tensorflow多容器进行计算服务展示"><a href="#tensorflow多容器进行计算服务展示" class="headerlink" title="tensorflow多容器进行计算服务展示"></a>tensorflow多容器进行计算服务展示</h4><p><img src="/2018/06/24/基于docker的gpu高性能计算云方案/002.png" alt="002"></p>
-<p><img src="/2018/06/24/基于docker的gpu高性能计算云方案/003.png" alt="003"></p>
+</li>
+</ul>
+<h4 id="TCP的特点及目的"><a href="#TCP的特点及目的" class="headerlink" title="TCP的特点及目的"></a>TCP的特点及目的</h4><p>TCP通过校验和、序列号、确认应答、重发控制、连接管理及窗口控制等实现可靠性传输。</p>
+<ul>
+<li>通过序列号的确认应答提高可靠性</li>
+</ul>
+<p><img src="/2018/08/14/TCP与UDP基本/序列号确认号1.png" alt="序列号确认号1"></p>
+<p>TCP通过肯定的确认应答(ACK)来实现可靠的数据传输。</p>
+<p><img src="/2018/08/14/TCP与UDP基本/TCP丢包.svg" alt="TCP丢包"></p>
 
       
     </div>
@@ -387,8 +415,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/06/15/Docker容器跨主机网络互联方案实验/" rel="next" title="Docker容器跨主机网络互联方案实验">
-                <i class="fa fa-chevron-left"></i> Docker容器跨主机网络互联方案实验
+              <a href="/2018/08/14/SDN开发工程师/" rel="next" title="SDN开发工程师任职要求">
+                <i class="fa fa-chevron-left"></i> SDN开发工程师任职要求
               </a>
             
           </div>
@@ -396,10 +424,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/07/02/基于Openstack和HDFS的高可用云盘系统设计/" rel="prev" title="基于Openstack和HDFS的高可用云盘系统设计">
-                基于Openstack和HDFS的高可用云盘系统设计 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -525,7 +549,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#系统总体架构"><span class="nav-number">1.</span> <span class="nav-text">系统总体架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#背景"><span class="nav-number">1.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#架构概述"><span class="nav-number">1.2.</span> <span class="nav-text">架构概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#搭建配置记录（未详细整理，待续）"><span class="nav-number">1.3.</span> <span class="nav-text">搭建配置记录（未详细整理，待续）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#安装Nvidia-docker节点"><span class="nav-number">1.3.1.</span> <span class="nav-text">安装Nvidia-docker节点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制节点"><span class="nav-number">1.3.2.</span> <span class="nav-text">控制节点</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#tensorflow多容器进行计算服务展示"><span class="nav-number">1.4.</span> <span class="nav-text">tensorflow多容器进行计算服务展示</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP与UDP定义"><span class="nav-number">1.</span> <span class="nav-text">TCP与UDP定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP与UDP的区分"><span class="nav-number">2.</span> <span class="nav-text">TCP与UDP的区分</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#端口号"><span class="nav-number">3.</span> <span class="nav-text">端口号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#UDP特点及应用"><span class="nav-number">4.</span> <span class="nav-text">UDP特点及应用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP的特点及目的"><span class="nav-number">5.</span> <span class="nav-text">TCP的特点及目的</span></a></li></ol></div>
             
 
           </div>
