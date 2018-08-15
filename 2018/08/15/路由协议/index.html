@@ -79,19 +79,17 @@
 
 
 
-<meta name="description" content="Java平台无关性的基石 各种不同平台的虚拟机与所有平台都统一使用的程序存储格式—字节码是构成平台无关性的基石   Class类文件的结构 Class文件是一组以8位字节为基础单位的二进制流，各个数据项目严格按照顺序紧凑的排列在Class文件之中，中间没有任何分隔符 魔数的作用：确定这个文件是否是一个能被虚拟机接受的Class文件 前4个字节存储的是Class文件的版本号，5，6个字节存储的是次版">
+<meta name="description" content="路由控制的定义 为了让数据包能够正确的发送到目标主机，路由器必须在途中进行正确地转发。这种向“正确的方向”转发数据所进行的处理就叫做陆游控制或路由。 静态路由的设置通常是实现设置好路由器和主机并将路由信息固定的一种方法。 动态路由是指让路由协议在运行过程中自动地设置路由控制信息的一种方法。  路由控制范围 ICP - Interior Gateway Protocol (内部网关协议)  EGP">
 <meta property="og:type" content="article">
-<meta property="og:title" content="虚拟机类文件结构">
-<meta property="og:url" content="https://vajn.github.io/2018/07/17/虚拟机类文件结构/index.html">
+<meta property="og:title" content="路由协议">
+<meta property="og:url" content="https://vajn.github.io/2018/08/15/路由协议/index.html">
 <meta property="og:site_name" content="用心感受生活">
-<meta property="og:description" content="Java平台无关性的基石 各种不同平台的虚拟机与所有平台都统一使用的程序存储格式—字节码是构成平台无关性的基石   Class类文件的结构 Class文件是一组以8位字节为基础单位的二进制流，各个数据项目严格按照顺序紧凑的排列在Class文件之中，中间没有任何分隔符 魔数的作用：确定这个文件是否是一个能被虚拟机接受的Class文件 前4个字节存储的是Class文件的版本号，5，6个字节存储的是次版">
+<meta property="og:description" content="路由控制的定义 为了让数据包能够正确的发送到目标主机，路由器必须在途中进行正确地转发。这种向“正确的方向”转发数据所进行的处理就叫做陆游控制或路由。 静态路由的设置通常是实现设置好路由器和主机并将路由信息固定的一种方法。 动态路由是指让路由协议在运行过程中自动地设置路由控制信息的一种方法。  路由控制范围 ICP - Interior Gateway Protocol (内部网关协议)  EGP">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://vajn.github.io/2018/07/17/虚拟机类文件结构/字节码文件.png">
-<meta property="og:updated_time" content="2018-08-12T15:04:40.000Z">
+<meta property="og:updated_time" content="2018-08-15T15:49:01.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="虚拟机类文件结构">
-<meta name="twitter:description" content="Java平台无关性的基石 各种不同平台的虚拟机与所有平台都统一使用的程序存储格式—字节码是构成平台无关性的基石   Class类文件的结构 Class文件是一组以8位字节为基础单位的二进制流，各个数据项目严格按照顺序紧凑的排列在Class文件之中，中间没有任何分隔符 魔数的作用：确定这个文件是否是一个能被虚拟机接受的Class文件 前4个字节存储的是Class文件的版本号，5，6个字节存储的是次版">
-<meta name="twitter:image" content="https://vajn.github.io/2018/07/17/虚拟机类文件结构/字节码文件.png">
+<meta name="twitter:title" content="路由协议">
+<meta name="twitter:description" content="路由控制的定义 为了让数据包能够正确的发送到目标主机，路由器必须在途中进行正确地转发。这种向“正确的方向”转发数据所进行的处理就叫做陆游控制或路由。 静态路由的设置通常是实现设置好路由器和主机并将路由信息固定的一种方法。 动态路由是指让路由协议在运行过程中自动地设置路由控制信息的一种方法。  路由控制范围 ICP - Interior Gateway Protocol (内部网关协议)  EGP">
 
 
 
@@ -121,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="https://vajn.github.io/2018/07/17/虚拟机类文件结构/"/>
+  <link rel="canonical" href="https://vajn.github.io/2018/08/15/路由协议/"/>
 
 
 
 
 
-  <title>虚拟机类文件结构 | 用心感受生活</title>
+  <title>路由协议 | 用心感受生活</title>
   
 
 
@@ -264,7 +262,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://vajn.github.io/2018/07/17/虚拟机类文件结构/">
+    <link itemprop="mainEntityOfPage" href="https://vajn.github.io/2018/08/15/路由协议/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jie Liu">
@@ -281,7 +279,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">虚拟机类文件结构</h1>
+          <h1 class="post-title" itemprop="name headline">路由协议</h1>
         
 
         <div class="post-meta">
@@ -293,8 +291,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-17T21:31:52+08:00">
-                2018-07-17
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-15T23:22:36+08:00">
+                2018-08-15
               </time>
             
 
@@ -312,8 +310,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2018/07/17/虚拟机类文件结构/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/17/虚拟机类文件结构/" itemprop="commentCount"></span>
+                <a href="/2018/08/15/路由协议/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/08/15/路由协议/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -341,31 +339,24 @@
       
 
       
-        <h4 id="Java平台无关性的基石"><a href="#Java平台无关性的基石" class="headerlink" title="Java平台无关性的基石"></a>Java平台无关性的基石</h4><ul>
-<li>各种不同平台的虚拟机与所有平台都统一使用的程序存储格式—字节码是构成平台无关性的基石</li>
+        <h4 id="路由控制的定义"><a href="#路由控制的定义" class="headerlink" title="路由控制的定义"></a>路由控制的定义</h4><ul>
+<li>为了让数据包能够正确的发送到目标主机，路由器必须在途中进行正确地转发。这种向“正确的方向”转发数据所进行的处理就叫做陆游控制或路由。</li>
+<li>静态路由的设置通常是实现设置好路由器和主机并将路由信息固定的一种方法。</li>
+<li>动态路由是指让路由协议在运行过程中自动地设置路由控制信息的一种方法。</li>
 </ul>
-<p><img src="/2018/07/17/虚拟机类文件结构/字节码文件.png" alt="字节码文件"></p>
-<h4 id="Class类文件的结构"><a href="#Class类文件的结构" class="headerlink" title="Class类文件的结构"></a>Class类文件的结构</h4><ul>
-<li>Class文件是一组以8位字节为基础单位的二进制流，各个数据项目严格按照顺序紧凑的排列在Class文件之中，中间没有任何分隔符</li>
-<li>魔数的作用：确定这个文件是否是一个能被虚拟机接受的Class文件</li>
-<li>前4个字节存储的是Class文件的版本号，5，6个字节存储的是次版本号，7，8个字节存储的是主版本号。</li>
-</ul>
-<h5 id="常量池"><a href="#常量池" class="headerlink" title="常量池"></a>常量池</h5><p>版本号结束后，紧接着是常量池</p>
-<ul>
-<li>常量池主要是存放了两大类常量：字面量和符号引用，包括<ul>
-<li>类和接口的全局限定名(Fully Qualified Name)</li>
-<li>字段的名称和描述符(Descriptor)</li>
-<li>方法的名称和描述符</li>
-</ul>
+<h4 id="路由控制范围"><a href="#路由控制范围" class="headerlink" title="路由控制范围"></a>路由控制范围</h4><ul>
+<li><p>ICP - Interior Gateway Protocol (内部网关协议)</p>
 </li>
-<li>常量池中的项目类型</li>
+<li><p>EGP - Exterior Gateway Protocol (外部网关协议)</p>
+</li>
+<li><p>IGP中还可以使用RIP(Routing Information Protocol，路由信息协议)、RIP2、OSPF(Open Shortest Path First, 开放最短路径优先)等众多协议。</p>
+</li>
+<li><p>EGP使用的是BGP(Porder Gateway Protocol，边界网关协议)协议</p>
+</li>
 </ul>
-<p>JDK1.7种规定了14项常量池的项目类型</p>
-<p>UTF-8 编码的字符串、整型字面量、浮点型字面量、长整型字面量、双精度浮点型字面量、类或接口的符号引用、字符串类型的字面量、字段的符号引用、类中方法的符号引用、接口中方法的符号引用、字段或者方法的部分符号引用、表示方法句柄、标识方法类型、表示一个动态的方法调用点</p>
-<p>使用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">javap -verbose +class文件名</span><br></pre></td></tr></table></figure>
-<p>分析class中的常量表</p>
-<h5 id="访问标志"><a href="#访问标志" class="headerlink" title="访问标志"></a>访问标志</h5><p>常量池结束后，紧接着是两个字节代表的访问标志（access_flags）, 这个标志用于识别一些类或者接口层次的访问信息，包括：Class是类还是接口；是否定义为public类型；是否定义为abstract类型；如果是类的话，是否被声明为final等。</p>
+<h4 id="路由算法"><a href="#路由算法" class="headerlink" title="路由算法"></a>路由算法</h4><h5 id="距离向量算法"><a href="#距离向量算法" class="headerlink" title="距离向量算法"></a>距离向量算法</h5><p>路由器之间可以呼唤网络的方向及其距离相关信息，并以这些信息制作路由控制表。这种方法在处理上比较简单，不过由于只有距离和方向的信息，所以当网络变得十分复杂的时候，在获得稳定路由信息之前需要消耗一定的时间。</p>
+<h5 id="链路状态算法"><a href="#链路状态算法" class="headerlink" title="链路状态算法"></a>链路状态算法</h5><p>路由状态算法是路由器在了解网络整体连接状态的基础上生成路由控制表的一种方法。该方法中，每个路由器必须保持同样的信息才能进行正确的路由选择</p>
+<p>链路状态算法需要各个路由器从网络代理获取路由信息表，在一个规模巨大的网络结构中，管理和处理信息需要高速的CPU处理能力和大量的内存</p>
 
       
     </div>
@@ -390,8 +381,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/07/06/垃圾收集器与内存分配策略/" rel="next" title="垃圾收集器与内存分配策略">
-                <i class="fa fa-chevron-left"></i> 垃圾收集器与内存分配策略
+              <a href="/2018/08/14/TCP与UDP基本/" rel="next" title="TCP与UDP基本">
+                <i class="fa fa-chevron-left"></i> TCP与UDP基本
               </a>
             
           </div>
@@ -399,10 +390,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/07/21/kolla部署openstack-all-in-one/" rel="prev" title="kolla部署openstack-all-in-one">
-                kolla部署openstack-all-in-one <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -528,7 +515,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Java平台无关性的基石"><span class="nav-number">1.</span> <span class="nav-text">Java平台无关性的基石</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Class类文件的结构"><span class="nav-number">2.</span> <span class="nav-text">Class类文件的结构</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#常量池"><span class="nav-number">2.1.</span> <span class="nav-text">常量池</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#访问标志"><span class="nav-number">2.2.</span> <span class="nav-text">访问标志</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#路由控制的定义"><span class="nav-number">1.</span> <span class="nav-text">路由控制的定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#路由控制范围"><span class="nav-number">2.</span> <span class="nav-text">路由控制范围</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#路由算法"><span class="nav-number">3.</span> <span class="nav-text">路由算法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#距离向量算法"><span class="nav-number">3.1.</span> <span class="nav-text">距离向量算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#链路状态算法"><span class="nav-number">3.2.</span> <span class="nav-text">链路状态算法</span></a></li></ol></li></ol></div>
             
 
           </div>
