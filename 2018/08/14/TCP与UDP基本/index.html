@@ -93,7 +93,11 @@
 <meta property="og:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/TCP连接建立和释放的过程.svg">
 <meta property="og:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/单个段通信.svg">
 <meta property="og:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/滑动窗口机制.svg">
-<meta property="og:updated_time" content="2018-08-14T16:37:02.000Z">
+<meta property="og:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/TCP流控制.svg">
+<meta property="og:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/UDP首部.svg">
+<meta property="og:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/TCP首部.svg">
+<meta property="og:image" content="https://vajn.github.io/2018/08/14/TCP与UDP基本/控制位.svg">
+<meta property="og:updated_time" content="2018-08-15T14:58:46.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TCP与UDP基本">
 <meta name="twitter:description" content="TCP与UDP定义 TCP是面向连接的、可靠的流协议。TCP为提供可靠性传输，实行“顺序控制”或“重发控制”机制。此外还具备“流量控制”、“拥塞控制”、提高网络利用率等众多功能。 UDP是不具有可靠性的数据传输协议。在UDP的情况下，虽然可以确保发送消息的大小，缺不能保证消息一定会到达。因此，应用有时会根据自己的需要进行重发处理。  TCP与UDP的区分 TCP用于在传输层有必要实现可靠传输的情况">
@@ -423,6 +427,79 @@
 <li>多个段使用滑动窗口机制可提高数据传输效率</li>
 </ul>
 <p><img src="/2018/08/14/TCP与UDP基本/滑动窗口机制.svg" alt="滑动窗口机制"></p>
+<h4 id="流控制"><a href="#流控制" class="headerlink" title="流控制"></a>流控制</h4><p>TCP首部中，专门有一个字段通知窗口大小。这个窗口大小提供了一个可以让发送端根据接收端实际接收能力控制发送的数据量，这就是流控制。</p>
+<p><img src="/2018/08/14/TCP与UDP基本/TCP流控制.svg" alt="TCP流控制"></p>
+<ul>
+<li>发送端的主机根据接收端主机的窗口大小通知进行流量控制。由此可以防止发送端主机一次发送数据过大导致接收端主机无法处理的情况发生。</li>
+</ul>
+<h4 id="拥塞控制"><a href="#拥塞控制" class="headerlink" title="拥塞控制"></a>拥塞控制</h4><p>TCP为了防止网络出现拥堵，在通信已开始就会通过一个叫慢启动的算法算出的数值，对发送数据量进行控制。</p>
+<p>TCP通信开始时没有设置相应的慢启动阈值。而是在超时重发时设置为当时拥塞窗口大小的一半。</p>
+<h4 id="UDP首部的格式"><a href="#UDP首部的格式" class="headerlink" title="UDP首部的格式"></a>UDP首部的格式</h4><p><img src="/2018/08/14/TCP与UDP基本/UDP首部.svg" alt="UDP首部"></p>
+<ul>
+<li>源端口：发送端端口号，字段长度16位</li>
+<li>目标端口号：接收端端口号，字段长度16位</li>
+<li>包长度：保存了UDP首部的长度跟数据的长度之和</li>
+<li>校验和：为了提供可靠的UDP首部和数据而设计</li>
+</ul>
+<h4 id="TCP首部格式"><a href="#TCP首部格式" class="headerlink" title="TCP首部格式"></a>TCP首部格式</h4><p><img src="/2018/08/14/TCP与UDP基本/TCP首部.svg" alt="TCP首部"></p>
+<ul>
+<li>源端口号：表示发送端端口号，字段长16位</li>
+<li>目标端口号：表示接收端端口号，字段长16位</li>
+<li>序列号<ul>
+<li>该字段长32位，指发送数据的位置，每发送一次数据，就累加一次改数据字节数的大小</li>
+<li>序列号的初值时建立连接时计算机随机生成的初始值</li>
+</ul>
+</li>
+<li>确认应答号<ul>
+<li>字段长度为32位。是指下一次应该收到的数据的序列号</li>
+<li>发送端收到这个确认应答号以后可以认为在这个序列号以前的数据都已经被正常接收。</li>
+</ul>
+</li>
+<li>数据偏移</li>
+</ul>
+<p>改字段表示TCP所传输的数据应该从TCP包的哪个位置开始计算，即可以把它看作TCP首部的长度。改字段为4位，单位为4字节。如果改字段设置为5，那说明从TCP包的最一开始到20字节未知都是TCP首部</p>
+<ul>
+<li>保留</li>
+</ul>
+<p>为了扩展使用，长度为4位</p>
+<ul>
+<li>控制位</li>
+</ul>
+<p><img src="/2018/08/14/TCP与UDP基本/控制位.svg" alt="控制位"></p>
+<p><em>CWR，ECE</em></p>
+<p>用于IP首部的ECN字段。ECE标志为1，通知对方将拥塞窗口缩小。</p>
+<p><em>URG</em></p>
+<p>改位为1时，表示包中有需要紧急处理的数据</p>
+<p><em>ACK(Acknowlwdgement Flag)</em></p>
+<p>改为为1时，确认应答的字段变为有效</p>
+<p><em>PSH(Push Flag)</em></p>
+<p>该位为1时，表示需要将收到的数据立即传送给上层应用协议</p>
+<p><em>RST(Reset Flag)</em></p>
+<p>该位位1时表示TCP连接中出现异常必须强制断开连接</p>
+<p><em>SYN(Synchronize Flag)</em></p>
+<p>用于建立连接。SYN为1表示希望建立连接，并在其序列号字段进行序列号初始值设定</p>
+<p><em>FIN(Fin Flag)</em></p>
+<p>改位为1时，表示今后不会再有数据发送，希望断开连接。当通信双方相互交换FIN位置为1的TCP端。每个主机对对方的FIN包进行确认应答以后就可以断开连接</p>
+<ul>
+<li>窗口大小(Window Size)</li>
+</ul>
+<p>该字段长为16位。用于通知从相同TCP首部的确认应答号所指未知开始能接收的数据大小。TCP不允许发送超过此处所示大小的数据。不过如果窗口设置为0，则表示可以发送窗口探测，以了解最新的窗口大小。</p>
+<ul>
+<li>检验和</li>
+</ul>
+<p>TCP的校验和与UDP相似，区别在于TCP的校验和无法关闭。</p>
+<p>在互联网中发送的数据包要经由好多的路由器，一旦发送途中某一个路由器发生故障，经过此路由器的包、协议首部或数据极有可能被破话。</p>
+<ul>
+<li>紧急指针(Urgent Pointer)</li>
+</ul>
+<p>只有在URG控制位为1时有效。从数据部分的首位到紧急指针所指示的位置为止为紧急数据，紧急指针指出了紧急数据的末尾在报文段中的位置。</p>
+<ul>
+<li>选项(Options)</li>
+</ul>
+<p>该选项字段用于提高TCP的传输性能。</p>
+<p><strong>窗口大小与吞吐量</strong></p>
+<p>TCP通信的最大吞吐量由窗口大小和往返时间决定。假定最大吞吐量为Tmax，窗口大小为W，往返时间是RTT的话，那么最大吞吐量的公式如下：</p>
+<p>T(max) = W / RTT</p>
 
       
     </div>
@@ -581,7 +658,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP与UDP定义"><span class="nav-number">1.</span> <span class="nav-text">TCP与UDP定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP与UDP的区分"><span class="nav-number">2.</span> <span class="nav-text">TCP与UDP的区分</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#端口号"><span class="nav-number">3.</span> <span class="nav-text">端口号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#UDP特点及应用"><span class="nav-number">4.</span> <span class="nav-text">UDP特点及应用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP的特点及目的"><span class="nav-number">5.</span> <span class="nav-text">TCP的特点及目的</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#窗口控制"><span class="nav-number">6.</span> <span class="nav-text">窗口控制</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP与UDP定义"><span class="nav-number">1.</span> <span class="nav-text">TCP与UDP定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP与UDP的区分"><span class="nav-number">2.</span> <span class="nav-text">TCP与UDP的区分</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#端口号"><span class="nav-number">3.</span> <span class="nav-text">端口号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#UDP特点及应用"><span class="nav-number">4.</span> <span class="nav-text">UDP特点及应用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP的特点及目的"><span class="nav-number">5.</span> <span class="nav-text">TCP的特点及目的</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#窗口控制"><span class="nav-number">6.</span> <span class="nav-text">窗口控制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#流控制"><span class="nav-number">7.</span> <span class="nav-text">流控制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拥塞控制"><span class="nav-number">8.</span> <span class="nav-text">拥塞控制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#UDP首部的格式"><span class="nav-number">9.</span> <span class="nav-text">UDP首部的格式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP首部格式"><span class="nav-number">10.</span> <span class="nav-text">TCP首部格式</span></a></li></ol></div>
             
 
           </div>
