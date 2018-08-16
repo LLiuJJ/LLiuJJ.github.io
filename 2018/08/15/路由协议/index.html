@@ -79,17 +79,24 @@
 
 
 
-<meta name="description" content="路由控制的定义 为了让数据包能够正确的发送到目标主机，路由器必须在途中进行正确地转发。这种向“正确的方向”转发数据所进行的处理就叫做陆游控制或路由。 静态路由的设置通常是实现设置好路由器和主机并将路由信息固定的一种方法。 动态路由是指让路由协议在运行过程中自动地设置路由控制信息的一种方法。  路由控制范围 ICP - Interior Gateway Protocol (内部网关协议)  EGP">
+<meta name="description" content="路由控制的定义 为了让数据包能够正确的发送到目标主机，路由器必须在途中进行正确地转发。这种向“正确的方向”转发数据所进行的处理就叫做路由控制或路由。 静态路由的设置通常是实现设置好路由器和主机并将路由信息固定的一种方法。 动态路由是指让路由协议在运行过程中自动地设置路由控制信息的一种方法。  路由控制范围 IGP - Interior Gateway Protocol (内部网关协议)  EGP">
 <meta property="og:type" content="article">
 <meta property="og:title" content="路由协议">
 <meta property="og:url" content="https://vajn.github.io/2018/08/15/路由协议/index.html">
 <meta property="og:site_name" content="用心感受生活">
-<meta property="og:description" content="路由控制的定义 为了让数据包能够正确的发送到目标主机，路由器必须在途中进行正确地转发。这种向“正确的方向”转发数据所进行的处理就叫做陆游控制或路由。 静态路由的设置通常是实现设置好路由器和主机并将路由信息固定的一种方法。 动态路由是指让路由协议在运行过程中自动地设置路由控制信息的一种方法。  路由控制范围 ICP - Interior Gateway Protocol (内部网关协议)  EGP">
+<meta property="og:description" content="路由控制的定义 为了让数据包能够正确的发送到目标主机，路由器必须在途中进行正确地转发。这种向“正确的方向”转发数据所进行的处理就叫做路由控制或路由。 静态路由的设置通常是实现设置好路由器和主机并将路由信息固定的一种方法。 动态路由是指让路由协议在运行过程中自动地设置路由控制信息的一种方法。  路由控制范围 IGP - Interior Gateway Protocol (内部网关协议)  EGP">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-08-15T15:49:01.000Z">
+<meta property="og:image" content="https://vajn.github.io/2018/08/15/路由协议/RIP-1.svg">
+<meta property="og:image" content="https://vajn.github.io/2018/08/15/路由协议/RIP-2.svg">
+<meta property="og:image" content="https://vajn.github.io/2018/08/15/路由协议/RIP-3.svg">
+<meta property="og:image" content="https://vajn.github.io/2018/08/15/路由协议/RIP-4.svg">
+<meta property="og:image" content="https://vajn.github.io/2018/08/15/路由协议/路由环路.svg">
+<meta property="og:image" content="https://vajn.github.io/2018/08/15/路由协议/OSPF.svg">
+<meta property="og:updated_time" content="2018-08-16T14:33:25.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="路由协议">
-<meta name="twitter:description" content="路由控制的定义 为了让数据包能够正确的发送到目标主机，路由器必须在途中进行正确地转发。这种向“正确的方向”转发数据所进行的处理就叫做陆游控制或路由。 静态路由的设置通常是实现设置好路由器和主机并将路由信息固定的一种方法。 动态路由是指让路由协议在运行过程中自动地设置路由控制信息的一种方法。  路由控制范围 ICP - Interior Gateway Protocol (内部网关协议)  EGP">
+<meta name="twitter:description" content="路由控制的定义 为了让数据包能够正确的发送到目标主机，路由器必须在途中进行正确地转发。这种向“正确的方向”转发数据所进行的处理就叫做路由控制或路由。 静态路由的设置通常是实现设置好路由器和主机并将路由信息固定的一种方法。 动态路由是指让路由协议在运行过程中自动地设置路由控制信息的一种方法。  路由控制范围 IGP - Interior Gateway Protocol (内部网关协议)  EGP">
+<meta name="twitter:image" content="https://vajn.github.io/2018/08/15/路由协议/RIP-1.svg">
 
 
 
@@ -340,12 +347,12 @@
 
       
         <h4 id="路由控制的定义"><a href="#路由控制的定义" class="headerlink" title="路由控制的定义"></a>路由控制的定义</h4><ul>
-<li>为了让数据包能够正确的发送到目标主机，路由器必须在途中进行正确地转发。这种向“正确的方向”转发数据所进行的处理就叫做陆游控制或路由。</li>
+<li>为了让数据包能够正确的发送到目标主机，路由器必须在途中进行正确地转发。这种向“正确的方向”转发数据所进行的处理就叫做路由控制或路由。</li>
 <li>静态路由的设置通常是实现设置好路由器和主机并将路由信息固定的一种方法。</li>
 <li>动态路由是指让路由协议在运行过程中自动地设置路由控制信息的一种方法。</li>
 </ul>
 <h4 id="路由控制范围"><a href="#路由控制范围" class="headerlink" title="路由控制范围"></a>路由控制范围</h4><ul>
-<li><p>ICP - Interior Gateway Protocol (内部网关协议)</p>
+<li><p>IGP - Interior Gateway Protocol (内部网关协议)</p>
 </li>
 <li><p>EGP - Exterior Gateway Protocol (外部网关协议)</p>
 </li>
@@ -357,6 +364,69 @@
 <h4 id="路由算法"><a href="#路由算法" class="headerlink" title="路由算法"></a>路由算法</h4><h5 id="距离向量算法"><a href="#距离向量算法" class="headerlink" title="距离向量算法"></a>距离向量算法</h5><p>路由器之间可以呼唤网络的方向及其距离相关信息，并以这些信息制作路由控制表。这种方法在处理上比较简单，不过由于只有距离和方向的信息，所以当网络变得十分复杂的时候，在获得稳定路由信息之前需要消耗一定的时间。</p>
 <h5 id="链路状态算法"><a href="#链路状态算法" class="headerlink" title="链路状态算法"></a>链路状态算法</h5><p>路由状态算法是路由器在了解网络整体连接状态的基础上生成路由控制表的一种方法。该方法中，每个路由器必须保持同样的信息才能进行正确的路由选择</p>
 <p>链路状态算法需要各个路由器从网络代理获取路由信息表，在一个规模巨大的网络结构中，管理和处理信息需要高速的CPU处理能力和大量的内存</p>
+<h4 id="RIP协议详解"><a href="#RIP协议详解" class="headerlink" title="RIP协议详解"></a>RIP协议详解</h4><p>RIP(Routing information Protocol)是一种距离向量型路由协议，广泛应用于LAN中。</p>
+<p>下面我们通过一个分析来了解该路由协议的过程(无故障情况下)</p>
+<p>最开始，路由器只知道相邻的路由信息</p>
+<p><img src="/2018/08/15/路由协议/RIP-1.svg" alt="RIP-1"></p>
+<p>RIP将路由控制信息定期(30秒一次)向全网广播，第一次广播后</p>
+<p><img src="/2018/08/15/路由协议/RIP-2.svg" alt="RIP-2"></p>
+<p>第二次广播后<img src="/2018/08/15/路由协议/RIP-3.svg" alt="RIP-3"></p>
+<p>至此，三个路由器已经学到全网的路由信息。</p>
+<ul>
+<li>路由实效的情况</li>
+</ul>
+<p>设置一个失效计时器180S，6个周期内都没有收到某个学习来的路由的信息，会把路由设置为 possible down</p>
+<p>如果时间长达240S，则这个路由会被删除。<img src="/2018/08/15/路由协议/RIP-4.svg" alt="RIP-4"></p>
+<h5 id="RIP可能出现的问题"><a href="#RIP可能出现的问题" class="headerlink" title="RIP可能出现的问题"></a>RIP可能出现的问题</h5><ul>
+<li>不一致的路由信息会导致路由环路，各种协议都应尽力避免路由环路。</li>
+</ul>
+<p><img src="/2018/08/15/路由协议/路由环路.svg" alt="路由环路"></p>
+<p>10.4.0.0 down之后，B没有来得及更新路由信息，而C从B学到10.4.0.0的路由信息，从而形成环路，条数会不断上涨。</p>
+<p>对跳数设置最大值以防止环路。</p>
+<ul>
+<li>解决办法：</li>
+</ul>
+<p>水平分割-永远不会将一个路由信息从接收这个信息的接口上发送回去。</p>
+<p>当一个网络不可达之后，把路由的距离设置为无限大，让所有路由器知道这个网络不可达。</p>
+<p>当出现网络拓扑变化的时候，立即向外发布更新。</p>
+<ul>
+<li>总结 RIP防止路由环路技术</li>
+</ul>
+<p>1.定义最大跳数</p>
+<p>2.水平分割</p>
+<p>3.触发更新</p>
+<p>4.抑制计时器</p>
+<p>5.路由毒化</p>
+<p>RIP使用UDP协议，端口号520</p>
+<ul>
+<li>RIP的一些更新特点</li>
+</ul>
+<p>1.使用多播</p>
+<p>2.支持子网掩码</p>
+<p>3.路由选择域</p>
+<p>4.外部路由标志</p>
+<p>5.身份验证密钥</p>
+<h4 id="OSPF协议"><a href="#OSPF协议" class="headerlink" title="OSPF协议"></a>OSPF协议</h4><p>Open Shortest Path First，底层使用最短路径优先算法。</p>
+<p><img src="/2018/08/15/路由协议/OSPF.svg" alt="OSPF"></p>
+<h5 id="Link-State数据结构"><a href="#Link-State数据结构" class="headerlink" title="Link State数据结构"></a>Link State数据结构</h5><p>邻居表 Neighbor table</p>
+<ul>
+<li>邻接数据库</li>
+<li>保存所有已知邻居</li>
+</ul>
+<p>拓扑表 Topology table</p>
+<ul>
+<li>又称为链路状态数据库(LSDB)</li>
+</ul>
+<p>路由表 Routing table，由拓扑表运行 SPF算法得出</p>
+<ul>
+<li>又称为转发数据库(forwarding database/RIB)</li>
+<li>保存到达目标网络的最优路径</li>
+</ul>
+<h5 id="链路状态型路由协议与距离矢量型路由协议比较"><a href="#链路状态型路由协议与距离矢量型路由协议比较" class="headerlink" title="链路状态型路由协议与距离矢量型路由协议比较"></a>链路状态型路由协议与距离矢量型路由协议比较</h5><ul>
+<li>相比距离矢量型路由协议，链路状态型路由协议保存更多的、更详细的网络拓扑信息</li>
+<li>每个路由器保存全网拓扑信息</li>
+<li>一般来讲，链路状态协议比距离矢量型协议判断决策更加精确</li>
+</ul>
 
       
     </div>
@@ -515,7 +585,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#路由控制的定义"><span class="nav-number">1.</span> <span class="nav-text">路由控制的定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#路由控制范围"><span class="nav-number">2.</span> <span class="nav-text">路由控制范围</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#路由算法"><span class="nav-number">3.</span> <span class="nav-text">路由算法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#距离向量算法"><span class="nav-number">3.1.</span> <span class="nav-text">距离向量算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#链路状态算法"><span class="nav-number">3.2.</span> <span class="nav-text">链路状态算法</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#路由控制的定义"><span class="nav-number">1.</span> <span class="nav-text">路由控制的定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#路由控制范围"><span class="nav-number">2.</span> <span class="nav-text">路由控制范围</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#路由算法"><span class="nav-number">3.</span> <span class="nav-text">路由算法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#距离向量算法"><span class="nav-number">3.1.</span> <span class="nav-text">距离向量算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#链路状态算法"><span class="nav-number">3.2.</span> <span class="nav-text">链路状态算法</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RIP协议详解"><span class="nav-number">4.</span> <span class="nav-text">RIP协议详解</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#RIP可能出现的问题"><span class="nav-number">4.1.</span> <span class="nav-text">RIP可能出现的问题</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#OSPF协议"><span class="nav-number">5.</span> <span class="nav-text">OSPF协议</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Link-State数据结构"><span class="nav-number">5.1.</span> <span class="nav-text">Link State数据结构</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#链路状态型路由协议与距离矢量型路由协议比较"><span class="nav-number">5.2.</span> <span class="nav-text">链路状态型路由协议与距离矢量型路由协议比较</span></a></li></ol></li></ol></div>
             
 
           </div>
