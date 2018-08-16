@@ -92,7 +92,8 @@
 <meta property="og:image" content="https://vajn.github.io/2018/08/15/路由协议/RIP-4.svg">
 <meta property="og:image" content="https://vajn.github.io/2018/08/15/路由协议/路由环路.svg">
 <meta property="og:image" content="https://vajn.github.io/2018/08/15/路由协议/OSPF.svg">
-<meta property="og:updated_time" content="2018-08-16T14:33:25.000Z">
+<meta property="og:image" content="https://vajn.github.io/2018/08/15/路由协议/OSPF%20Areas.svg">
+<meta property="og:updated_time" content="2018-08-16T15:55:19.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="路由协议">
 <meta name="twitter:description" content="路由控制的定义 为了让数据包能够正确的发送到目标主机，路由器必须在途中进行正确地转发。这种向“正确的方向”转发数据所进行的处理就叫做路由控制或路由。 静态路由的设置通常是实现设置好路由器和主机并将路由信息固定的一种方法。 动态路由是指让路由协议在运行过程中自动地设置路由控制信息的一种方法。  路由控制范围 IGP - Interior Gateway Protocol (内部网关协议)  EGP">
@@ -427,6 +428,48 @@
 <li>每个路由器保存全网拓扑信息</li>
 <li>一般来讲，链路状态协议比距离矢量型协议判断决策更加精确</li>
 </ul>
+<h5 id="链路状态协议存在的问题"><a href="#链路状态协议存在的问题" class="headerlink" title="链路状态协议存在的问题"></a>链路状态协议存在的问题</h5><p>每个路由器需要维护全网拓扑信息</p>
+<ul>
+<li>占用大量内存</li>
+<li>进行路由计算时占用大量CPU资源</li>
+<li>每次路由计算时间较长</li>
+<li>当细节网络出现变动时，全网路由器均需要重新收敛计算</li>
+</ul>
+<h5 id="OSPF分层网络架构"><a href="#OSPF分层网络架构" class="headerlink" title="OSPF分层网络架构"></a>OSPF分层网络架构</h5><ul>
+<li>OSPF强制使用分层架构</li>
+<li>OSPF定义了网络双层结构，定义了区域概念，通过区域划分，实现双层的网络架构<ul>
+<li>传输区域 Transit area （骨干）</li>
+<li>普通区域 Regular areas（非骨干）</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2018/08/15/路由协议/OSPF Areas.svg" alt="OSPF Areas"></p>
+<ul>
+<li>Backbone Area0维护全网信息</li>
+<li>普通Area区域维护各自的区域的信息</li>
+<li>不同区域之间通信，需要通过Backbon Area0转发</li>
+<li>OSPF区域特点<ul>
+<li>最小化路由条目数量</li>
+<li>本地拓扑变动</li>
+<li>将LSA泛洪限制在区域内</li>
+<li>需要一个分层的网络设计</li>
+</ul>
+</li>
+<li>OSPF设计原则<ul>
+<li>网络内有且只有一个区域0</li>
+<li>普通区域通过区域0互联，普通区域之间不能有邻街关系</li>
+<li>每个区域的网络最好是连续的，可汇总的</li>
+<li>ABR负责向区域0通告所在区域信息，最好可以汇总</li>
+</ul>
+</li>
+</ul>
+<h5 id="OSPF计算"><a href="#OSPF计算" class="headerlink" title="OSPF计算"></a>OSPF计算</h5><p>路由器通过对LSDB保存的信息使用 Dijkstra’s SPF算法进行计算获得到达目标网络的最优路由。</p>
+<ul>
+<li>每个路由器拥有所在区域的全部链路状态信息</li>
+<li>每个路由器将自己作为根，通过LSDB信息使用SPF算法构建SPF树</li>
+<li>通过运行SPF算法，比较不同路径的开销值，选择到达目标网络的最优路径，并删除环路</li>
+<li>计算出来的最优路径存入转发数据库，即路由表</li>
+</ul>
 
       
     </div>
@@ -585,7 +628,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#路由控制的定义"><span class="nav-number">1.</span> <span class="nav-text">路由控制的定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#路由控制范围"><span class="nav-number">2.</span> <span class="nav-text">路由控制范围</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#路由算法"><span class="nav-number">3.</span> <span class="nav-text">路由算法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#距离向量算法"><span class="nav-number">3.1.</span> <span class="nav-text">距离向量算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#链路状态算法"><span class="nav-number">3.2.</span> <span class="nav-text">链路状态算法</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RIP协议详解"><span class="nav-number">4.</span> <span class="nav-text">RIP协议详解</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#RIP可能出现的问题"><span class="nav-number">4.1.</span> <span class="nav-text">RIP可能出现的问题</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#OSPF协议"><span class="nav-number">5.</span> <span class="nav-text">OSPF协议</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Link-State数据结构"><span class="nav-number">5.1.</span> <span class="nav-text">Link State数据结构</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#链路状态型路由协议与距离矢量型路由协议比较"><span class="nav-number">5.2.</span> <span class="nav-text">链路状态型路由协议与距离矢量型路由协议比较</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#路由控制的定义"><span class="nav-number">1.</span> <span class="nav-text">路由控制的定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#路由控制范围"><span class="nav-number">2.</span> <span class="nav-text">路由控制范围</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#路由算法"><span class="nav-number">3.</span> <span class="nav-text">路由算法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#距离向量算法"><span class="nav-number">3.1.</span> <span class="nav-text">距离向量算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#链路状态算法"><span class="nav-number">3.2.</span> <span class="nav-text">链路状态算法</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RIP协议详解"><span class="nav-number">4.</span> <span class="nav-text">RIP协议详解</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#RIP可能出现的问题"><span class="nav-number">4.1.</span> <span class="nav-text">RIP可能出现的问题</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#OSPF协议"><span class="nav-number">5.</span> <span class="nav-text">OSPF协议</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Link-State数据结构"><span class="nav-number">5.1.</span> <span class="nav-text">Link State数据结构</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#链路状态型路由协议与距离矢量型路由协议比较"><span class="nav-number">5.2.</span> <span class="nav-text">链路状态型路由协议与距离矢量型路由协议比较</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#链路状态协议存在的问题"><span class="nav-number">5.3.</span> <span class="nav-text">链路状态协议存在的问题</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#OSPF分层网络架构"><span class="nav-number">5.4.</span> <span class="nav-text">OSPF分层网络架构</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#OSPF计算"><span class="nav-number">5.5.</span> <span class="nav-text">OSPF计算</span></a></li></ol></li></ol></div>
             
 
           </div>
