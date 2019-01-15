@@ -9,9 +9,9 @@ date: 2019-01-07 23:37:55
 
 一个追寻自由自在生活的浪子！
 
-email: jieliu2017@aliyun.com
+email: jay_jieliu@outlook.com
 
-zhihu: https://www.zhihu.com/people/liu-jie-84-52/activities
+知乎: [JAYL](https://www.zhihu.com/people/liu-jie-84-52/activities)
 
 <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=38592976&auto=1&height=66"></iframe>
 
