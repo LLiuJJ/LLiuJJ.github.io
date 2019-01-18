@@ -1,0 +1,69 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>LEC2 | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">LEC2</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a href="/MIT-6-824/"><i class="fa fa-search"> MIT-6-824</i></a><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">LEC2</h1><div class="post-meta">Jan 17, 2019</div><a class="disqus-comment-count" href="/2019/01/17/LEC2/#vcomment"><span class="valine-comment-count" data-xid="/2019/01/17/LEC2/"></span><span> 条评论</span></a><div class="post-content"><h4 id="基础设施-RPC-和-线程"><a href="#基础设施-RPC-和-线程" class="headerlink" title="基础设施: RPC 和 线程"></a>基础设施: RPC 和 线程</h4><p><strong>一个最常被问到的问题:为什么使用Go</strong></p>
+<p><strong><em>6.824这门课原先是使用C++的</em></strong></p>
+<p>学生花了很多时间去修与构建分布式系统无关的bug</p>
+<p>例如C++编程里面一个创建对象的问题，学生free了还需要使用的对象</p>
+<p><strong><em>Go 语言可以让你更专注的处理分布式系统的问题</em></strong></p>
+<p>1.Go语言是类型安全的</p>
+<p>2.它有垃圾收集器（不会存在对象没有free导致的程序bug）</p>
+<p>3.对并发编程的支持很友好</p>
+<p>4.对RPC的支持很友好</p>
+<p><strong><em>我们喜欢用Go编程</em></strong></p>
+<p>1.Go很容易学习</p>
+<p>2.Go语言推荐资料 <a href="https://golang.org/doc/effective_go.html#generality" target="_blank" rel="noopener">https://golang.org/doc/effective_go.html#generality</a></p>
+<p><strong>远程过程调用 (RPC)</strong></p>
+<p>1.分布式系统中的关键部分，所有的lab都使用到了RPC，它使得网络交互的程序更容易编写</p>
+<p>2.隐藏了客户端/服务器通信的大部分细节</p>
+<p>3.通过RPC客户端的远程调用就像普通的过程调用</p>
+<p>4.服务器的处理程序和普通的程序类似</p>
+<p>5.RPC被广泛使用</p>
+<p><strong>理想情况下，RPC使得网络通信看起来就像函数的调用</strong></p>
+<p>客户端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">z = fn(x, y)</span><br></pre></td></tr></table></figure>
+<p>服务器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">fn(x, y) &#123;</span><br><span class="line">    compute</span><br><span class="line">    return z</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RPC旨在实现这种透明度的调用</p>
+<p>Go语言RPC的库 <a href="https://golang.org/pkg/net/rpc/" target="_blank" rel="noopener">https://golang.org/pkg/net/rpc/</a></p>
+<p><strong>RPC 消息图</strong></p>
+<p>Client                Server</p>
+<p>request —&gt;</p>
+<p>​            &lt;— response</p>
+<p><strong>软件架构</strong></p>
+<p>客户端应用存根            处理调用</p>
+<p>RPC 库                    RPC库</p>
+<p>Net   ——————————   Net</p>
+<p><strong>更多的细节</strong></p>
+<p>1.要调用服务器的那个处理函数</p>
+<p>2.Marshalling（编组）：将数据格式化为数据包</p>
+<p>​    处理数组、指针和对象是很棘手的</p>
+<p>​    Go的RPC库是相当强大的</p>
+<p>​    有一些东西你不能传送：例如，channels（通道）,functions（函数）</p>
+<p>3.Binding（绑定）:客户端如何知道与谁交互?</p>
+<p>​       客户端被提供了服务器的主机名</p>
+<p>​       也许名称服务将服务映射到最佳的服务器主机</p>
+<p>4.线程：</p>
+<p>​    客户端可能启动很多线程，所以1个以上的调用未完成，匹配响应</p>
+<p>​    处理程序可能很慢，因此服务器经常在每一个线程中运行每个处理程序</p>
+<p><strong>RPC问题：如何处理失败</strong></p>
+<p>​    例如：数据包丢失、网络中断、服务器速度慢、服务器崩溃</p>
+<p><strong>客户端RPC库中的故障是什么样的?</strong></p>
+<p>​    客户端从未收到服务器的响应</p>
+<p>​    客户端不知道服务器是否能看到请求</p>
+<p>​    可能服务器或者网络在发送回复之前失败了</p>
+</div><div class="tags"><a href="/tags/分布式系统6-824笔记/">分布式系统6.824笔记</a></div><div class="post-nav"><a class="next" href="/2019/01/17/LEC20-vedio/">LEC20-vedio</a></div><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' == true ? true : false;
+var verify = 'false' == true ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'ILqOzWM8jrm21Dhs5Ernxczi-gzGzoHsz',
+  appKey:'7sChUpdXujjsSpdpukXYva9P',
+  placeholder:'ヾﾉ≧∀≦)o 来互相伤害吧！',
+  avatar:'mm',
+  guest_info:guest_info,
+  pageSize:'10'
+})</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/6-824视频/" style="font-size: 15px;">6.824视频</a> <a href="/tags/分布式系统6-824笔记/" style="font-size: 15px;">分布式系统6.824笔记</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC2/">LEC2</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC20-vedio/">LEC20-vedio</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC17-vedio/">LEC17-vedio</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC16-vedio/">LEC16-vedio</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC15-vedio/">LEC15-vedio</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC13-vedio/">LEC13-vedio</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC12-vedio/">LEC12-vedio</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC10-vedio/">LEC10-vedio</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC9-vedio/">LEC9-vedio</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC8-vedio/">LEC8-vedio</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

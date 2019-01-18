@@ -1,77 +1,132 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>LEC1 | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">LEC1</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a href="/MIT-6-824/"><i class="fa fa-search"> MIT-6-824</i></a><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">LEC1</h1><div class="post-meta">Jan 15, 2019</div><div class="post-content"><p><strong>不敢确认的翻译给出了原文，避免误解</strong></p>
-<ul>
-<li><p>什么是分布式系统？</p>
-<ul>
-<li>多台主机合作</li>
-<li>DNS，P2P文件共享，存储大数据的数据库，MapReduce模型，大量基础设施都是分布式的</li>
-</ul>
-</li>
-<li><p>为什么需要分布式？</p>
-<ul>
-<li>连接物理上分离的实体</li>
-<li>通过隔离实现安全</li>
-<li>通过副本来实现容错</li>
-<li>通过并行CPU/mem/disk/net 来扩展系统的吞吐量</li>
-</ul>
-</li>
-<li><p>但是：</p>
-<ul>
-<li>分布式系统具有复杂性，包括很多并发的部分</li>
-<li>必须应对系统中部分部分失败</li>
-<li>很难实现性能潜力</li>
-</ul>
-</li>
-<li><p>实验的目标：</p>
-<ul>
-<li>更加深入的了解一些重要技术</li>
-<li>积累分布式系统的编程经验</li>
-</ul>
-</li>
-</ul>
-<h4 id="主话题"><a href="#主话题" class="headerlink" title="主话题"></a>主话题</h4><ul>
-<li><p>这是一门关于基础设施的课程，它们被架设起来被应用使用</p>
-<ul>
-<li>关于隐藏应用程序分布的复杂性</li>
-<li>三大抽象<br>  存储，交互，计算</li>
-</ul>
-</li>
-<li><p>实现分布式系统的一些基础知识</p>
-<p>  RPC，线程，并发控制</p>
-</li>
-<li><p>分布式系统的性能<br>  理想：可扩展的吞吐量</p>
-<pre><code>- 可扩展的吞吐量-Nx的服务器数量，Nx的总吞吐量，通过CPU/Disk/Net并行实现
-- 所以可以通过购买更多的服务器来处理更多的负载
-</code></pre><p>  现实：扩展变得越来越困难</p>
-<pre><code>- 负载均衡，(stragglers)性能落后的机器
-- 很小的，不可以并行化的部分
-- 隐藏共享资源，比如网络
-</code></pre></li>
-<li><p>分布式系统的容错性(fault tolerance)</p>
-<p>  1000个服务器，复杂的网络连接，总是会出现一些问题<br>  我们想通过应用程序来隐藏(容忍)这些失败</p>
-<ul>
-<li>可用性：尽管失败，我仍然可以继续使用我的文件</li>
-<li><p>耐用性(Durability)：当故障机器得到修复时，我的数据可以被恢复</p>
-<p>​          一个好主意：使用副本服务器(replicated servers)</p>
-</li>
-<li><p>如果一个服务宕机了，客户端可以选择使用其他的服务器</p>
-</li>
-</ul>
-</li>
-<li><p>分布式系统的一致性</p>
-<ul>
-<li><p>通用的基础架构需要明确定义的behavior</p>
-</li>
-<li><p>实现良好的behavior是困难的</p>
-<p> 客户端提交并行的操作<br> 服务器在尴尬的时候崩溃<br> 网络问题可能是服务器看起来像是死机了<br> 脑裂的风险(split brain)</p>
-</li>
-<li><p>一致性和性能是相对的</p>
-<pre><code>一致性需要交互
-具有令人满意(&quot;严格&quot;)语以的系统通常很慢
-快速的系统通常可以使应用程序面对复杂的行为
-</code></pre></li>
-</ul>
-</li>
-<li><p>案例学习: MapReduce</p>
-</li>
-</ul>
-</div><div class="tags"><a href="/tags/分布式系统/">分布式系统</a></div><div class="post-nav"><a class="next" href="/2019/01/08/2018总结/">2018总结</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/分布式系统/" style="font-size: 15px;">分布式系统</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/01/15/LEC1/">LEC1</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/08/2018总结/">2018总结</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>LEC1 | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">LEC1</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a href="/MIT-6-824/"><i class="fa fa-search"> MIT-6-824</i></a><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">LEC1</h1><div class="post-meta">Jan 15, 2019</div><a class="disqus-comment-count" href="/2019/01/15/LEC1/#vcomment"><span class="valine-comment-count" data-xid="/2019/01/15/LEC1/"></span><span> 条评论</span></a><div class="post-content"><p><strong>不敢确认的翻译给出了原文，避免误解</strong></p>
+<p><strong>什么是分布式系统</strong>？</p>
+<p>1.多台主机合作</p>
+<p>2.DNS，P2P文件共享，存储大数据的数据库，MapReduce模型，大量基础设施都是分布式的</p>
+<p><strong>为什么需要分布式</strong>？</p>
+<p>1.连接物理上分离的实体</p>
+<p>2.通过隔离实现安全</p>
+<p>3.通过副本来实现容错</p>
+<p>4.通过并行CPU/mem/disk/net 来扩展系统的吞吐量</p>
+<p>5.但是：</p>
+<p>1) 分布式系统具有复杂性，包括很多并发的部分</p>
+<p>2) 必须应对系统中部分部分失败</p>
+<p>3) 很难实现性能潜力</p>
+<p><strong>实验的目标</strong>：</p>
+<p>1.更加深入的了解一些重要技术</p>
+<p>2.积累分布式系统的编程经验</p>
+<p><strong>主话题</strong></p>
+<p>1.这是一门关于基础设施的课程，这些分布式的基础设施架设起来以供应用使用</p>
+<p>2.用来应用程序分布的复杂性</p>
+<p>1）三大抽象</p>
+<p>存储，交互，计算</p>
+<p>2）实现分布式系统的一些基础知识</p>
+<p>RPC，线程，并发控制</p>
+<p>3）分布式系统的性能</p>
+<p><strong>理想：可扩展的吞吐量</strong></p>
+<p>可扩展的吞吐量-Nx的服务器数量，Nx的总吞吐量，通过CPU/Disk/Net并行实现</p>
+<p>所以可以通过购买更多的服务器来处理更多的负载</p>
+<p><strong>现实：扩展变得越来越困难</strong></p>
+<p>负载均衡，(stragglers)性能落后的机器</p>
+<p>很小的，不可以并行化的部分</p>
+<p>隐藏共享资源，比如网络</p>
+<p>分布式系统的容错性(fault tolerance)</p>
+<p>1000个服务器，复杂的网络连接，总是会出现一些问题<br>我们想通过应用程序来隐藏(容忍)这些失败</p>
+<p>可用性：尽管失败，我仍然可以继续使用我的文件</p>
+<p>耐用性(Durability)：当故障机器得到修复时，我的数据可以被恢复</p>
+<p>一个好主意：使用副本服务器(replicated servers)</p>
+<p>如果一个服务宕机了，客户端可以选择使用其他的服务器</p>
+<p><strong>分布式系统的一致性</strong></p>
+<p>通用的基础架构需要明确定义的behavior，实现良好的behavior是困难的</p>
+<p>1.客户端提交并行的操作<br>2.服务器在尴尬的时候崩溃<br>3.网络问题可能是服务器看起来像是死机了<br>4.脑裂的风险(split brain)</p>
+<p><strong>一致性和性能是相对的</strong></p>
+<p>1.一致性需要交互<br>2.具有令人满意(“严格”)语以的系统通常很慢<br>3.快速的系统通常可以使应用程序面对复杂的行为</p>
+<p>案例学习: MapReduce</p>
+<p><strong>MapReduce概述</strong></p>
+<p>1.Context: 对多个TB的数据集进行多个小时的计算</p>
+<p>例如：分析分布在1000多台计算机上的大量图结构的数据，如果不是分布式系统专家来开发是很痛苦的</p>
+<p>2.模型目标：非专业程序员可以地在许多服务器上以合理的效率分割数据集并处理</p>
+<p>3.程序员定义Map和Reduce函数的顺序代码，通常很简单</p>
+<p>4.MapReduce在具有巨大输入的1000台服务器上运行函数并隐藏了分发处理的细节</p>
+<p><strong>MapReduce的抽象视图</strong></p>
+<p>输入(input)被分为M个文件</p>
+<p>[maps 生成多行 K-V对，reduces合并列]</p>
+<p><img src="/2019/01/15/LEC1/MapReduce.png" alt="MapReduce"></p>
+<p>MR（MapReduce简称）为每个输入文件调用Map()，产生一组 k2, v2 的中间顺序，每个Map() 调用是一个任务。</p>
+<p>MR为给定的k2收集所有中间v2，并将它们传递给Reduce调用最终输入设置为来自Reduce() 的 &lt;k2, v3&gt; 对，结果存储在R输出文件中</p>
+<p>[MapReduce API]</p>
+<p><img src="/2019/01/15/LEC1/MapReduceApi.png" alt="MapReduceApi"></p>
+<p><strong>MapReduce隐藏了一些细节痛点</strong></p>
+<p>1.在服务器上启动 s/w</p>
+<p>2.跟踪哪些任务已经完成了</p>
+<p>3.数据移动</p>
+<p>4.任务失败后恢复</p>
+<p><strong>Mapreduce 具有很好的扩展性</strong></p>
+<p>1.用N台服务器可以获得Nx的吞吐量</p>
+<p>假设 M和R &gt;= N （即：很多的输入文件和map输出的key）</p>
+<p>Maps()s可以并行的运行，因为它们之间没有交互，Reduce()s 也是同样的</p>
+<p>唯一的交互是maps和reduces之间的 “shuffle”</p>
+<p>2.因此，你可以通过购买更多的服务器来获得更多的吞吐量</p>
+<p>而不是对每个应用程序做特殊，高效的并行化</p>
+<p><strong>限制性能的因素是什么？</strong></p>
+<p>1.我们关心这个因为这正是系统性能的优化点<br>CPU? 内存? 磁盘? 网络？</p>
+<p>2.网络带宽的限制</p>
+<p>网络的内部总容量，通常远小于主机之间网络链路的速度总和</p>
+<p>难以建立一个比单台计算机运行速度快1000倍的网络</p>
+<p>所以分布式系统的设计者关心的是最大限度的减少网络上的数据移动</p>
+<p><strong>容灾处理</strong></p>
+<p>如果有服务器在MR job过程中宕机怎么处理</p>
+<p>隐藏失败是实现模型简易编程一个大的部分</p>
+<p>为什么不从一开始就重启整个job</p>
+<p>MR过程只会重新运行失败的Map()和Reduce()</p>
+<p>它们是pure fuctions,不会修改它们的输入，不保存状态，它们之间不共享内存，没有map/map 或者 reduce/reduce 之间的交互，所以重新执行会有相同的输出结果</p>
+<p>MR与其他的并行编程方案相比，pure fuctions是一个主要的限制，但这对MR编程模型的简单性至关重要</p>
+<p><strong>更多的细节</strong></p>
+<p>1.Master：给所有的worker分配任务，记住中间输出结果是M输入的分片</p>
+<p>输入数据存在GFS中，每个分片存了3个副本</p>
+<p>2.所有的计算机同时运行GFS和MR workers</p>
+<p>3.输入分片数比workers数要多</p>
+<p>4.Master在每个服务器上启动一个Map任务，当旧任务结束时，会接着处理新的任务</p>
+<p>5.Worker对通过key做hash计算，将Map数据输出到R个分区中，存储在本地磁盘</p>
+<p>直到所有Maps操作结束后才会进行Reduce计算</p>
+<p>6.Master告诉Reducers从Map操作的workers那里获取中间数据分块</p>
+<p>7.Reduce操作的workers将最终输出结果写到GFS中</p>
+<p><strong>如何通过细节处的设计来提高网络性能</strong></p>
+<p>1.Map的输入从本地磁盘读取，不是通过网络</p>
+<p>2.生成的中间数据只在网络中传输一次，存储在磁盘中，而不是GFS</p>
+<p>3.生成的中间数据分块保存很多的key，并存储在文件中</p>
+<p>4.大块的网络传输效率更高</p>
+<p><strong>如果更均衡的分配负载</strong></p>
+<p>1.scaling out是至关重要的，否则使用Nx服务器就没有得到相应的收益</p>
+<p>2.但是处理一个split或者partition的分区时间是不统一的，不同大小和内容，不同的服务器硬件</p>
+<p>3.解决方案：split的数多于workes数</p>
+<p>Master将新的splits分发给已经完成先前任务的workers</p>
+<p>所以更快的服务器比慢速的服务器做更多的工作，并同时完成。</p>
+<p><strong>MR如何应对worker崩溃呢</strong></p>
+<p>1.Map worker 崩溃</p>
+<p>master重新运行，通过其他GFS的副本作为输入</p>
+<p>即使worker已经完成，因为我们仍需要磁盘上的中间数据</p>
+<p>一些Reduce workers可能已经督过workers的中间数据</p>
+<p>2.Master怎么知道worker崩溃了(通过 pings)</p>
+<p>如果Reduces已经获取了所有Map操作生成的中间数据，那么master不再需要重新运行Map，然后Reduce崩溃必须等待Maps重新运行</p>
+<p>3.如果 reduces worker在生成结果之前崩溃，那么master将重新启动另一个worker</p>
+<p>4.Reduce worker在写输出的过程中崩溃</p>
+<p>GFS具有 atomic rename ,可以防止输出在完成之前可见</p>
+<p>5.所以master在其他的地方重新运行Reduce 任务是安全的</p>
+</div><div class="tags"><a href="/tags/分布式系统6-824笔记/">分布式系统6.824笔记</a></div><div class="post-nav"><a class="pre" href="/2019/01/16/LEC1-vedio/">LEC1-vedio</a><a class="next" href="/2019/01/08/2018总结/">2018总结</a></div><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' == true ? true : false;
+var verify = 'false' == true ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'ILqOzWM8jrm21Dhs5Ernxczi-gzGzoHsz',
+  appKey:'7sChUpdXujjsSpdpukXYva9P',
+  placeholder:'ヾﾉ≧∀≦)o 来互相伤害吧！',
+  avatar:'mm',
+  guest_info:guest_info,
+  pageSize:'10'
+})</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/6-824视频/" style="font-size: 15px;">6.824视频</a> <a href="/tags/分布式系统6-824笔记/" style="font-size: 15px;">分布式系统6.824笔记</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC2/">LEC2</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC20-vedio/">LEC20-vedio</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC17-vedio/">LEC17-vedio</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC16-vedio/">LEC16-vedio</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC15-vedio/">LEC15-vedio</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC13-vedio/">LEC13-vedio</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC12-vedio/">LEC12-vedio</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC10-vedio/">LEC10-vedio</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC9-vedio/">LEC9-vedio</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC8-vedio/">LEC8-vedio</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
