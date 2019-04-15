@@ -1,0 +1,252 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>CMU-DBMS-COURSE-09-NOTES | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">CMU-DBMS-COURSE-09-NOTES</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a href="/MIT-6-824/"><i class="fa fa-search"> MIT-6-824</i></a><a href="/LINUX/"><i class="fa fa-book"> LINUX</i></a><a href="/MOVIES/"><i class="fa fa-photo"> MOVIES</i></a><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">CMU-DBMS-COURSE-09-NOTES</h1><div class="post-meta">Apr 13, 2019</div><a class="disqus-comment-count" href="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/#vcomment"><span class="valine-comment-count" data-xid="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/"></span><span> 条评论</span></a><div class="post-content"><ul>
+<li>我们假设到目前为止我们讨论的所有数据结构都是单线程的</li>
+<li>但是我们需要允许多个线程安全地访问我们的数据结构，以利用额外的CPU核心</li>
+</ul>
+<p><strong>并发控制</strong></p>
+<ul>
+<li>并发控制协议是DBMS用来确保共享对象上并发操作产生“正确”结果的方法</li>
+<li>协议的正确性标准可能有所不同<ul>
+<li>逻辑正确性：我能看到我应该看到的数据吗？</li>
+<li>物理正确性：对象的内部表示是否正确？</li>
+</ul>
+</li>
+</ul>
+<p><strong>锁 vs 闩</strong></p>
+<ul>
+<li>锁<ul>
+<li>保护索引的逻辑内容不受其他线程的影响</li>
+<li>确保线程的持久化操作</li>
+<li>需要有能力回滚变化</li>
+</ul>
+</li>
+<li>闩<ul>
+<li>保护索引内部数据结构关键部分不受其他线程的影响</li>
+<li>确保操作的持久化</li>
+<li>不需要保证能够回滚变化</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Locks(锁)</th>
+<th>Latches(闩)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>区分</td>
+<td>用户事务</td>
+<td>线程</td>
+</tr>
+<tr>
+<td>保护</td>
+<td>数据库的内容</td>
+<td>在内存中的数据结构</td>
+</tr>
+<tr>
+<td>期间</td>
+<td>整个事务</td>
+<td>关键部分</td>
+</tr>
+<tr>
+<td>模式</td>
+<td>共享、独占、更新、意图</td>
+<td>读、写</td>
+</tr>
+<tr>
+<td>死锁</td>
+<td>检测 &amp; 分辨</td>
+<td>避开</td>
+</tr>
+<tr>
+<td>通过</td>
+<td>等待，超时，中断</td>
+<td>专业的编码</td>
+</tr>
+<tr>
+<td>保存在</td>
+<td>锁管理器</td>
+<td>被保护的数据结构中</td>
+</tr>
+</tbody>
+</table>
+<p><strong>闩锁模式</strong></p>
+<ul>
+<li>读模式<ul>
+<li>允许多个线程在同一时刻读取同一个项目</li>
+<li>一个线程可以获得读闩锁，当另一个线程也在读模式</li>
+</ul>
+</li>
+<li>写模式<ul>
+<li>只有一个线程允许访问项目</li>
+<li>当宁一个线程获得一把任意模式的闩锁时，一个线程不能获得一把写闩锁</li>
+</ul>
+</li>
+</ul>
+<p><strong>B+树并发控制</strong></p>
+<ul>
+<li>我们希望允许多个线程同时读和更新B+树索引</li>
+<li>我们需要避免两类问题<ul>
+<li>试图同时修改节点内容的多个线程</li>
+<li>一个线程遍历树，另一个线程拆分/合并解节点</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/muti-thr1.png" alt="muti-thr1"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/muti-thr2.png" alt="muti-thr2"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/muti-thr3.png" alt="muti-thr3"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/muti-thr4.png" alt="muti-thr4"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/muti-thr5.png" alt="muti-thr5"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/muti-thr6.png" alt="muti-thr6"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/muti-thr7.png" alt="muti-thr7"></p>
+<ul>
+<li>协议允许多线程同时访问和修改B+树</li>
+<li>基本的idea<ul>
+<li>为父节点获取闩锁</li>
+<li>为子节点获取闩锁</li>
+<li>如果父节点安全，释放闩锁</li>
+</ul>
+</li>
+<li>一个安全的节点是更新时不会拆分或合并的节点<ul>
+<li>没有满（插入操作的时候）</li>
+<li>超过一半满（删除操作的时候）</li>
+</ul>
+</li>
+<li>搜索：从根开始向下，反复<ul>
+<li>为子节点获取读锁</li>
+<li>然后释放父节点的读锁</li>
+</ul>
+</li>
+<li>插入/删除：从根部开始向下，根据需要获得读锁。一旦子节点被锁上，检查它是否安全<ul>
+<li>如果子节点安全，释放祖先节点多有的锁</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch1.png" alt="latch1"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch2.png" alt="latch2"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch3.png" alt="latch3"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch4.png" alt="latch4"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch5.png" alt="latch5"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch6.png" alt="latch6"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch7.png" alt="latch7"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch8.png" alt="latch8"><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch9.png" alt="latch9"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch10.png" alt="latch10"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch11.png" alt="latch11"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch12.png" alt="latch12"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch13.png" alt="latch13"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch14.png" alt="latch14"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch15.png" alt="latch15"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch16.png" alt="latch16"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch17.png" alt="latch17"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch18.png" alt="latch18"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch19.png" alt="latch19"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch20.png" alt="latch20"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch21.png" alt="latch21"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch22.png" alt="latch22"><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch23.png" alt="latch23"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch24.png" alt="latch24"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/latch25.png" alt="latch25"></p>
+<p><strong>思考</strong></p>
+<ul>
+<li>下面这个示例，哪个是第一个针对B+树要执行的更新操作?</li>
+</ul>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/observation1.png" alt="observation1"></p>
+<ul>
+<li>每次在根上执行的写锁操作都会成为高并发的性能瓶颈</li>
+</ul>
+<p><strong>更好的加锁算法</strong></p>
+<ul>
+<li>假设叶节点是安全的</li>
+<li>使用读闩锁抵达到它，并验证它是否安全</li>
+<li>如果叶节点不安全，用读锁执行先前的算法</li>
+</ul>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/better1.png" alt="better1"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/better2.png" alt="better2"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/better3.png" alt="better3"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/better4.png" alt="better4"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/better5.png" alt="better5"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/better6.png" alt="better6"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/better7.png" alt="better7"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/better8.png" alt="better8"></p>
+<ul>
+<li>搜索：和前面的算法一样</li>
+<li><p>插入/删除</p>
+<ul>
+<li>像搜索一样设置闩锁，抵达叶节点，并在叶节点上设置写闩锁</li>
+<li>如果叶节点的操作不安全，释放所有闩锁，然后使用具有写闩锁的插入/删除的协议重新启动线程</li>
+</ul>
+</li>
+<li><p>这种方法乐观的假定只修改叶节点；否则，在第一次传递到叶节点时设置的读锁是浪费的</p>
+</li>
+<li><p>到目前为止，所有示例中的线程都以“从上而下”的方式获得了锁存</p>
+<ul>
+<li>线程只能从低于其当前节点的节点获取闩锁</li>
+<li>如果所需的闩锁不可用，则线程必须等到它可用为止</li>
+<li>但是如果我们想从一个叶节点移动到另一个叶节点呢</li>
+</ul>
+</li>
+</ul>
+<p><strong>叶节点扫描</strong></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/leaf-node-scan1.png" alt="leaf-node-scan1"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/leaf-node-scan2.png" alt="leaf-node-scan2"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/leaf-node-scan3.png" alt="leaf-node-scan3"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/leaf-node-scan4.png" alt="leaf-node-scan4"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/leaf-node-scan5.png" alt="leaf-node-scan5"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/leaf-node-scan6.png" alt="leaf-node-scan6"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/leaf-node-scan7.png" alt="leaf-node-scan7"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/leaf-node-scan8.png" alt="leaf-node-scan8"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/leaf-node-scan9.png" alt="leaf-node-scan9"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/leaf-node-scan10.png" alt="leaf-node-scan10"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/leaf-node-scan11.png" alt="leaf-node-scan11"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/leaf-node-scan12.png" alt="leaf-node-scan12"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/leaf-node-scan13.png" alt="leaf-node-scan13"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/leaf-node-scan14.png" alt="leaf-node-scan14"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/leaf-node-scan15.png" alt="leaf-node-scan15"></p>
+<ul>
+<li>闩锁不支持死锁检测和避免，我们唯一能解决这个问题的方法是通过编码规则</li>
+<li>叶节点同级闩锁采集协议必须支持“无等待”模式，B+树代码必须处理失败的锁存采集</li>
+</ul>
+<p><strong>延迟父节点更新</strong></p>
+<ul>
+<li>每当一个叶子节点溢出时，我们必须至少更新三个节点<ul>
+<li>正在拆分的叶节点</li>
+<li>新创建的叶节点</li>
+<li>父节点</li>
+</ul>
+</li>
+<li>B link - 树优化：当一个叶节点溢出时，延迟父节点的更新操作</li>
+</ul>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/delay-parent1.png" alt="delay-parent1"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/delay-parent2.png" alt="delay-parent2"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/delay-parent3.png" alt="delay-parent3"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/delay-parent4.png" alt="delay-parent4"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/delay-parent5.png" alt="delay-parent5"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/delay-parent6.png" alt="delay-parent6"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/delay-parent7.png" alt="delay-parent7"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/delay-parent8.png" alt="delay-parent8"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/delay-parent9.png" alt="delay-parent9"></p>
+<p><img src="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/delay-parent10.png" alt="delay-parent10"></p>
+<p><strong>结论</strong></p>
+<ul>
+<li>使一个数据结构线程安全似乎很容易理解，但在实践中缺非常困难</li>
+<li>我们关注的是B+树，但同样高级技术叶适用于其他的数据结构</li>
+</ul>
+</div><div class="tags"></div><div class="post-nav"><a class="next" href="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/">CMU-DBMS-COURSE-08-NOTES</a></div><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' == true ? true : false;
+var verify = 'false' == true ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'ILqOzWM8jrm21Dhs5Ernxczi-gzGzoHsz',
+  appKey:'7sChUpdXujjsSpdpukXYva9P',
+  placeholder:'ヾﾉ≧∀≦)o 来互相伤害吧！',
+  avatar:'mm',
+  guest_info:guest_info,
+  pageSize:'10'
+})</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/6-824视频/" style="font-size: 15px;">6.824视频</a> <a href="/tags/分布式系统6-824笔记/" style="font-size: 15px;">分布式系统6.824笔记</a> <a href="/tags/movies/" style="font-size: 15px;">movies</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/">CMU-DBMS-COURSE-09-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/">CMU-DBMS-COURSE-08-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/07/CMU-DBMS-COURSE-07-NOTES/">CMU-DBMS-COURSE-07-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/">CMU-DBMS-COURSE-06-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/06/CMU-DBMS-COURSE-05-NOTES/">CMU-DBMS-COURSE-05-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/06/CMU-DBMS-COURSE-04-NOTES/">CMU-DBMS-COURSE-04-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/06/CMU-DBMS-COURSE-03-NOTES/">CMU-DBMS-COURSE-03-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/31/grpc使用/">grpc使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/15/C-编程思想笔记/">C++编程思想笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/10/迦百农/">迦百农</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

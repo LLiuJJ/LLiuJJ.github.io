@@ -1,0 +1,197 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>CMU-DBMS-COURSE-08-NOTES | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">CMU-DBMS-COURSE-08-NOTES</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a href="/MIT-6-824/"><i class="fa fa-search"> MIT-6-824</i></a><a href="/LINUX/"><i class="fa fa-book"> LINUX</i></a><a href="/MOVIES/"><i class="fa fa-photo"> MOVIES</i></a><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">CMU-DBMS-COURSE-08-NOTES</h1><div class="post-meta">Apr 11, 2019</div><a class="disqus-comment-count" href="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/#vcomment"><span class="valine-comment-count" data-xid="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/"></span><span> 条评论</span></a><div class="post-content"><p><strong>隐式索引</strong></p>
+<ul>
+<li>大多数DBMS自动创建一个索引来确保完整性约束<ul>
+<li>主键</li>
+<li>唯一约束</li>
+<li>外键</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/implicit-index1.png" alt="implicit-index1"></p>
+<p><strong>部分索引</strong></p>
+<ul>
+<li>在整个表的子集上创建索引。这可能会减少它的大小和维护它的开销。</li>
+</ul>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/partial-index1.png" alt="partial-index1"></p>
+<p><strong>覆盖式索引</strong></p>
+<ul>
+<li>如果处理查询所需的所有字段都在索引中可用，那么DBMS不需要检索元组</li>
+<li>这就减少了对DBMS缓冲池的争用</li>
+</ul>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/covering-index1.png" alt="covering-index1"></p>
+<p><strong>索引包含列</strong></p>
+<ul>
+<li>在索引中嵌入其他列以支持仅索引查询，不是搜索键的一部分。</li>
+</ul>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/index-include1.png" alt="index-include1"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/index-include2.png" alt="index-include2"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/index-include3.png" alt="index-include3"></p>
+<p><strong>函数/表达式索引</strong></p>
+<ul>
+<li>索引不需要以它们在基表中出现的方式存储键</li>
+<li>声明索引时可以使用表达式</li>
+</ul>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/functional-index1.png" alt="functional-index1"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/functional-index2.png" alt="functional-index2"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/functional-index3.png" alt="functional-index3"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/functional-index4.png" alt="functional-index4"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/functional-index5.png" alt="functional-index5"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/functional-index6.png" alt="functional-index6"></p>
+<p><strong>实现动态顺序索引的最简单的方法是使用已排序的链接列表</strong></p>
+<ul>
+<li><p>所有操作都是线性的搜索，平均开销O(N)</p>
+</li>
+<li><p>优化的方案</p>
+</li>
+</ul>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/observation1.png" alt="observation1"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/observation2.png" alt="observation2"></p>
+<p><strong>跳跃列表</strong></p>
+<ul>
+<li>具有跳过中间节点的额外指针的多级链接列表</li>
+<li><p>在不需要全局重新平衡的情况下，按排序顺序维护keys</p>
+</li>
+<li><p>不同级别的列表集合</p>
+<ul>
+<li>最低级别是所有键的已排序、单独链接的列表</li>
+<li>第二级每隔一个键连接</li>
+<li>第三级隔4个键连接</li>
+<li>一般来说，一个级别下面有一半的键</li>
+</ul>
+</li>
+<li>要插入新的密钥，翻转coin以决定添加新密钥的级别。提供大致O(log n)搜索时间</li>
+</ul>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list1.png" alt="skip-list1"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list2.png" alt="skip-list2"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list3.png" alt="skip-list3"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list4.png" alt="skip-list4"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list5.png" alt="skip-list5"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list6.png" alt="skip-list6"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list7.png" alt="skip-list7"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list8.png" alt="skip-list8"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list9.png" alt="skip-list9"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list10.png" alt="skip-list10"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list11.png" alt="skip-list11"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list12.png" alt="skip-list12"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list13.png" alt="skip-list13"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list14.png" alt="skip-list14"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list15.png" alt="skip-list15"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list16.png" alt="skip-list16"></p>
+<p><strong>跳跃链表删除操作</strong></p>
+<ul>
+<li>首先，通过设置一个标志告诉线程忽略，从索引中逻辑地删除一个键</li>
+<li>一旦我们知道没有其他线程持有此引用，就可以物理地删除该键</li>
+</ul>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list17.png" alt="skip-list17"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list18.png" alt="skip-list18"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list19.png" alt="skip-list19"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list20.png" alt="skip-list20"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list21.png" alt="skip-list21"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/skip-list22.png" alt="skip-list22"></p>
+<ul>
+<li>跳表优点<ul>
+<li>如果不包含反向指针，则使用的内存比典型的B+树少</li>
+<li>插入和删除不需要重新平衡</li>
+</ul>
+</li>
+<li>跳表缺点<ul>
+<li>对磁盘缓存支持不友好，因为它们不优化引用的位置</li>
+<li>反向搜索是很重要的</li>
+</ul>
+</li>
+</ul>
+<p><strong>基数树 R-Tree</strong></p>
+<ul>
+<li>将键表示伟单个数字的组合。这允许线程逐个检查前缀，而不是比较整个密钥<ul>
+<li>树的高度取决于key的长度</li>
+<li>不需要重新平衡</li>
+<li>叶节点的路径表示叶节点的键</li>
+<li>key是隐式存储的，可以从路径中重建</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/r-tree1.png" alt="r-tree1"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/r-tree2.png" alt="r-tree2"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/r-tree3.png" alt="r-tree3"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/r-tree4.png" alt="r-tree4"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/r-tree5.png" alt="r-tree5"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/r-tree6.png" alt="r-tree6"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/r-tree7.png" alt="r-tree7"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/r-tree8.png" alt="r-tree8"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/r-tree9.png" alt="r-tree9"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/r-tree10.png" alt="r-tree10"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/r-tree11.png" alt="r-tree11"></p>
+<p><strong>基数树-二进制可比较的键</strong></p>
+<ul>
+<li>并非所有属性类型都可以分解为基数树的二进制可比数字<ul>
+<li>Unsigned Intehers：对于小端机器，字节顺序必须翻转</li>
+<li>Signed Integers：翻转两个补码，使负数小于正数</li>
+<li>Floats：分类为组(负与正，规范化与非规范化)，然后存储为无符号整数</li>
+<li>Compound：分别变换每个属性</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/r-tree-bck1.png" alt="r-tree-bck1"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/r-tree-bck2.png" alt="r-tree-bck2"></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/r-tree-bck3.png" alt="r-tree-bck3"></p>
+<p><strong>内存表索引性能比较</strong></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/in-mem-index1.png" alt="in-mem-index1"></p>
+<p><strong>思考</strong></p>
+<ul>
+<li>到目前为止，我们讨论过的树索引对于“点”和“范围”查询很有用<ul>
+<li>查找15217邮政编码中的所有客户</li>
+<li>查找2018年6月至2018年9月之间的所有订单</li>
+</ul>
+</li>
+<li>它们不擅长关键词搜索<ul>
+<li>查找包含“pavlo”一词的所有维基百科文章</li>
+</ul>
+</li>
+</ul>
+<p><strong>维基百科查询例子</strong></p>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/wikipadia-example1.png" alt="wikipadia-example1"></p>
+<ul>
+<li>下面操作并不会帮助到我们的查询</li>
+</ul>
+<p><img src="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/wikipadia-example2.png" alt="wikipadia-example2"></p>
+<p><strong>倒排索引</strong></p>
+<ul>
+<li>倒排索引将单词映射到目标属性中包含这些单词的记录<ul>
+<li>有时称为全文搜索索引</li>
+</ul>
+</li>
+<li>支持这个特性的主要数据库有：Solr，elastic search, Sphinx</li>
+</ul>
+<p><strong>查询类型</strong></p>
+<ul>
+<li>词组搜索<ul>
+<li>查找按给定顺序包含单词列表的记录</li>
+</ul>
+</li>
+<li>临近搜索<ul>
+<li>查找两个单词出现在彼此n个单词内的记录</li>
+</ul>
+</li>
+<li>通配符搜索<ul>
+<li>查找包含符合某种模式的单词的记录</li>
+</ul>
+</li>
+</ul>
+</div><div class="tags"></div><div class="post-nav"><a class="pre" href="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/">CMU-DBMS-COURSE-09-NOTES</a><a class="next" href="/2019/04/07/CMU-DBMS-COURSE-07-NOTES/">CMU-DBMS-COURSE-07-NOTES</a></div><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' == true ? true : false;
+var verify = 'false' == true ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'ILqOzWM8jrm21Dhs5Ernxczi-gzGzoHsz',
+  appKey:'7sChUpdXujjsSpdpukXYva9P',
+  placeholder:'ヾﾉ≧∀≦)o 来互相伤害吧！',
+  avatar:'mm',
+  guest_info:guest_info,
+  pageSize:'10'
+})</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/6-824视频/" style="font-size: 15px;">6.824视频</a> <a href="/tags/分布式系统6-824笔记/" style="font-size: 15px;">分布式系统6.824笔记</a> <a href="/tags/movies/" style="font-size: 15px;">movies</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/">CMU-DBMS-COURSE-09-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/11/CMU-DBMS-COURSE-08-NOTES/">CMU-DBMS-COURSE-08-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/07/CMU-DBMS-COURSE-07-NOTES/">CMU-DBMS-COURSE-07-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/">CMU-DBMS-COURSE-06-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/06/CMU-DBMS-COURSE-05-NOTES/">CMU-DBMS-COURSE-05-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/06/CMU-DBMS-COURSE-04-NOTES/">CMU-DBMS-COURSE-04-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/06/CMU-DBMS-COURSE-03-NOTES/">CMU-DBMS-COURSE-03-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/31/grpc使用/">grpc使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/15/C-编程思想笔记/">C++编程思想笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/10/迦百农/">迦百农</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
