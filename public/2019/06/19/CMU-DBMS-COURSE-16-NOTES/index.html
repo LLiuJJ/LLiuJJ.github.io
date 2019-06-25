@@ -1,0 +1,107 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>CMU-DBMS-COURSE-16-NOTES | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">CMU-DBMS-COURSE-16-NOTES</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a href="/MIT-6-824/"><i class="fa fa-search"> MIT-6-824</i></a><a href="/LINUX/"><i class="fa fa-book"> LINUX</i></a><a href="/MOVIES/"><i class="fa fa-photo"> MOVIES</i></a><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">CMU-DBMS-COURSE-16-NOTES</h1><div class="post-meta">Jun 19, 2019</div><a class="disqus-comment-count" href="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/#vcomment"><span class="valine-comment-count" data-xid="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/"></span><span> 条评论</span></a><div class="post-content"><h5 id="Semester-学期-status"><a href="#Semester-学期-status" class="headerlink" title="Semester(学期) status"></a>Semester(学期) status</h5><p>A DBMS’s concurrency control and recovery components permeate(渗透) throughout the design of its entire architecture.</p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/Status.png" alt="Status"></p>
+<h5 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h5><p>We both change the same record in a table at the same time.</p>
+<p>How to avoid race(竞争) condition? (Lost Updates Concurrency Control)</p>
+<p>You transfer $100 between bank accounts but there is a power failure.</p>
+<p>What is the correct database state? (Durability Recovery)</p>
+<h5 id="Concurrency-control-amp-recovery"><a href="#Concurrency-control-amp-recovery" class="headerlink" title="Concurrency control &amp; recovery"></a>Concurrency control &amp; recovery</h5><p>Valuable properties of DBMSs (DBMS的重要特性)</p>
+<p>Based on concept of transactions with ACID properties.</p>
+<h5 id="Transactions"><a href="#Transactions" class="headerlink" title="Transactions"></a>Transactions</h5><p>A transaction is the execution of a sequence of one or more operations (e.g., SQL queries) on a shared database to perform some higher-level function.</p>
+<p>It is the basic unit of change in DBMS</p>
+<p><strong>Example</strong></p>
+<p>Move $100 from Andy’ bank account to his bookie’s account.</p>
+<p>Transaction:</p>
+<ul>
+<li><p>Check whether Andy has $100.</p>
+</li>
+<li><p>Deduct $100 from his account.</p>
+</li>
+<li><p>Add $100 to his bookie’s account.</p>
+</li>
+</ul>
+<h5 id="Strawman-System"><a href="#Strawman-System" class="headerlink" title="Strawman System"></a>Strawman System</h5><p>Execute each txn one-by-one(i.e., serial order) as they arrive at the DBMS.</p>
+<ul>
+<li>One and only one txn can be running at the same time in the DBMS.</li>
+</ul>
+<p>Before a txn starts, copy the entire database to a new file and make all changes to that file.</p>
+<ul>
+<li>If the txn completes successfully, overwrite the original file with the new one.</li>
+<li>If the txn fails, just remove the dirty copy.</li>
+</ul>
+<h5 id="Definitions"><a href="#Definitions" class="headerlink" title="Definitions"></a>Definitions</h5><p>A txn may carry out many operations on the data retrieved from the database</p>
+<p>However, the DBMS is only concerned about what data is read/written from/to the database.</p>
+<ul>
+<li>Changes to the “outside world” are beyond the scope of the DBMS.</li>
+</ul>
+<h5 id="Formal-Definitions"><a href="#Formal-Definitions" class="headerlink" title="Formal Definitions"></a>Formal Definitions</h5><p>Database: A fixed set of named data objects(e.g., A,B,C,…)</p>
+<ul>
+<li>We do not need to define what these objects are now</li>
+</ul>
+<p>Transaction: A sequence of read and write operations(R(A), W(B), …)</p>
+<ul>
+<li>DBMS’s abstract view of a user program</li>
+</ul>
+<h5 id="Transactions-in-SQL"><a href="#Transactions-in-SQL" class="headerlink" title="Transactions in SQL"></a>Transactions in SQL</h5><p>A new txn starts with the BEGIN command.</p>
+<p>The txn stops with either COMMIT or ABORT:</p>
+<ul>
+<li>If commit, all changes are saved.</li>
+<li>If abort, all changes are undone so that it’s like as if the txn never executed at all.</li>
+<li>Abort can be either self-inflicted or caused by the DBMS.</li>
+</ul>
+<h5 id="Correnctness-criteria-ACID"><a href="#Correnctness-criteria-ACID" class="headerlink" title="Correnctness criteria: ACID"></a>Correnctness criteria: ACID</h5><p><strong>Atomicity:</strong> All actions in the txn happen, or none happen.</p>
+<p><strong>Consistency:</strong> If each txn is consistent and the DB starts consistent, then it ends up consistent.</p>
+<p><strong>Isolation:</strong> Execution of one txn is isolated from that of other txns.</p>
+<p><strong>Durability:</strong> If a txn commits, its effects persist.</p>
+<h5 id="Atomicity-of-transactions"><a href="#Atomicity-of-transactions" class="headerlink" title="Atomicity of transactions"></a>Atomicity of transactions</h5><p>Two possible outcomes of executing a txn:</p>
+<ul>
+<li>Commit after completing all its actions.</li>
+<li>Abort(or be aborted by the DBMS) after executing some actions.</li>
+</ul>
+<p>DBMS guarantees that txns are atomic.</p>
+<ul>
+<li>From user’s point of view: txn always either executes all its actions, or executes no actions at all.</li>
+</ul>
+<p>We take $100 out of Andy’s account but then there is a power failure before we transfer it to his bookie.</p>
+<p><em>When the database comes back on-line, what should be the correct state of Andy’s account?</em></p>
+<h5 id="Mechanisms-机制-for-ensuring-atomicity"><a href="#Mechanisms-机制-for-ensuring-atomicity" class="headerlink" title="Mechanisms(机制) for ensuring atomicity"></a>Mechanisms(机制) for ensuring atomicity</h5><p><strong>Approach #1: Logging</strong></p>
+<ul>
+<li>DBMS logs all actions so that it can undo the actions of aborted transactions.</li>
+<li>Think of the like the black box in airplanes…</li>
+</ul>
+<p>Logging used by all modern systems.</p>
+<ul>
+<li>Audit Trail(审计跟踪) &amp; Efficiency Reasons</li>
+</ul>
+<p><strong>Approach #2: Shadow Paging</strong></p>
+<ul>
+<li>DBMS makes copies of pages and txns make changes to those copies. Only when the txn commits it the page made visible to others.</li>
+<li>Originally from System R.</li>
+</ul>
+<p>Few systems do this:</p>
+<ul>
+<li>CouchDB</li>
+<li>LMDB(OpenLDAP)</li>
+</ul>
+<h5 id="Consistency"><a href="#Consistency" class="headerlink" title="Consistency"></a>Consistency</h5><p>The “world” represented by the database is logically correct. All questions asked about the data are given logically correct answers.</p>
+<h5 id="Database-consistency"><a href="#Database-consistency" class="headerlink" title="Database consistency"></a>Database consistency</h5><p>The database accurately models the real world and follows integrity(完整性) constraints.</p>
+<p>Transactions in the future see the effects of transactions committed in the past inside of the database.</p>
+<h5 id="Transaction-consistency"><a href="#Transaction-consistency" class="headerlink" title="Transaction consistency"></a>Transaction consistency</h5><p>If the database is consistent before the transaction starts(running alone), it will also be consistent after.</p>
+<p>Transaction consistency is the application’s responsibility.</p>
+</div><div class="tags"><a href="/tags/Concurrency-control-theory/">Concurrency control theory</a></div><div class="post-nav"><a class="pre" href="/2019/06/19/CMU-DBMS-COURSE-17-NOTES/">CMU-DBMS-COURSE-17-NOTES</a><a class="next" href="/2019/06/19/CMU-DBMS-COURSE-15-NOTES/">CMU-DBMS-COURSE-15-NOTES</a></div><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' == true ? true : false;
+var verify = 'false' == true ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'ILqOzWM8jrm21Dhs5Ernxczi-gzGzoHsz',
+  appKey:'7sChUpdXujjsSpdpukXYva9P',
+  placeholder:'ヾﾉ≧∀≦)o 来互相伤害吧！',
+  avatar:'mm',
+  guest_info:guest_info,
+  pageSize:'10'
+})</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Join-Algorithms/" style="font-size: 15px;">Join Algorithms</a> <a href="/tags/Parallel-Execution/" style="font-size: 15px;">Parallel Execution</a> <a href="/tags/Concurrency-control-theory/" style="font-size: 15px;">Concurrency control theory</a> <a href="/tags/6-824视频/" style="font-size: 15px;">6.824视频</a> <a href="/tags/分布式系统6-824笔记/" style="font-size: 15px;">分布式系统6.824笔记</a> <a href="/tags/movies/" style="font-size: 15px;">movies</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-17-NOTES/">CMU-DBMS-COURSE-17-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/">CMU-DBMS-COURSE-16-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-15-NOTES/">CMU-DBMS-COURSE-15-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/">CMU-DBMS-COURSE-14-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/">CMU-DBMS-COURSE-13-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/10/Google-Spanner-Paper/">Google-Spanner-Paper</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/">CMU-DBMS-COURSE-12-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/">CMU-DBMS-COURSE-11-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/">CMU-DBMS-COURSE-10-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/">CMU-DBMS-COURSE-09-NOTES</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

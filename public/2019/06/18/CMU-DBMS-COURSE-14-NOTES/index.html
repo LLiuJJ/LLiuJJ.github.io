@@ -1,0 +1,167 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>CMU-DBMS-COURSE-14-NOTES | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">CMU-DBMS-COURSE-14-NOTES</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a href="/MIT-6-824/"><i class="fa fa-search"> MIT-6-824</i></a><a href="/LINUX/"><i class="fa fa-book"> LINUX</i></a><a href="/MOVIES/"><i class="fa fa-photo"> MOVIES</i></a><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">CMU-DBMS-COURSE-14-NOTES</h1><div class="post-meta">Jun 18, 2019</div><a class="disqus-comment-count" href="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/#vcomment"><span class="valine-comment-count" data-xid="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/"></span><span> 条评论</span></a><div class="post-content"><h5 id="Parallel-VS-distributed"><a href="#Parallel-VS-distributed" class="headerlink" title="Parallel VS distributed"></a>Parallel VS distributed</h5><p>Database is spread out(分散) across multiple resources to improve parallelism.</p>
+<p>Appears as a single database instance to the application.</p>
+<ul>
+<li>SQL query for a single-node DBMS should generate same result on a parallel or distributed DBMS.</li>
+</ul>
+<p><strong>Parallel DBMSs</strong></p>
+<ul>
+<li>Nodes are physically close to each other.</li>
+<li>Nodes connected with high-speed LAN.</li>
+<li>Communication cost is assumed to be small.</li>
+</ul>
+<p><strong>Distributed DBMSs</strong></p>
+<ul>
+<li>Nodes can be far from each other.</li>
+<li>Nodes connected using public network.</li>
+<li>Communication cost and problems cannot be ignored.</li>
+</ul>
+<h5 id="Inter-vs-Intra-query-parallelism-查询间并行，查询内并行"><a href="#Inter-vs-Intra-query-parallelism-查询间并行，查询内并行" class="headerlink" title="Inter- vs. Intra-query parallelism(查询间并行，查询内并行)"></a>Inter- vs. Intra-query parallelism(查询间并行，查询内并行)</h5><p><strong>Inter-Query</strong>  Different queries are executed concurrently.</p>
+<p>Increases throughput &amp; reduces latency.</p>
+<p><strong>Intra-Query</strong> Execute the operations of a single query in parallel.</p>
+<p>Decreases latency for long-running queries.</p>
+<p>A DBMS’s process model defines how the system in architected to support concurrent requests from a multi-user application.</p>
+<p>A worker is the DBMS component that is responsible for executing tasks on behalf of the client and returning the results.</p>
+<h5 id="Process-per-worker"><a href="#Process-per-worker" class="headerlink" title="Process per worker"></a>Process per worker</h5><p>Each worker is a separate OS process.</p>
+<ul>
+<li>Relies on OS scheduler.</li>
+<li>Use shared-memory for global data structures.</li>
+<li>A process crash doesn’t take down entire system.</li>
+<li>Examples: IBM DB2, Postgres, Oracle</li>
+</ul>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/PROCESS-PER-WORKER.png" alt="PROCESS-PER-WORKER"></p>
+<h5 id="Process-pool"><a href="#Process-pool" class="headerlink" title="Process pool"></a>Process pool</h5><p>A worker uses any process that is free in a pool </p>
+<ul>
+<li>Still relies on OS scheduler and shared memory.</li>
+<li>Bad for CPU cache locality.</li>
+<li>Example: IBM DB2, Postgres</li>
+</ul>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/PROCESS-POOL.png" alt="PROCESS-POOL"></p>
+<h5 id="Thread-per-worker"><a href="#Thread-per-worker" class="headerlink" title="Thread per worker"></a>Thread per worker</h5><p>Single process with multiple worker threads.</p>
+<ul>
+<li>DBMS has to manage its own scheduling.</li>
+<li>May or may not use a dispatcher thread.</li>
+<li>Thread crash(may) kill the entire system.</li>
+<li>Example: IBM DB2, MSSQL, MySQL, Oracle (2014)</li>
+</ul>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/THREAD-PER-WORKER.png" alt="THREAD-PER-WORKER"></p>
+<h5 id="Process-models"><a href="#Process-models" class="headerlink" title="Process models"></a>Process models</h5><p>Using a multi-threaded architecture has several advantages:</p>
+<ul>
+<li><p>Less overhead per context switch</p>
+</li>
+<li><p>Don’t have to manage shared memory</p>
+</li>
+</ul>
+<p>The thread per worker model does not  mean that you have intra-query parallelism.</p>
+<p>I am not aware of any new DBMS built in the last 10 years that doesn’t use threads.</p>
+<h5 id="Scheduling"><a href="#Scheduling" class="headerlink" title="Scheduling"></a>Scheduling</h5><p>For each query plan, the DBMS has to decide where, when, and how to execute it.</p>
+<ul>
+<li>How many tasks should it use?</li>
+<li>How many CPU cores should it use?</li>
+<li>What CPU core should the tasks execute on?</li>
+<li>Where should a task store its output?</li>
+</ul>
+<p>The DBMS always knows more than the OS.</p>
+<h5 id="Inter-query-parallelism"><a href="#Inter-query-parallelism" class="headerlink" title="Inter-query parallelism"></a>Inter-query parallelism</h5><p>Improve overall performance by allowing multiple queries to execute simultaneously(同时的).</p>
+<p>If queries are read-only, then this requires little coordination(协调) between queries.</p>
+<p>If queries are updating the database at the same time, then this is hard to fo this correctly.</p>
+<ul>
+<li>Need to provide the illusion(假象) of isolation</li>
+</ul>
+<p>Improve the performance of a single query by executing its operators in parallel</p>
+<p>There are parallel algorithms for every relational operator.</p>
+<p><strong>Approach #1: Intra-Operator(Horizontal-水平)</strong></p>
+<ul>
+<li>Operators are decomposed(分解) into independent instances that perform(执行) the same function on different subsets of data.</li>
+</ul>
+<p>The DBMS inserts an exchange operator into the query plan to coalesce(合并) results from children operators.</p>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/INTRA-OPERATOR-H-1.png" alt="INTRA-OPERATOR-H-1"></p>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/INTRA-OPERATOR-H-2.png" alt="INTRA-OPERATOR-H-2"></p>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/INTRA-OPERATOR-H-3.png" alt="INTRA-OPERATOR-H-3"></p>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/INTRA-OPERATOR-H-4.png" alt="INTRA-OPERATOR-H-4"></p>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/INTRA-OPERATOR-H-5.png" alt="INTRA-OPERATOR-H-5"></p>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/INTRA-OPERATOR-H-6.png" alt="INTRA-OPERATOR-H-6"></p>
+<p><strong>Approach #2: Inter-Operator(Vertical-垂直)</strong></p>
+<ul>
+<li>Operations are overlapped(重叠的) in order to pipeline data from one stage to the next without materialization(实现)，It also called pipelined parallelism</li>
+</ul>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/INTER-OPERATOR-V-1.png" alt="INTER-OPERATOR-V-1"></p>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/INTER-OPERATOR-V-2.png" alt="INTER-OPERATOR-V-2"></p>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/INTER-OPERATOR-V-3.png" alt="INTER-OPERATOR-V-3"></p>
+<p>AFAIK(据我所知), this approach is not widely used in traditional relational DBMSs.</p>
+<ul>
+<li>Not all operators can emit output until they have seen all of the tuples from their children</li>
+</ul>
+<p>This is more common in stream processing systems</p>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/stream.png" alt="stream"></p>
+<p>Using additional processes/threads to execute queries in parallel won’t help help if the disk is always the main bottleneck(瓶颈)</p>
+<ul>
+<li>Can actually make things worse if each worker is reading different segments of disk</li>
+</ul>
+<h5 id="I-O-Parallelism"><a href="#I-O-Parallelism" class="headerlink" title="I/O Parallelism"></a>I/O Parallelism</h5><p>Split the DBMS installation across multiple storage devices</p>
+<ul>
+<li>Multiple Disk per Database</li>
+<li>One Database per Disk</li>
+<li>One Relation per Disk</li>
+<li>Split Relation across Multiple Disks</li>
+</ul>
+<h5 id="Multi-disk-parallelism"><a href="#Multi-disk-parallelism" class="headerlink" title="Multi-disk parallelism"></a>Multi-disk parallelism</h5><p>Configure OS/hardware to store the DBMS’s files across multiple storage devices.</p>
+<ul>
+<li>Storage Appliances</li>
+<li>RAID Configuration</li>
+<li>This is transparent(透明的) to the DBMS</li>
+</ul>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/MULTI-DISK-PARALLELISM.png" alt="MULTI-DISK-PARALLELISM"></p>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/RAID-1-Mirroring.png" alt="RAID-1-Mirroring"></p>
+<h5 id="DataBase-partitioning"><a href="#DataBase-partitioning" class="headerlink" title="DataBase partitioning"></a>DataBase partitioning</h5><p>Some DBMSs allow you specify the disk location of each individual（独立的） database.</p>
+<ul>
+<li>The buffer pool manager maps a page to a disk location</li>
+</ul>
+<p>This is also easy to do at the filesystem level if the DBMS stores each database in a separate directory.</p>
+<ul>
+<li>The log file might be shared though</li>
+</ul>
+<p>Split single logical table into disjoint(不相交的) physical segments that are stored/managed separately(单独的).</p>
+<p>Ideally partitioning is transparent to the application.</p>
+<ul>
+<li>The application  accesses logical tables and doesn’t care how things are stored.</li>
+<li>Not always true.</li>
+</ul>
+<h5 id="Vertical-垂直-partitioning"><a href="#Vertical-垂直-partitioning" class="headerlink" title="Vertical(垂直) partitioning"></a>Vertical(垂直) partitioning</h5><p>Store a table’s attributes in a separate location(e.g, file, disk volume)</p>
+<p>Have to store tuple information to reconstruct(重建) the original record</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE foo (</span><br><span class="line">attr1 INT,</span><br><span class="line">attr2 INT,</span><br><span class="line">attr3 INT,</span><br><span class="line">attr4 TEXT</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/VERTICAL-PARTITIONING.png" alt="VERTICAL-PARTITIONING"></p>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/VERTICAL-PARTITIONING-2.png" alt="VERTICAL-PARTITIONING-2"></p>
+<h5 id="Horizontal-partitioning"><a href="#Horizontal-partitioning" class="headerlink" title="Horizontal partitioning"></a>Horizontal partitioning</h5><p>Divide the tuples of a table up into disjoint segments based on some partitioning key</p>
+<ul>
+<li>Hash Partitioning</li>
+<li>Range Partitioning</li>
+<li>Predicate(谓词) Partitioning</li>
+</ul>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/HORIZONTAL-PARTITIONING-1.png" alt="HORIZONTAL-PARTITIONING-1"></p>
+<p><img src="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/HORIZONTAL-PARTITIONING-2.png" alt="HORIZONTAL-PARTITIONING-2"></p>
+<p>Parallel execution is important (Almost) every DBMS support this.</p>
+<p>This is really hard to get right.</p>
+<ul>
+<li>Coordination Overhead（协调开销）</li>
+<li>Scheduling </li>
+<li>Concurrency Issues</li>
+<li>Resource Contention</li>
+</ul>
+</div><div class="tags"><a href="/tags/Parallel-Execution/">Parallel Execution</a></div><div class="post-nav"><a class="pre" href="/2019/06/19/CMU-DBMS-COURSE-15-NOTES/">CMU-DBMS-COURSE-15-NOTES</a><a class="next" href="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/">CMU-DBMS-COURSE-13-NOTES</a></div><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' == true ? true : false;
+var verify = 'false' == true ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'ILqOzWM8jrm21Dhs5Ernxczi-gzGzoHsz',
+  appKey:'7sChUpdXujjsSpdpukXYva9P',
+  placeholder:'ヾﾉ≧∀≦)o 来互相伤害吧！',
+  avatar:'mm',
+  guest_info:guest_info,
+  pageSize:'10'
+})</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Join-Algorithms/" style="font-size: 15px;">Join Algorithms</a> <a href="/tags/Parallel-Execution/" style="font-size: 15px;">Parallel Execution</a> <a href="/tags/Concurrency-control-theory/" style="font-size: 15px;">Concurrency control theory</a> <a href="/tags/6-824视频/" style="font-size: 15px;">6.824视频</a> <a href="/tags/分布式系统6-824笔记/" style="font-size: 15px;">分布式系统6.824笔记</a> <a href="/tags/movies/" style="font-size: 15px;">movies</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-17-NOTES/">CMU-DBMS-COURSE-17-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/">CMU-DBMS-COURSE-16-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-15-NOTES/">CMU-DBMS-COURSE-15-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/">CMU-DBMS-COURSE-14-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/">CMU-DBMS-COURSE-13-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/10/Google-Spanner-Paper/">Google-Spanner-Paper</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/">CMU-DBMS-COURSE-12-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/">CMU-DBMS-COURSE-11-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/">CMU-DBMS-COURSE-10-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/">CMU-DBMS-COURSE-09-NOTES</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
