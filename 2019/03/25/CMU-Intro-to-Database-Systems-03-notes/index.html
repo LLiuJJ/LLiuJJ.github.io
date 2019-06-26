@@ -1,0 +1,225 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>CMU-Intro-to-Database-Systems-03-notes | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">CMU-Intro-to-Database-Systems-03-notes</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a href="/MIT-6-824/"><i class="fa fa-search"> MIT-6-824</i></a><a href="/LINUX/"><i class="fa fa-book"> LINUX</i></a><a href="/MOVIES/"><i class="fa fa-photo"> MOVIES</i></a><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">CMU-Intro-to-Database-Systems-03-notes</h1><div class="post-meta">Mar 25, 2019</div><a class="disqus-comment-count" href="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/#vcomment"><span class="valine-comment-count" data-xid="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/"></span><span> 条评论</span></a><div class="post-content"><p><strong>存储器架构</strong></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/StorageHierarchy.png" alt="StorageHierarchy"></p>
+<ul>
+<li>存储器根据其存储特性可以分为多层，上层存储器容量小，运行速度快。</li>
+<li>寄存器，CPU缓存，DRAM是易失性存储，一旦断电，存储数据将丢失。</li>
+<li><p>SSD，HDD等是非易失性存储，断电数据仍然保留。</p>
+</li>
+<li><p>Non-Volatile Memory(NVM) 是位于分界线上的一种存储，它有着比SSD更高的性能，并能提供持久化存储。</p>
+</li>
+</ul>
+<p><strong>访问这些存储器的时延</strong></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/ACCESSTIMES.png" alt="ACCESSTIMES"></p>
+<p><strong>数据库设计的目标</strong></p>
+<ul>
+<li>允许DBMS去管理超过可用内存大小的存储量。</li>
+<li>读写磁盘的开销是很大的，所以必须要谨慎管理磁盘，避免出现性能下降。</li>
+</ul>
+<p><strong>顺序和随机访问的区别</strong></p>
+<ul>
+<li>随机访问HDD要比顺序访问慢很多。</li>
+<li>传统的数据库管理系统都是以最大化顺序访问为准则的。</li>
+<li>算法尝试减少写入随机页面的次数，将数据存在连续的块中。</li>
+</ul>
+<p><strong>mmap</strong></p>
+<ul>
+<li>可以使用mmap映射一个文件的内容到一个进程的地址空间</li>
+<li>操作系统的责任是将文件的页换入换出内存</li>
+</ul>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/mmap1.png" alt="mmap1"></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/mmap2.png" alt="mmap2"></p>
+<p><strong>为什么不使用操作系统的调用管理文件？</strong></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/mmap3.png" alt="mmap3"></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/mmap4.png" alt="mmap4"></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/mmap5.png" alt="mmap5"></p>
+<ul>
+<li>如果我们允许多个线程访问mmap文件去隐藏缺页错误呢？</li>
+<li><p>这对只读的请求是正常工作的，但是当面对多个写请求的时候情况就复杂了。</p>
+</li>
+<li><p>madvise：告诉操作系统，你期待怎么样去读某些页面？</p>
+</li>
+<li>mlock：告诉操作系统一定范围内的内存不能被还出</li>
+<li>msync：告诉操作系统把内存的一定范围页面刷如磁盘</li>
+</ul>
+<hr>
+<p><strong>DBMS做的一些事情</strong></p>
+<ul>
+<li>以正确的顺序将脏页面写回磁盘</li>
+<li>专业的预读</li>
+<li>缓冲区的替换策略</li>
+<li>线程/进程调度</li>
+</ul>
+<p><strong>DBMS关注的两个问题</strong></p>
+<ul>
+<li>DBMS如何在磁盘文件中表示数据库？</li>
+<li>DBMS如何管理内存和磁盘之间来回的移动数据？</li>
+</ul>
+<p><strong>文件存储</strong></p>
+<ul>
+<li><p>DBMS在一个或者多个磁盘文件中存储数据</p>
+</li>
+<li><p>存储管理器(storage manager)的责任是管理数据库文件，它将文件组织成页集合的形式，跟踪读写到页面的数据，跟踪可用的存储空间</p>
+</li>
+</ul>
+<p><strong>数据库页面</strong></p>
+<ul>
+<li>一个页面是固定大小的数据块，它可以包括元组(tuples)，元数据(meta-data)，索引(indexes)，日志记录(log records)</li>
+<li>大多数系统不回混合页面类型</li>
+<li>有些系统需要一个独立的页面</li>
+<li>每个页面都有一个唯一的标识符，DBMS使用一个间接层将页ID映射到实际的物理存储位置</li>
+<li>对于数据库系统中的页，有三种不同的概念：硬件页(Hardware Page)通常是4KB；操作系统页(OS Page)通常是4KB；数据库页面(Database Page)1-16KB</li>
+</ul>
+<p><strong>常见数据库页面大小</strong></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/pages.png" alt="pages"></p>
+<p><strong>页面存储架构</strong></p>
+<ul>
+<li>不同的DBMSs用不同的方式管理磁盘上面的页<ul>
+<li>堆文件组织(Heap File Organization)</li>
+<li>顺序/排序文件组织(Sequential/Sorted File Organization)</li>
+<li>哈希文件组织(Hash File Organization)</li>
+</ul>
+</li>
+</ul>
+<p><strong>数据库Heap</strong></p>
+<ul>
+<li><p>堆文件(Heap file)是无序的页面集合，其中是按随机顺序存储的元组。作用：获取/删除页面；必须支持对所有页面进行迭代。</p>
+</li>
+<li><p>需要元数据来跟踪存在的页面，以及哪些有空闲的空间</p>
+</li>
+<li><p>Heap file的形式有两种: LinkedList和Page Directory</p>
+</li>
+</ul>
+<p><strong>LINKED LIST结构Heap file 特点</strong></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/PageLinkList.png" alt="PageLinkList"></p>
+<ul>
+<li>在文件开头存储了两个指针：空闲页list的头指针；数据页list的头指针</li>
+<li>每一页都跟踪它自己空闲slots的序号</li>
+</ul>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/DirPages.png" alt="DirPages"></p>
+<ul>
+<li>DBMS维护了一个特殊的页面来跟踪数据页的位置在数据库文件中</li>
+<li>这个目录也记录了每个页面空闲slot序号</li>
+<li>DBMS确保目录页与数据页同步</li>
+</ul>
+<p><strong>页面头部</strong></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/page_header.png" alt="page_header"></p>
+<ul>
+<li>每个页面都包含一个头部，里面包含了页面的元数据信息<ul>
+<li>页面大小</li>
+<li>校验和</li>
+<li>DBMS的版本</li>
+<li>事务的可见性</li>
+<li>压缩信息</li>
+</ul>
+</li>
+<li>有些系统需要页面变得独立，比如Oracle</li>
+</ul>
+<p><strong>页面的布局</strong></p>
+<ul>
+<li>对于任何页面存储架构来说，我们现在需要知道怎样在页面里面组织数据存储</li>
+<li>两种方法：<ul>
+<li>面向元组</li>
+<li>日志结构</li>
+</ul>
+</li>
+</ul>
+<p><strong>元组的存储</strong></p>
+<ul>
+<li>记录页面中远足的数量，然后往尾部增加新的元组</li>
+</ul>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/tuple1.png" alt="tuple1"></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/tuple2.png" alt="tuple2"></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/tuple3.png" alt="tuple3"></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/tuple4.png" alt="tuple4"></p>
+<p><strong>页面槽(Slotted pages)</strong></p>
+<ul>
+<li>最常见的页面部署方案称为槽页(slotted pages)</li>
+<li>slot数组映射了slots到元组开始位置的偏移量、</li>
+<li>header存储了使用了的slots，最后一个被使用slot的起始位置</li>
+</ul>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/slot-page1.png" alt="slot-page1"></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/slot-page2.png" alt="slot-page2"></p>
+<p><strong>日志文件型数据组织方式</strong></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/log1.png" alt="log1"></p>
+<ul>
+<li>DBMS只存储日志记录，而不是将元组存储在页面中</li>
+<li>系统将数据库如何修改的日志追加到文件<ul>
+<li>插入存储整个元组</li>
+<li>将元组标记为已删除</li>
+<li>更新属性包含被修改的增量</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/log2.png" alt="log2"></p>
+<ul>
+<li>要读取记录，DBMS反向记录并重新创建元组，并找到它需要的东西</li>
+<li>建立索引允许跳到log的指定位置</li>
+<li>定期的压缩日志</li>
+</ul>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/log3.png" alt="log3"></p>
+<p><strong>日志的压缩</strong></p>
+<ul>
+<li><p>通过删除不必要的记录来将较大的日志文件合并成较小的文件</p>
+</li>
+<li><p>compaction的过程</p>
+</li>
+</ul>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/compaction1.png" alt="compaction1"></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/compaction2.png" alt="compaction2"></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/compaction3.png" alt="compaction3"></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/compaction4.png" alt="compaction4"></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/compaction5.png" alt="compaction5"></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/compaction6.png" alt="compaction6"></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/compaction7.png" alt="compaction7"></p>
+<p><strong>元组布局</strong></p>
+<ul>
+<li>元组本质上是一个字节序列</li>
+<li>DBMS的工作就是解释这些字节属性类型和值</li>
+</ul>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/tuple-header.png" alt="tuple-header"></p>
+<ul>
+<li>每个元组前面都有一个头包含有关它的元数据：可见性信息（用于并发控制）；为NULL值提供的BitMap</li>
+<li>我们为什么不需要存储schema的元数据信息呢？</li>
+<li>元组里面的数据按你创建表时候的命令组织</li>
+<li>组织这些数据是软件工程师要做的事情</li>
+</ul>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/tuple-data.png" alt="tuple-data"></p>
+<p><strong>非规范化元组数据(denormalized tuple data)</strong></p>
+<ul>
+<li>可以在物理上取消规范化相关元组并存储它们在同一页中<ul>
+<li>可以减少常见工作负载的I/O请求数量</li>
+<li>可以使得update操作更高效</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/denormalized1.png" alt="denormalized1"></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/denormalized2.png" alt="denormalized2"></p>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/denormalized3.png" alt="denormalized3"></p>
+<p><strong>记录的ID</strong></p>
+<ul>
+<li>DBMS需要一种跟踪单个元组的方法</li>
+<li>每个元组都被分配一个唯一的记录标识符<ul>
+<li>最常见：page_id + offset/slot</li>
+<li>也可以包含文件的位置信息</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/record-ids.png" alt="record-ids"></p>
+</div><div class="tags"></div><div class="post-nav"><a class="pre" href="/2019/03/28/CMU-Intro-to-Database-Systems-04-notes/">CMU-Intro-to-Database-Systems-04-notes</a><a class="next" href="/2019/03/25/CMU-Intro-to-Database-Systems-02-notes/">CMU-Intro-to-Database-Systems-02-notes</a></div><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' == true ? true : false;
+var verify = 'false' == true ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'ILqOzWM8jrm21Dhs5Ernxczi-gzGzoHsz',
+  appKey:'7sChUpdXujjsSpdpukXYva9P',
+  placeholder:'ヾﾉ≧∀≦)o 来互相伤害吧！',
+  avatar:'mm',
+  guest_info:guest_info,
+  pageSize:'10'
+})</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/6-824视频/" style="font-size: 15px;">6.824视频</a> <a href="/tags/分布式系统6-824笔记/" style="font-size: 15px;">分布式系统6.824笔记</a> <a href="/tags/movies/" style="font-size: 15px;">movies</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/03/30/CMU-Intro-to-Database-Systems-05/">CMU-Intro-to-Database-Systems-05</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/28/CMU-Intro-to-Database-Systems-04-notes/">CMU-Intro-to-Database-Systems-04-notes</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/25/CMU-Intro-to-Database-Systems-03-notes/">CMU-Intro-to-Database-Systems-03-notes</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/25/CMU-Intro-to-Database-Systems-02-notes/">CMU-Intro-to-Database-Systems-02-notes</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/15/C-编程思想笔记/">C++编程思想笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/10/迦百农/">迦百农</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/07/LEC4/">LEC4</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/24/LEC3/">LEC3</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC2/">LEC2</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/17/LEC20-vedio/">LEC20-vedio</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

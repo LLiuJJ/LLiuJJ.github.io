@@ -1,0 +1,133 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>CMU-Intro-to-Database-Systems-04-notes | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">CMU-Intro-to-Database-Systems-04-notes</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a href="/MIT-6-824/"><i class="fa fa-search"> MIT-6-824</i></a><a href="/LINUX/"><i class="fa fa-book"> LINUX</i></a><a href="/MOVIES/"><i class="fa fa-photo"> MOVIES</i></a><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">CMU-Intro-to-Database-Systems-04-notes</h1><div class="post-meta">Mar 28, 2019</div><a class="disqus-comment-count" href="/2019/03/28/CMU-Intro-to-Database-Systems-04/#vcomment"><span class="valine-comment-count" data-xid="/2019/03/28/CMU-Intro-to-Database-Systems-04/"></span><span> 条评论</span></a><div class="post-content"><p><strong>磁盘式数据库存储架构</strong></p>
+<ul>
+<li>DBMS假设数据库主要存储在非易失性设备上</li>
+<li>DBMS的组建管理数据在非易失性存储和易失性存储之间的数据移动</li>
+</ul>
+<p><img src="/2019/03/28/CMU-Intro-to-Database-Systems-04/CMU-Intro-to-Database-Systems-04-notes/oriented1.png" alt="disk-oriented1"></p>
+<p><img src="/2019/03/28/CMU-Intro-to-Database-Systems-04/CMU-Intro-to-Database-Systems-04-notes/oriented2.png" alt="disk-oriented2"></p>
+<p><img src="/2019/03/28/CMU-Intro-to-Database-Systems-04/CMU-Intro-to-Database-Systems-04-notes/oriented3.png" alt="disk-oriented3"></p>
+<p><img src="/2019/03/28/CMU-Intro-to-Database-Systems-04/CMU-Intro-to-Database-Systems-04-notes/oriented4.png" alt="disk-oriented4"></p>
+<p><img src="/2019/03/28/CMU-Intro-to-Database-Systems-04/CMU-Intro-to-Database-Systems-04-notes/oriented5.png" alt="disk-oriented5"></p>
+<p><strong>元组存储</strong></p>
+<ul>
+<li>元组本质上是一个字节序列，DBMS的工作就是解释这些字节属性类型和值</li>
+<li>DBMS的catalogs包含了系统用来描述系统表的信息，以及描述元组的布局</li>
+</ul>
+<p><strong>数据表示</strong></p>
+<ul>
+<li><p>INTEGER/BIGINT/SMALLINT/TINYINT，C/C++表示</p>
+</li>
+<li><p>FLOAT/REAL vs NUMERIC/DECIMAL，IEEE-754 标准，定点小数</p>
+</li>
+<li>VARCHAR/VARBINARY/TEXT/BLOB，头部以串长度开头，接着是具体的数据类型</li>
+<li>TIME/DATE/TIMESTAMP，32/64位整数 Unix时间格式</li>
+</ul>
+<p><strong>可变精度的数字</strong></p>
+<ul>
+<li>不精确，可变精度的数据类型使用原声的C/C++类型</li>
+<li>按照IEEE-754的规定直接存储</li>
+<li>通常比任意精度的速度要快，例如：FLOAT, REAL/DOUBLE</li>
+</ul>
+<p><img src="/2019/03/28/CMU-Intro-to-Database-Systems-04/CMU-Intro-to-Database-Systems-04-notes/var.png" alt="var"></p>
+<p><strong>固定精度的数字</strong></p>
+<ul>
+<li>具有任意精度和规模的数据类型，当误差不可接受时使用，如NUMERIC,DECIMAL</li>
+<li>通常存储在精确的可变长度二进制文件中并附加元数据表示</li>
+</ul>
+<p><strong>超大的值</strong></p>
+<ul>
+<li>大多数DBMS不允许元组超过单个页面大小</li>
+<li>存储大于一个页面的值，DBMS使用单独的溢出存储页(overflow page)存储<ul>
+<li>Postgres：TOAST (&gt; 2KB)</li>
+<li>MySQL：Overflow (&gt; 1/2 size of page)</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2019/03/28/CMU-Intro-to-Database-Systems-04/CMU-Intro-to-Database-Systems-04-notes/lager_v.png" alt="lager_v"></p>
+<p><strong>外部值存储（External value storage）</strong></p>
+<ul>
+<li>一些系统允许你在一个外部文件中存储一个很大的值</li>
+<li>作为BLOB类型处理<ul>
+<li>Oracle：BFILE </li>
+<li>Microsoft：FILESTREAM</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2019/03/28/CMU-Intro-to-Database-Systems-04/CMU-Intro-to-Database-Systems-04-notes/external-f.png" alt="external-f"></p>
+<ul>
+<li>DBMS无法操作外部文件的内容<ul>
+<li>无持久化保护</li>
+<li>没有事务保护</li>
+</ul>
+</li>
+</ul>
+<p><strong>系统目录 (System catalogs)</strong></p>
+<ul>
+<li>一个数据库的元数据是存储在其数据库内部的catalogs<ul>
+<li>Tables，columns，indexes，views</li>
+<li>Users，permissions</li>
+<li>Internal statistics（内部统计)</li>
+</ul>
+</li>
+<li>几乎每个DBMS都存储其数据库的目录</li>
+<li>你可以查数据库内部的information_schema来获取数据库信息</li>
+<li>ANSI的标准提供了一系列的视图包括表，视图，列，过程</li>
+<li>DBMS也有非标准的快捷方式来检索这些信息</li>
+</ul>
+<p><strong>OLTP</strong></p>
+<ul>
+<li>On-line Transaction Processing（在线事务处理）</li>
+<li>读取和更新数据库中的单个实体的小量数据</li>
+</ul>
+<p><img src="/2019/03/28/CMU-Intro-to-Database-Systems-04/CMU-Intro-to-Database-Systems-04-notes/OLTP.png" alt="OLTP"></p>
+<p><strong>OLAP</strong></p>
+<ul>
+<li>On-line Analytical Processing (在线分析处理)</li>
+<li>读取跨越多个实体的大量数据的复杂查询</li>
+</ul>
+<p><img src="/2019/03/28/CMU-Intro-to-Database-Systems-04/CMU-Intro-to-Database-Systems-04-notes/OLAP.png" alt="OLAP"></p>
+<p><strong>数据存储模型</strong></p>
+<ul>
+<li>为了使OLTP或者OLAP性能更好，DBMS用不同的方式存储元组</li>
+</ul>
+<p><strong>N-ARY STORAGE MODEL (NSM)</strong></p>
+<ul>
+<li>DBMS在一个页面中连续的存储单个元组，每个元组存储了所有的属性</li>
+<li>适用于OLTP的工作负载，尽在单个实体上操作，大量的插入工作负载</li>
+</ul>
+<p><img src="/2019/03/28/CMU-Intro-to-Database-Systems-04/CMU-Intro-to-Database-Systems-04-notes/NSM-1.png" alt="NSM-1"></p>
+<p><img src="/2019/03/28/CMU-Intro-to-Database-Systems-04/CMU-Intro-to-Database-Systems-04-notes/NSM-2.png" alt="NSM-2"></p>
+<p><img src="/2019/03/28/CMU-Intro-to-Database-Systems-04/CMU-Intro-to-Database-Systems-04-notes/NSM-3.png" alt="NSM-3"></p>
+<ul>
+<li>NSM优点：快速插入，更新，删除元组</li>
+<li>NSM缺点：不适合表的部分属性扫描</li>
+</ul>
+<p><strong>DECOMPOSITION STORAGE MODEL (DSM)</strong></p>
+<ul>
+<li>DBMS在页中相邻的所有元组中存储单个属性的值</li>
+<li>比较出名的是“列族存储”</li>
+<li>适用于只读的OLAP查询工作，比如scan某个属性的所有值</li>
+</ul>
+<p><img src="/2019/03/28/CMU-Intro-to-Database-Systems-04/CMU-Intro-to-Database-Systems-04-notes/DSM.png" alt="DSM"></p>
+<ul>
+<li>DSM优点：减少浪费的I/O请求量，因为DBMS只读区所需要的数据；更好的处理查询任务和数据压缩。</li>
+<li>DSM缺点：单个元组的查询、插入、更新和删除速度慢，因为元组属性被分散在不同的页面中。</li>
+</ul>
+</div><div class="tags"></div><div class="post-nav"><a class="pre" href="/2019/03/30/CMU-Intro-to-Database-Systems-05/">CMU-Intro-to-Database-Systems-05</a><a class="next" href="/2019/03/25/CMU-Intro-to-Database-Systems-03/">CMU-Intro-to-Database-Systems-03-notes</a></div><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' == true ? true : false;
+var verify = 'false' == true ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'ILqOzWM8jrm21Dhs5Ernxczi-gzGzoHsz',
+  appKey:'7sChUpdXujjsSpdpukXYva9P',
+  placeholder:'ヾﾉ≧∀≦)o 来互相伤害吧！',
+  avatar:'mm',
+  guest_info:guest_info,
+  pageSize:'10'
+})</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/分布式系统6-824笔记/" style="font-size: 15px;">分布式系统6.824笔记</a> <a href="/tags/6-824视频/" style="font-size: 15px;">6.824视频</a> <a href="/tags/movies/" style="font-size: 15px;">movies</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/03/31/grpc使用/">grpc使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/31/CMU-Intro-to-Database-Systems-06/">CMU-Intro-to-Database-Systems-06</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/30/CMU-Intro-to-Database-Systems-05/">CMU-Intro-to-Database-Systems-05</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/28/CMU-Intro-to-Database-Systems-04/">CMU-Intro-to-Database-Systems-04-notes</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/25/CMU-Intro-to-Database-Systems-03/">CMU-Intro-to-Database-Systems-03-notes</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/25/CMU-Intro-to-Database-Systems-02/">CMU-Intro-to-Database-Systems-02-notes</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/15/C-编程思想笔记/">C++编程思想笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/10/迦百农/">迦百农</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/07/LEC4/">LEC4</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/24/LEC3/">LEC3</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
