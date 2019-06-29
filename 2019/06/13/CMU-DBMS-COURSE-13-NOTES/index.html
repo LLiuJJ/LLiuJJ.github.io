@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>CMU-DBMS-COURSE-13-NOTES | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">CMU-DBMS-COURSE-13-NOTES</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">CMU-DBMS-COURSE-13-NOTES</h1><div class="post-meta">Jun 13, 2019</div><div class="post-content"><h5 id="IBM-SYSTEM-R"><a href="#IBM-SYSTEM-R" class="headerlink" title="IBM SYSTEM R"></a>IBM SYSTEM R</h5><p>First implementation of a query optimizer.</p>
+<p>People argued that the DBMS could never choose a query plan better than what a human could write.</p>
+<p>A lot of the concepts from System R’s optimizer are still used today.</p>
+<h5 id="Query-optimization"><a href="#Query-optimization" class="headerlink" title="Query optimization"></a>Query optimization</h5><p>Heuristics(启发) / Rules</p>
+<p>Rewrite the query to remove stupid / inefficient things.</p>
+<p>Does not require a cost model.</p>
+<p>Cost-based Search</p>
+<p>Use a cost model to evaluate multiple equivalent（相同）plans and pick the one with the lowest cost.</p>
+<h5 id="Query-planning-overview"><a href="#Query-planning-overview" class="headerlink" title="Query planning overview"></a>Query planning overview</h5><p><img src="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/QUERY-PLANNING-OVERVIEW.png" alt="QUERY-PLANNING-OVERVIEW"></p>
+<h5 id="Relational-algebra-equivalences（关系代数等价）"><a href="#Relational-algebra-equivalences（关系代数等价）" class="headerlink" title="Relational algebra equivalences（关系代数等价）"></a>Relational algebra equivalences（关系代数等价）</h5><p>Two relational algebra expressions are equivalent if they generate the same set of tuples.</p>
+<p>The DBMS can identify better query plans without a cost model.</p>
+<p>This is often called query rewriting</p>
+<h5 id="Predicate-pushdown（谓词下推）"><a href="#Predicate-pushdown（谓词下推）" class="headerlink" title="Predicate pushdown（谓词下推）"></a>Predicate pushdown（谓词下推）</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT s.name, e.cid</span><br><span class="line">FROM student AS a, enrolled AS e</span><br><span class="line">WHERE a.sid = e.sid</span><br><span class="line">AND e.grade = &apos;A&apos;</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/PREDICATE-PUSHDOWN.png" alt="PREDICATE-PUSHDOWN"></p>
+<p><img src="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/PREDICATE-PUSHDOWN-2.png" alt="PREDICATE-PUSHDOWN-2"></p>
+<h5 id="Relational-algebra-equivalences（关系代数等价）-1"><a href="#Relational-algebra-equivalences（关系代数等价）-1" class="headerlink" title="Relational algebra equivalences（关系代数等价）"></a>Relational algebra equivalences（关系代数等价）</h5><p>Selections</p>
+<p>Perform filters as early as possible</p>
+<p>Recorder predicates so that the DBMS applies the most selective one first.</p>
+<p>Break a complex predicate, and push down</p>
+<p><img src="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/关系代数等价.png" alt="关系代数等价"></p>
+<p>Simplify a complex predicate（谓词）</p>
+<p>(X = Y AND Y = 3) -&gt; X = 3 AND Y = 3</p>
+<p><strong>Projections(预测)</strong></p>
+<ul>
+<li>Perform them early to create smaller tuples and reduce intermediate(中间的) results (if duplicates are eliminated（消除）)</li>
+<li>Project out all attributes except(除了) the ones requested or required(e.g., joining keys)</li>
+</ul>
+<h5 id="Predicate-pushdown（谓词下推）-1"><a href="#Predicate-pushdown（谓词下推）-1" class="headerlink" title="Predicate pushdown（谓词下推）"></a>Predicate pushdown（谓词下推）</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT s.name, e.cid</span><br><span class="line">FROM student AS s, enrolled AS e</span><br><span class="line">WHERE s.sid = e.sid</span><br><span class="line">AND e.grade = &apos;A&apos;</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/PROJECTION-PUSHDOWN-2.png" alt="PROJECTION-PUSHDOWN-2"></p>
+<p>Impossible / Unnecessary Predicates</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM A WHERE 1 = 0;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM A WHERE 1 = 1;</span><br></pre></td></tr></table></figure>
+<p>Join Elimination</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT A1.*</span><br><span class="line">FROM A AS A1 JOIN A AS A2</span><br><span class="line">ON A1.id = A2.id;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM A;</span><br></pre></td></tr></table></figure>
+<p>Merging Predicates</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM A</span><br><span class="line">WHERE val BETWEEN 1 AND 100</span><br><span class="line">OR val BETWEEN 50 AND 150;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM A</span><br><span class="line">WHERE val BETWEEN 1 AND 150;</span><br></pre></td></tr></table></figure>
+<h5 id="Relational-algebra-equivalences（关系代数等价）-2"><a href="#Relational-algebra-equivalences（关系代数等价）-2" class="headerlink" title="Relational algebra equivalences（关系代数等价）"></a>Relational algebra equivalences（关系代数等价）</h5><p><strong>Joins</strong></p>
+<p>Commutative(交换的)，associative(结合的)</p>
+<h5 id="Cost-estimation-估算"><a href="#Cost-estimation-估算" class="headerlink" title="Cost estimation (估算)"></a>Cost estimation (估算)</h5><p>How long will a query take?</p>
+<p>-&gt; CPU: Small cost; tough to estimate</p>
+<p>-&gt; Disk: #of block transfers</p>
+<p>-&gt; Memory: Amount of DRAM used</p>
+<p>-&gt; Network: # of messages</p>
+<h5 id="Statistics-统计信息"><a href="#Statistics-统计信息" class="headerlink" title="Statistics(统计信息)"></a>Statistics(统计信息)</h5><p>The DBMS stores internal statistic about tables, attributes, and indexes in its internal catalog.</p>
+<p>Different systems update them at different times.</p>
+<p>Manual invocations: （手动调用）</p>
+<p>-&gt; Postgres / SQLite: ANALYZE</p>
+<p>-&gt; Oracle / MySQL: ANALYZE TABLE</p>
+<p>-&gt; SQL Server: UPDATE STATISTICS</p>
+<p>-&gt; DB2: RUNSTATS</p>
+<p>For each relation R , the DBMS maintains the following information:</p>
+<p>-&gt; N(R) : Number of tuples in R.</p>
+<p>-&gt; V(A, R) : Number of distinct(有区别的) values for attribute A</p>
+<h5 id="Derivable-statistics-可推导的统计"><a href="#Derivable-statistics-可推导的统计" class="headerlink" title="Derivable statistics (可推导的统计)"></a>Derivable statistics (可推导的统计)</h5><p>The selection cardinality (选择基数) SC (A, R) is the average number of records with a value for an attribute A given N(R) / V(A, R)</p>
+<h5 id="Selection-statistics"><a href="#Selection-statistics" class="headerlink" title="Selection statistics"></a>Selection statistics</h5><p>Equality predicates on unique keys are easy to estimate.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM people WHERE id = 123</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM people WHERE val &gt; 1000</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM people WHERE age = 30 AND status = &apos;Lit&apos;</span><br></pre></td></tr></table></figure>
+<p>The selectivity (选择性) (sel) of a predicate P is the fraction(分数) of tuples that qualify(符合条件)</p>
+<p>Formula(公式) depends on type of predicate:</p>
+<p>-&gt; Equality </p>
+<p>-&gt; Range</p>
+<p>-&gt; Negation （取反）</p>
+<p>-&gt; Conjunction （连接词）</p>
+<p>-&gt; Disjunction （逻辑或）</p>
+<h5 id="Selections-complex-predicates"><a href="#Selections-complex-predicates" class="headerlink" title="Selections - complex predicates"></a>Selections - complex predicates</h5><p>Assume that V(age, people) has five distinct values (0-4) and N(R) = 5</p>
+<p><strong>Equality Predicate: A = constant</strong></p>
+<p>sel(A = constant) = SC(P) / V(A, R)</p>
+<p>Example: sel(age = 2) =</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM people WHERE age = 2</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/SC-1.png" alt="SC-1"></p>
+<p><strong>Range Query</strong></p>
+<p>sel(A &gt;= a) = (A(max) - a) / (A(max) - A(min))</p>
+<p>Example: sel(age &gt;= 2) = (4 - 2) / (4 - 0) = 1 / 2</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM people WHERE age &gt;= 2</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/SC-2.png" alt="SC-2"></p>
+<p><strong>Negation Query</strong></p>
+<p>sel ( not P ) = 1 - sel( p )</p>
+<p>Example: sel ( age != 2 )</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM people WHERE age != 2</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/SC-3.png" alt="SC-3"></p>
+<p><img src="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/SC-4.png" alt="SC-4"></p>
+<p><em>Observation: Selectivity ~= Probability</em></p>
+<p><strong>Conjunction</strong></p>
+<p>sel (P1 ^ P2) = sel(P1) * sel(P2)</p>
+<p>sel (age = 2 ^ name LIKE ‘A%’ )</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM people WHERE age = 2 AND name LIKE &apos;A%&apos;</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/Conjunction.png" alt="Conjunction"></p>
+<p><strong>Disjunction</strong></p>
+<p>sel(P1 U P2) </p>
+<p>= sel(P1) + sel(P2) - sel(P1 ^ P2)</p>
+<p>= sel(P1) + sel(P2) - sel(P1) * sel(P2)</p>
+<p>-&gt; sel(age = 2 OR name LIKE ‘A%’)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM people WHERE age = 2 OR name LIKE &apos;A%&apos;</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/Disjunction.png" alt="Disjunction"></p>
+<h5 id="Query-Optimization"><a href="#Query-Optimization" class="headerlink" title="Query Optimization"></a>Query Optimization</h5><p>After performing rule-based rewriting, the DBMS will enumerate(列举) different plans for the query and estimate(估计) their costs.</p>
+<p>Single relations</p>
+<p>Multiple relations</p>
+<p>Nested(嵌套) sub-queries</p>
+<p>It chooses the best plan it has been for query after exhausting(用尽) all plans or some timeout</p>
+<p>Simple heuristics(启发式) are often good enough for this</p>
+<p>OLTP queries are especially easy</p>
+<h5 id="OLTP-Query-planning"><a href="#OLTP-Query-planning" class="headerlink" title="OLTP Query planning"></a>OLTP Query planning</h5><p>Query planning for OLTP queries is easy because they are sargable（可分析的）</p>
+<p>Search Argument Able</p>
+<p>It is usually just picking the best index</p>
+<p>Joins are almost always on foreign key relationships with a small cardinality（基数）</p>
+<p>Can be implementation with simple heuristics</p>
+</div><div class="tags"></div><div class="post-nav"><a class="pre" href="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/">CMU-DBMS-COURSE-14-NOTES</a><a class="next" href="/2019/06/10/Google-Spanner-Paper/">Google-Spanner-Paper</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Parallel-Execution/" style="font-size: 15px;">Parallel Execution</a> <a href="/tags/Join-Algorithms/" style="font-size: 15px;">Join Algorithms</a> <a href="/tags/Concurrency-control-theory/" style="font-size: 15px;">Concurrency control theory</a> <a href="/tags/6-824视频/" style="font-size: 15px;">6.824视频</a> <a href="/tags/分布式系统6-824笔记/" style="font-size: 15px;">分布式系统6.824笔记</a> <a href="/tags/movies/" style="font-size: 15px;">movies</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-17-NOTES/">CMU-DBMS-COURSE-17-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/">CMU-DBMS-COURSE-16-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-15-NOTES/">CMU-DBMS-COURSE-15-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/">CMU-DBMS-COURSE-14-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/">CMU-DBMS-COURSE-13-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/10/Google-Spanner-Paper/">Google-Spanner-Paper</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/">CMU-DBMS-COURSE-12-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/">CMU-DBMS-COURSE-11-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/">CMU-DBMS-COURSE-10-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/">CMU-DBMS-COURSE-09-NOTES</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

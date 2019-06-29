@@ -1,0 +1,138 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>CMU-DBMS-COURSE-11-NOTES | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">CMU-DBMS-COURSE-11-NOTES</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">CMU-DBMS-COURSE-11-NOTES</h1><div class="post-meta">May 12, 2019</div><div class="post-content"><ul>
+<li>Tip 感觉很多话中文翻译过来很别扭，后续就全部用原文做笔记了</li>
+</ul>
+<h4 id="Sorting-And-Aggregations（聚合）"><a href="#Sorting-And-Aggregations（聚合）" class="headerlink" title="Sorting And Aggregations（聚合）"></a>Sorting And Aggregations（聚合）</h4><h5 id="Why-do-we-need-to-sort"><a href="#Why-do-we-need-to-sort" class="headerlink" title="Why do we need to sort?"></a>Why do we need to sort?</h5><p>The tuples in a table have no specific order, But users often want to retrieve(检索) tuples in a specific order.</p>
+<ul>
+<li>to support DISTINCT Operation</li>
+<li>Bulk(大部分) loading sorted tuples into a B+ tree index is faster</li>
+<li>Aggragations(GROUP BY)</li>
+</ul>
+<h5 id="Think-about-sorting-algorithms"><a href="#Think-about-sorting-algorithms" class="headerlink" title="Think about sorting algorithms"></a>Think about sorting algorithms</h5><p>If data fits in memory, then we can use a standard sorting algorithm like quick-sort.</p>
+<p>If data does not fit in memory, then we need to use a technique that is aware of <em>the cost of writing data out to disk</em>.</p>
+<h5 id="External-merge-sort-abstract"><a href="#External-merge-sort-abstract" class="headerlink" title="External merge sort abstract"></a>External merge sort abstract</h5><ul>
+<li>Sorting Phase</li>
+</ul>
+<p>Sort small chunks of  of data that fit in main-memory, and then write back the sorted data to a file on disk.</p>
+<ul>
+<li>Merge Phase</li>
+</ul>
+<p>Combine sorted sub-files into a single larger file.</p>
+<h5 id="2-WAY-EXTERNAL-MERGE-SORT"><a href="#2-WAY-EXTERNAL-MERGE-SORT" class="headerlink" title="2-WAY EXTERNAL MERGE SORT"></a>2-WAY EXTERNAL MERGE SORT</h5><p>Files are broken up(分裂) into N pages.</p>
+<p>The DBMS has a finite(限定的) number of B fixed-size(固定大小) buffers.</p>
+<p><strong>Pass #0</strong></p>
+<ul>
+<li>Reads every B pages of the table into memory</li>
+<li>Sorts them, and writes them back to disk</li>
+<li>Each sorted set of pages is called a run</li>
+</ul>
+<p><strong>Pass #1,2,3</strong></p>
+<ul>
+<li>Recursively merges pairs of runs into runs twice as long</li>
+<li>Uses three buffer pages (2 for input pages, 1 for output)</li>
+</ul>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/External-merge-sort1.png" alt="External-merge-sort1"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/External-merge-sort2.png" alt="External-merge-sort2"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/External-merge-sort3.png" alt="External-merge-sort3"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/External-merge-sort4.png" alt="External-merge-sort4"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/External-merge-sort5.png" alt="External-merge-sort5"></p>
+<p>In each pass, we read and write each page in file.</p>
+<p>Number of passes:<br>$$<br>1 + \log_{2}{N}<br>$$<br>Total I/O cost：<br>$$<br>2N * (# of-passes)<br>$$<br><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/EXTERNAL-MERGE-SORT-1.png" alt="EXTERNAL-MERGE-SORT-1"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/EXTERNAL-MERGE-SORT-2.png" alt="EXTERNAL-MERGE-SORT-2"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/EXTERNAL-MERGE-SORT-3.png" alt="EXTERNAL-MERGE-SORT-3"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/EXTERNAL-MERGE-SORT-4.png" alt="EXTERNAL-MERGE-SORT-4"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/EXTERNAL-MERGE-SORT-5.png" alt="EXTERNAL-MERGE-SORT-5"></p>
+<p>This algorithm only requires three buffer pages（B=3）</p>
+<p>Even if we have more buffer space available (B &gt; 3)， it does not effectively utilize them</p>
+<h5 id="General-external-merge-sort"><a href="#General-external-merge-sort" class="headerlink" title="General external merge sort"></a>General external merge sort</h5><p><strong>Pass #0</strong></p>
+<ul>
+<li>Use B buffer pages</li>
+<li>Produce [N/B] sorted runs of size B</li>
+</ul>
+<p><strong>Pass #1,2,3</strong></p>
+<ul>
+<li>Merge B-1 runs</li>
+</ul>
+<p>Number of passes:<br>$$<br>1+ log_{B-1}{N/B}<br>$$<br>Tips：N/B和log运算的值都是向上取整</p>
+<p>Total I/O Cost:<br>$$<br>2N * (# of—passes)<br>$$</p>
+<h5 id="Using-B-Trees"><a href="#Using-B-Trees" class="headerlink" title="Using B+ Trees"></a>Using B+ Trees</h5><p>If the table that must be sorted already has a B+ tree index on the sort attribute(s)，then we can use that to accelerate sorting</p>
+<p>Retrieve tuples in desired sort order by simply traversing the leaf pages of the tree</p>
+<h5 id="Clustered-B-Tree"><a href="#Clustered-B-Tree" class="headerlink" title="Clustered B+ Tree"></a>Clustered B+ Tree</h5><p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/Clustered-bplus-tree.png" alt="Clustered-bplus-tree"></p>
+<p>Traverse to the left-most leaf page, and then retrieve tuples from all leaf pages. This will always better than external sorting.</p>
+<h5 id="Unclustered-B-Tree"><a href="#Unclustered-B-Tree" class="headerlink" title="Unclustered B+ Tree"></a>Unclustered B+ Tree</h5><p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/Unclustered-bplus-tree.png" alt="Unclustered-bplus-tree"></p>
+<p>Chase each pointer to the page that contains the data.</p>
+<p>This is almost always a bad idea. In general，one I/O per data record.</p>
+<h5 id="Aggregations"><a href="#Aggregations" class="headerlink" title="Aggregations"></a>Aggregations</h5><p>Collapse multiple tuples into a single scalar(标量) value</p>
+<p>Two implementation choices:</p>
+<p>Sorting, Hashing</p>
+<h5 id="Sorting-aggregation"><a href="#Sorting-aggregation" class="headerlink" title="Sorting aggregation"></a>Sorting aggregation</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT DISTINCT cid</span><br><span class="line">FROM enrolled</span><br><span class="line">WHERE grade IN(&apos;B&apos;, &apos;&apos;C)</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/SORTING-AGGREGATION-1.png" alt="SORTING-AGGREGATION-1"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/SORTING-AGGREGATION-2.png" alt="SORTING-AGGREGATION-2"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/SORTING-AGGREGATION-3.png" alt="SORTING-AGGREGATION-3"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/SORTING-AGGREGATION-4.png" alt="SORTING-AGGREGATION-4"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/SORTING-AGGREGATION-5.png" alt="SORTING-AGGREGATION-5"></p>
+<h5 id="Alternatives（选择）-to-sorting"><a href="#Alternatives（选择）-to-sorting" class="headerlink" title="Alternatives（选择） to sorting"></a>Alternatives（选择） to sorting</h5><p>What if we don’t need the data to be ordered?</p>
+<ul>
+<li>Forming groups in GROUP BY(no ordering)</li>
+<li>Removing duplicates in DISTINCT(no ordering)</li>
+</ul>
+<p>Hashing is a better alternative in this scenario(方案).</p>
+<ul>
+<li>Only need to remove duplicates, no need for ordering.</li>
+<li>Can be computationally cheaper than sorting.</li>
+</ul>
+<h5 id="Hashing-aggregate"><a href="#Hashing-aggregate" class="headerlink" title="Hashing aggregate"></a>Hashing aggregate</h5><p>Populate an ephemeral(临时的) hash table as the DBMS scans the table. For each record，check whether there is already an entry in the hash table:</p>
+<ul>
+<li>DISTINCT: Discard duplicate</li>
+<li>GROUP BY: Perform aggregate computation</li>
+</ul>
+<p>If everything fits in memory, then it’s easy. If we have to spill(溢出) to disk, then we need to be smarter…</p>
+<p>Partition Phase: Divide tuples into buckets based on hash key</p>
+<p>ReHash Phase: Build in-memory hash table for each partition and compute the aggregation.</p>
+<h5 id="Hashing-aggregate-phase-1-partition"><a href="#Hashing-aggregate-phase-1-partition" class="headerlink" title="Hashing aggregate phase #1: partition"></a>Hashing aggregate phase #1: partition</h5><p>Use a hash function h1 to split tuples into partitions on disk.</p>
+<ul>
+<li>We know that all matches live in the same partition.</li>
+<li>Partitions are “spilled” to disk via output buffers.</li>
+</ul>
+<p>Assume that we have B buffers.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT DISTINCT cid</span><br><span class="line">FROM	enrolled</span><br><span class="line">WHERE	grade IN(&apos;B&apos;,&apos;C&apos;)</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/HASHING-AGGREGATE-1.png" alt="HASHING-AGGREGATE-1"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/HASHING-AGGREGATE-2.png" alt="HASHING-AGGREGATE-2"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/HASHING-AGGREGATE-3.png" alt="HASHING-AGGREGATE-3"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/HASHING-AGGREGATE-4.png" alt="HASHING-AGGREGATE-4"></p>
+<h5 id="Hashing-aggregate-phase-2-rehash"><a href="#Hashing-aggregate-phase-2-rehash" class="headerlink" title="Hashing aggregate phase #2: rehash"></a>Hashing aggregate phase #2: rehash</h5><p>For each partition on disk:</p>
+<ul>
+<li>Read it into memory and build an in-memory hash table based on a second hash function h2.</li>
+<li>Then go through each bucket of this hash table to bring together matching tuples.</li>
+</ul>
+<p>This assumes that  each partition fits in memory.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT DISTINCT cid FROM enrolled WHERE grade IN (&apos;B&apos;, &apos;C&apos;)</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/HASHING-AGGREGATE-5.png" alt="HASHING-AGGREGATE-5"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/HASHING-AGGREGATE-6.png" alt="HASHING-AGGREGATE-6"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/HASHING-AGGREGATE-7.png" alt="HASHING-AGGREGATE-7"></p>
+<h5 id="Hashing-summarization"><a href="#Hashing-summarization" class="headerlink" title="Hashing summarization"></a>Hashing summarization</h5><p>During the ReHash phase, store pairs of the form</p>
+<p> (GroupKey -&gt; RunningVal)</p>
+<p>When we want to insert a new tuple into the hash table:</p>
+<ul>
+<li>If we find a matching GroupKey, just update the RunningVal appropriately</li>
+<li>Else insert a new GroupKey-&gt;RunningVal</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT cid, AVG(s.gpa)</span><br><span class="line">FROM student AS s, enrolled AS e</span><br><span class="line">WHERE s.sid = e.sid</span><br><span class="line">GROUP BY cid</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/HASHING-SUMMARIZATION-1.png" alt="HASHING-SUMMARIZATION-1"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/HASHING-SUMMARIZATION-2.png" alt="HASHING-SUMMARIZATION-2"></p>
+<p><img src="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/HASHING-SUMMARIZATION-3.png" alt="HASHING-SUMMARIZATION-3"></p>
+<h5 id="Cost-analysis"><a href="#Cost-analysis" class="headerlink" title="Cost analysis"></a>Cost analysis</h5><p>How big of a table can we hash using this approach?</p>
+<ul>
+<li>B-1 “spill partitions” in Phase #1</li>
+<li>Each should be no more than B block big</li>
+</ul>
+<p>Answer: B*(B-1)</p>
+<ul>
+<li>A table of N pages needs about sqrt(N) buffers Use a “fudge factor” f &gt; 1 for that: we need B<em>sqrt(f </em> N)</li>
+</ul>
+<h5 id="Concusion"><a href="#Concusion" class="headerlink" title="Concusion"></a>Concusion</h5><p>Choice of sorting vs. hashing is subtle(微妙的) and depends on optimizations done in each case.</p>
+<p>We already discussed the optimizations for sorting:</p>
+<ul>
+<li>Chunk I/O into large blocks to amortize(摊销) seek+RD costs</li>
+<li>Double-buffering to overlap CPU and I/O</li>
+</ul>
+</div><div class="tags"></div><div class="post-nav"><a class="pre" href="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/">CMU-DBMS-COURSE-12-NOTES</a><a class="next" href="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/">CMU-DBMS-COURSE-10-NOTES</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Parallel-Execution/" style="font-size: 15px;">Parallel Execution</a> <a href="/tags/Join-Algorithms/" style="font-size: 15px;">Join Algorithms</a> <a href="/tags/Concurrency-control-theory/" style="font-size: 15px;">Concurrency control theory</a> <a href="/tags/6-824视频/" style="font-size: 15px;">6.824视频</a> <a href="/tags/分布式系统6-824笔记/" style="font-size: 15px;">分布式系统6.824笔记</a> <a href="/tags/movies/" style="font-size: 15px;">movies</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-17-NOTES/">CMU-DBMS-COURSE-17-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/">CMU-DBMS-COURSE-16-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-15-NOTES/">CMU-DBMS-COURSE-15-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/">CMU-DBMS-COURSE-14-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/">CMU-DBMS-COURSE-13-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/10/Google-Spanner-Paper/">Google-Spanner-Paper</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/">CMU-DBMS-COURSE-12-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/">CMU-DBMS-COURSE-11-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/">CMU-DBMS-COURSE-10-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/">CMU-DBMS-COURSE-09-NOTES</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

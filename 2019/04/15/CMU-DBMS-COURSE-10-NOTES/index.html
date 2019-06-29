@@ -1,0 +1,140 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>CMU-DBMS-COURSE-10-NOTES | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">CMU-DBMS-COURSE-10-NOTES</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">CMU-DBMS-COURSE-10-NOTES</h1><div class="post-meta">Apr 15, 2019</div><div class="post-content"><h4 id="查询计划"><a href="#查询计划" class="headerlink" title="查询计划"></a>查询计划</h4><p>​    DBMS将SQL语句转换为查询计划。操作被安排在一棵树中。数据从叶节点流向根，树中根节点的输出是查询的结果，通常运算符是二进制的，同一个查询计划可以有多种执行方式，大多数DBMS都希望尽可能多地使用索引扫描。</p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/query-plan.png" alt="query-plan"></p>
+<h4 id="处理模型"><a href="#处理模型" class="headerlink" title="处理模型"></a>处理模型</h4><p>DBMS处理模型定义了系统如何执行查询计划。对于不同的工作负载，不同的模型具有不同的权衡。</p>
+<h5 id="迭代模型"><a href="#迭代模型" class="headerlink" title="迭代模型"></a>迭代模型</h5><p>这是最常见的处理模型，几乎每个DBMS都使用它</p>
+<ul>
+<li>自顶向下处理</li>
+<li><p>每一个查询计划操作实现一个next函数</p>
+<ul>
+<li>每次调用next时，如果没有更多的元组，则运算符返回单个元组或空标记</li>
+<li>运算符实现了一个循环，该循环对其子代节点调用next，以检查它们的元组，然后对它们进行处理</li>
+</ul>
+</li>
+<li><p>允许必须检索下一个元组之前，DBMS可以通过尽可能多的运算符处理元组的流水线操作</p>
+</li>
+<li><p>一些操作将被阻塞，直到子节点发出所有元组（连接，子查询，排序）</p>
+</li>
+<li>使用这种方法，输出控制很容易</li>
+</ul>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/iter-model1.png" alt="iter-model1"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/iter-model2.png" alt="iter-model2"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/iter-model3.png" alt="iter-model3"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/iter-model4.png" alt="iter-model4"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/iter-model5.png" alt="iter-model5"></p>
+<h4 id="具体化模型"><a href="#具体化模型" class="headerlink" title="具体化模型"></a>具体化模型</h4><ul>
+<li>每个操作一次处理其输入，然后立即发出输出。操作将其输出‘具体化“为单个结果</li>
+<li>从底向上执行</li>
+<li>对于OLTP工作负载，此方法更好，因为查询通常一次只能访问少量元组。因此，检索元组的函数调用较少</li>
+<li>不适合具有大型中间结果的OLAP查询</li>
+</ul>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/mate-model1.png" alt="mate-model1"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/mate-model2.png" alt="mate-model2"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/mate-model3.png" alt="mate-model3"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/mate-model4.png" alt="mate-model4"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/mate-model5.png" alt="mate-model5"></p>
+<p><strong>矢量化模型</strong></p>
+<ul>
+<li>就像迭代器模型一样，每个运算符都实现了next函数。但是每个运算符发出一批数据（即向量）而不是单个元组</li>
+<li>从上向下执行</li>
+<li>非常适合必须扫描大量元组的OLAP查询，因为next函数的调用次数较少</li>
+</ul>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/vect-model1.png" alt="vect-model1"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/vect-model2.png" alt="vect-model2"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/vect-model3.png" alt="vect-model3"></p>
+<h4 id="访问方式"><a href="#访问方式" class="headerlink" title="访问方式"></a>访问方式</h4><ul>
+<li>访问方式是DBMS访问数据表的方法，在关系代数中没有定义</li>
+<li>三种基本方法<ul>
+<li>顺序扫描</li>
+<li>索引扫描</li>
+<li>多索引/“位图”扫描</li>
+</ul>
+</li>
+</ul>
+<h4 id="顺序扫描"><a href="#顺序扫描" class="headerlink" title="顺序扫描"></a>顺序扫描</h4><ul>
+<li>对于页表中的每一个页，从缓冲池中检索出来，迭代的访问每个元组，并检查是否包含它。</li>
+<li>DBMS维护了一个内部的光标，跟踪它检查的最后一个页/槽。</li>
+</ul>
+<h5 id="顺序扫描的优化"><a href="#顺序扫描的优化" class="headerlink" title="顺序扫描的优化"></a>顺序扫描的优化</h5><ul>
+<li>预读(Prefetching)</li>
+<li>并行化(Parallelization)</li>
+<li>缓冲池旁路(Buffer Pool Bypass)</li>
+<li>区域地图(Zone Maps)</li>
+</ul>
+<h6 id="Zone-Maps"><a href="#Zone-Maps" class="headerlink" title="Zone Maps"></a>Zone Maps</h6><p>预先计算页面中属性值的聚合，DBMS首先检查区域地图以决定是否要访问该页面</p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/zone-map1.png" alt="zone-map1"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/zone-map2.png" alt="zone-map2"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/zone-map3.png" alt="zone-map3"></p>
+<ul>
+<li>延迟实现(Late Materialization)</li>
+</ul>
+<h5 id="Late-Materialization"><a href="#Late-Materialization" class="headerlink" title="Late Materialization"></a>Late Materialization</h5><ul>
+<li>DBMS可以延迟将元组缝合到一起，直到查询计划执行到上部</li>
+</ul>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/late1.png" alt="late1"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/late2.png" alt="late2"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/late3.png" alt="late3"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/late4.png" alt="late4"></p>
+<ul>
+<li>堆聚类</li>
+</ul>
+<h5 id="Heap-Clustering"><a href="#Heap-Clustering" class="headerlink" title="Heap Clustering"></a>Heap Clustering</h5><p>使用聚集索引指定的顺序对堆页中的元祖进行排序。</p>
+<p>如果查询使用集群索引的属性访问元组，那么DBMS可以直接跳转到它需要的页面。</p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/heap-cluster1.png" alt="heap-cluster1"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/heap-cluster2.png" alt="heap-cluster2"></p>
+<h5 id="索引扫描"><a href="#索引扫描" class="headerlink" title="索引扫描"></a>索引扫描</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM students</span><br><span class="line">WHERE age &lt; 30</span><br><span class="line">AND dept = &apos;CS&apos;</span><br><span class="line">AND country = &apos;US&apos;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>假设我们有一个表里面有100个元组和两个索引，索引1 age 索引2 dept</li>
+</ul>
+<p><strong>多索引扫描</strong></p>
+<ul>
+<li>如果表中有多个索引供DBMS用于查询<ul>
+<li>对匹配的索引计算ids的集合</li>
+<li>根据查询的谓词组合这些集合（并集或者交集）</li>
+<li>检索纪录项并应用其余的检索条件</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM students</span><br><span class="line">WHERE age &lt; 30</span><br><span class="line">AND dept = &apos;CS&apos;</span><br><span class="line">AND country = &apos;US&apos;</span><br></pre></td></tr></table></figure>
+<p>上述语句的执行过程为</p>
+<ul>
+<li>首先通过age &lt; 30拿到记录的ids</li>
+<li>其次通过dept=’CS’拿到指定纪录的ids</li>
+<li>求它们的交集</li>
+<li><p>检索这些匹配出来的纪录检查country = ‘US’是否满足</p>
+</li>
+<li><p>集合交集操作可以通过位图、哈希表或Bloom过滤器完成。</p>
+</li>
+</ul>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/multi-index-scan1.png" alt="multi-index-scan1"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/multi-index-scan2.png" alt="multi-index-scan2"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/multi-index-scan3.png" alt="multi-index-scan3"></p>
+<h5 id="索引扫描页排序"><a href="#索引扫描页排序" class="headerlink" title="索引扫描页排序"></a>索引扫描页排序</h5><ul>
+<li>按照未出现在分类索引中的顺序检索元组效率很低</li>
+<li>DBMS可以首先找出它需要的所有元组，然后根据它们的页ID对它们进行排序</li>
+</ul>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/index-scan1.png" alt="index-scan1"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/index-scan2.png" alt="index-scan2"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/index-scan3.png" alt="index-scan3"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/index-scan4.png" alt="index-scan4"></p>
+<p><strong>表达式求值</strong></p>
+<ul>
+<li><p>DBMS将WHERE字句表示为表达式树</p>
+</li>
+<li><p>树中的节点表示不通的表达式类型</p>
+<ul>
+<li>比较 （=,&lt;,&gt;,!=）</li>
+<li>逻辑与 (AND)，逻辑或 (OR)</li>
+<li>数值运算操作(+,-,*,/,%)</li>
+<li>常量值</li>
+<li>元组属性引用</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/evalution-1.png" alt="evalution-1"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/evalution-2.png" alt="evalution-2"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/evalution-3.png" alt="evalution-3"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/evalution-4.png" alt="evalution-4"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/evalution-5.png" alt="evalution-5"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/evalution-6.png" alt="evalution-6"></p>
+<p><img src="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/evalution-7.png" alt="evalution-7"></p>
+</div><div class="tags"></div><div class="post-nav"><a class="pre" href="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/">CMU-DBMS-COURSE-11-NOTES</a><a class="next" href="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/">CMU-DBMS-COURSE-09-NOTES</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Parallel-Execution/" style="font-size: 15px;">Parallel Execution</a> <a href="/tags/Join-Algorithms/" style="font-size: 15px;">Join Algorithms</a> <a href="/tags/Concurrency-control-theory/" style="font-size: 15px;">Concurrency control theory</a> <a href="/tags/6-824视频/" style="font-size: 15px;">6.824视频</a> <a href="/tags/分布式系统6-824笔记/" style="font-size: 15px;">分布式系统6.824笔记</a> <a href="/tags/movies/" style="font-size: 15px;">movies</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-17-NOTES/">CMU-DBMS-COURSE-17-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/">CMU-DBMS-COURSE-16-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-15-NOTES/">CMU-DBMS-COURSE-15-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/">CMU-DBMS-COURSE-14-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/">CMU-DBMS-COURSE-13-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/10/Google-Spanner-Paper/">Google-Spanner-Paper</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/">CMU-DBMS-COURSE-12-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/">CMU-DBMS-COURSE-11-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/">CMU-DBMS-COURSE-10-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/">CMU-DBMS-COURSE-09-NOTES</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

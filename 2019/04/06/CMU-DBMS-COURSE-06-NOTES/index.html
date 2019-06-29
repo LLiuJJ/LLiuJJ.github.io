@@ -1,0 +1,161 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>CMU-DBMS-COURSE-06-NOTES | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">CMU-DBMS-COURSE-06-NOTES</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">CMU-DBMS-COURSE-06-NOTES</h1><div class="post-meta">Apr 6, 2019</div><div class="post-content"><p><strong>课程进度</strong></p>
+<ul>
+<li>前面我们讲了磁盘管理和缓冲池管理，现在我们将讨论如何支持DBMS的执行引擎从页面读取/写入数据。</li>
+<li>这涉及到两种重要的数据结构：哈希表（Hash Tables），树(Tree)</li>
+</ul>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/status.png" alt="status"></p>
+<ul>
+<li>数据库中用到这两种基础数据结构的组件：内部元数据；核心数据存储；临时数据存储；表索引</li>
+</ul>
+<p><strong>设计上的思考</strong></p>
+<ul>
+<li>数据组织：我们如何在内存/页面中布局数据结构，以及存储哪些信息以支持高效访问。</li>
+<li>并发控制：如何支持多线程同时访问数据结构而不出问题。</li>
+</ul>
+<p><strong>哈希表</strong></p>
+<ul>
+<li>哈希表实现了将键映射到值的关联数组抽象数据类型。</li>
+<li>它使用一个散列函数来计算数组中的偏移量，从中找到所需的值。</li>
+</ul>
+<p><strong>静态Hash表</strong></p>
+<ul>
+<li>为需要记录的每个元素分配一个槽的巨型数组。</li>
+<li>去找一个元素的时候，对key用数组元素的数量取模去找到它在数组中的偏移量。</li>
+</ul>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/static-hash1.png" alt="static-hash1"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/static-hash2.png" alt="static-hash2"></p>
+<ul>
+<li>假设你事先知道元素的数量，每个key都是唯一的，有一个完美的hash函数，确保如果 key1 != key2，则 hash(key1) != hash(key2)。</li>
+</ul>
+<p><strong>哈希函数</strong></p>
+<ul>
+<li>我们不想在连接算法中使用加密哈希函数。</li>
+<li>我们希望实现的哈希算法，速度快，碰撞率足够低。</li>
+<li>一些有名的哈希函数<ul>
+<li>MurmurHash（2008）：被设计成一个快速、通用的哈希函数。</li>
+<li>Google CityHash（2011）：基于MurmurHash2的设计思想；被设计成对小key(&lt; 64 bytes)哈希速度很快。</li>
+<li>Google FarmHash（2014）：Cityhash的新版本，有更低的碰撞率。</li>
+<li>CLHash（2016）：基于无进位乘法的快速散列函数。</li>
+</ul>
+</li>
+<li>这些哈希函数性能对比测试</li>
+</ul>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/hash-benchmark.png" alt="hash-benchmark"></p>
+<p><strong>静态哈希函数的方案</strong></p>
+<ul>
+<li>方法一：线性探针散列(Linear Probe Hashing)</li>
+<li>方法二：Robin Hood hashing</li>
+<li>方法三：Cuckoo Hashing</li>
+</ul>
+<p><strong>Linear Probe Hashing</strong></p>
+<ul>
+<li>一张巨大的充满了slot的表</li>
+<li><p>通过线性的去搜索表中的下一个空闲slot来解决冲突</p>
+<ul>
+<li>要确定元素是否存在，请散列到索引重的某个位置并扫描它</li>
+<li>必须将key存储在索引中才能知道何时停止扫描</li>
+</ul>
+</li>
+<li><p>算法具体流程</p>
+</li>
+</ul>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/probe-hash.png" alt="probe-hash"></p>
+<ul>
+<li>示例</li>
+</ul>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/liner-probe1.png" alt="liner-probe1"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/liner-probe2.png" alt="liner-probe2"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/liner-probe3.png" alt="liner-probe3"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/liner-probe4.png" alt="liner-probe4"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/liner-probe5.png" alt="liner-probe5"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/liner-probe6.png" alt="liner-probe6"></p>
+<p><strong>Robin Hood Hashing</strong></p>
+<ul>
+<li>Linear probe hashing的变种，从“富”键中窃取插槽，并将其提供给“差”键。</li>
+<li>每个键跟踪它们在表中最佳位置的位置的数量</li>
+<li>插入时，如果第一个key比第二个key离其最佳位置更远，则key会占用另一个key的槽</li>
+<li>示例</li>
+</ul>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/robin-hash1.png" alt="robin-hash1"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/robin-hash2.png" alt="robin-hash2"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/robin-hash3.png" alt="robin-hash3"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/robin-hash4.png" alt="robin-hash4"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/robin-hash5.png" alt="robin-hash5"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/robin-hash6.png" alt="robin-hash6"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/robin-hash7.png" alt="robin-hash7"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/robin-hash8.png" alt="robin-hash8"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/robin-hash9.png" alt="robin-hash9"></p>
+<p><strong>CUCKOO HASHING</strong></p>
+<ul>
+<li>使用具有不同哈希函数的多个哈希表</li>
+<li>在插入时，检查每一张表并挑选任何一个有空闲slot的</li>
+<li>如果没有表有空闲的slot，则其中一个表移出元素，然后重新散列以找到一个新的位置</li>
+<li>查找和删除都是O(1)，因为每个hash表只检查一个位置</li>
+</ul>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/cuckoo-hash1.png" alt="cuckoo-hash1"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/cuckoo-hash2.png" alt="cuckoo-hash2"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/cuckoo-hash3.png" alt="cuckoo-hash3"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/cuckoo-hash4.png" alt="cuckoo-hash4"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/cuckoo-hash5.png" alt="cuckoo-hash5"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/cuckoo-hash6.png" alt="cuckoo-hash6"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/cuckoo-hash7.png" alt="cuckoo-hash7"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/cuckoo-hash8.png" alt="cuckoo-hash8"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/cuckoo-hash9.png" alt="cuckoo-hash9"></p>
+<ul>
+<li>确保移动键的时候不会陷入无限循环</li>
+<li>如果我们找到一个循环，那么我们可以用新的哈希函数来重建真个哈希表</li>
+<li>对于两个散列函数，我们（可能）不需要重建表，直到它满到50%</li>
+<li>对于三个哈希函数，我们（可能）不需要重新构建表，直到它达到大约90%的满值</li>
+</ul>
+<p><strong>总结</strong></p>
+<ul>
+<li>前面的哈希表要求知道要提前存储元素的数量</li>
+<li>如果需要增大/缩小，则需要重新生成整个表</li>
+<li>动态哈希表可以能够按需增长/收缩</li>
+</ul>
+<p><strong>链式散列</strong></p>
+<ul>
+<li>维护哈希表中每个槽的桶的链接列表</li>
+<li>通过将具有相同哈希键的所有元素放入同一个存储桶来解决冲突</li>
+<li>要确定元素是否存在，请散列到其bucket并扫描它</li>
+</ul>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/chained-hash1.png" alt="chained-hash1"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/chained-hash2.png" alt="chained-hash2"></p>
+<ul>
+<li>哈希表可以无限增长，因为你只需不断向链接列表中添加新的存储桶</li>
+<li>你只需要在bucket上使用一个闩锁来存储一个新条目或扩展链接链表</li>
+</ul>
+<p><strong>可扩展散列</strong></p>
+<ul>
+<li>我们将桶拆分，而不是让链表永远增长。</li>
+<li>这要求拆分时重新调整条目，但是更改已经本地化</li>
+</ul>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/extendible-hash1.png" alt="extendible-hash1"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/extendible-hash2.png" alt="extendible-hash2"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/extendible-hash3.png" alt="extendible-hash3"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/extendible-hash4.png" alt="extendible-hash4"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/extendible-hash5.png" alt="extendible-hash5"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/extendible-hash6.png" alt="extendible-hash6"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/extendible-hash7.png" alt="extendible-hash7"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/extendible-hash8.png" alt="extendible-hash8"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/extendible-hash9.png" alt="extendible-hash9"></p>
+<p><strong>Linear Hashing</strong></p>
+<ul>
+<li>保持跟踪下一个要拆分的存储桶的指针</li>
+<li>在任何通溢出的时候，在指针位置拆分桶</li>
+<li>溢出条件由实际条件决定<ul>
+<li>空间利用</li>
+<li>溢出链平均长度</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/linear-hash1.png" alt="linear-hash1"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/linear-hash2.png" alt="linear-hash2"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/linear-hash3.png" alt="linear-hash3"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/linear-hash4.png" alt="linear-hash4"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/linear-hash6.png" alt="linear-hash6"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/linear-hash7.png" alt="linear-hash7"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/linear-hash8.png" alt="linear-hash8"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/linear-hash9.png" alt="linear-hash9"></p>
+<p><img src="/2019/04/06/CMU-DBMS-COURSE-06-NOTES/linear-hash10.png" alt="linear-hash10"></p>
+</div><div class="tags"></div><div class="post-nav"><a class="pre" href="/2019/04/07/CMU-DBMS-COURSE-07-NOTES/">CMU-DBMS-COURSE-07-NOTES</a><a class="next" href="/2019/04/06/CMU-DBMS-COURSE-05-NOTES/">CMU-DBMS-COURSE-05-NOTES</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Parallel-Execution/" style="font-size: 15px;">Parallel Execution</a> <a href="/tags/Join-Algorithms/" style="font-size: 15px;">Join Algorithms</a> <a href="/tags/Concurrency-control-theory/" style="font-size: 15px;">Concurrency control theory</a> <a href="/tags/6-824视频/" style="font-size: 15px;">6.824视频</a> <a href="/tags/分布式系统6-824笔记/" style="font-size: 15px;">分布式系统6.824笔记</a> <a href="/tags/movies/" style="font-size: 15px;">movies</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-17-NOTES/">CMU-DBMS-COURSE-17-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/">CMU-DBMS-COURSE-16-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-15-NOTES/">CMU-DBMS-COURSE-15-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/">CMU-DBMS-COURSE-14-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/">CMU-DBMS-COURSE-13-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/10/Google-Spanner-Paper/">Google-Spanner-Paper</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/">CMU-DBMS-COURSE-12-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/">CMU-DBMS-COURSE-11-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/">CMU-DBMS-COURSE-10-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/">CMU-DBMS-COURSE-09-NOTES</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

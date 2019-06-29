@@ -232,7 +232,9 @@ div {
     .post .post-content pre code {
       padding: 0 2em; }
     .post .post-content p {
-      margin: 0 0 1.234em; }
+      margin: 0 0 1.234em;
+      word-break: break-word;
+      overflow-wrap: break-word; }
       .post .post-content p code {
         display: inline-block;
         margin: 0 5px;
@@ -889,6 +891,15 @@ figure.highlight,
 .highlight.c .code .built_in {
   color: #0086b3; }
 
+.highlight.clj .code .builtin-name {
+  color: #df5000; }
+
+.highlight.clj .code .name {
+  color: #795da3; }
+
+.highlight.clj .code .number {
+  color: #0086b3; }
+
 .highlight.cs .code .preprocessor,
 .highlight.cs .code .preprocessor .keyword {
   color: #333; }
@@ -1165,6 +1176,12 @@ figure.highlight,
 .highlight.less .selector-class,
 .highlight.less .selector-tag {
   color: #795da3; }
+
+.highlight.lisp .code .name {
+  color: #df5000; }
+
+.highlight.lisp .code .number {
+  color: #0086b3; }
 
 .highlight.scss .tag,
 .highlight.scss .at_rule,

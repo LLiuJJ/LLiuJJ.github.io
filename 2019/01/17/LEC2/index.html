@@ -1,0 +1,203 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>LEC2 | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">LEC2</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">LEC2</h1><div class="post-meta">Jan 17, 2019</div><div class="post-content"><h4 id="基础设施-RPC-和-线程"><a href="#基础设施-RPC-和-线程" class="headerlink" title="基础设施: RPC 和 线程"></a>基础设施: RPC 和 线程</h4><p><strong>一个最常被问到的问题:为什么使用Go</strong></p>
+<p><strong><em>6.824这门课原先是使用C++的</em></strong></p>
+<p>学生花了很多时间去修与构建分布式系统无关的bug</p>
+<p>例如C++编程里面一个创建对象的问题，学生free了还需要使用的对象</p>
+<p><strong><em>Go 语言可以让你更专注的处理分布式系统的问题</em></strong></p>
+<p>1.Go语言是类型安全的</p>
+<p>2.它有垃圾收集器（不会存在对象没有free导致的程序bug）</p>
+<p>3.对并发编程的支持很友好</p>
+<p>4.对RPC的支持很友好</p>
+<p><strong><em>我们喜欢用Go编程</em></strong></p>
+<p>1.Go很容易学习</p>
+<p>2.Go语言推荐资料 <a href="https://golang.org/doc/effective_go.html#generality" target="_blank" rel="noopener">https://golang.org/doc/effective_go.html#generality</a></p>
+<p><strong>远程过程调用 (RPC)</strong></p>
+<p>1.分布式系统中的关键部分，所有的lab都使用到了RPC，它使得网络交互的程序更容易编写</p>
+<p>2.隐藏了客户端/服务器通信的大部分细节</p>
+<p>3.通过RPC客户端的远程调用就像普通的过程调用</p>
+<p>4.服务器的处理程序和普通的程序类似</p>
+<p>5.RPC被广泛使用</p>
+<p><strong>理想情况下，RPC使得网络通信看起来就像函数的调用</strong></p>
+<p>客户端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">z = fn(x, y)</span><br></pre></td></tr></table></figure>
+<p>服务器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">fn(x, y) &#123;</span><br><span class="line">    compute</span><br><span class="line">    return z</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RPC旨在实现这种透明度的调用</p>
+<p>Go语言RPC的库 <a href="https://golang.org/pkg/net/rpc/" target="_blank" rel="noopener">https://golang.org/pkg/net/rpc/</a></p>
+<p><strong>RPC 消息图</strong></p>
+<p>Client                Server</p>
+<p>request —&gt;</p>
+<p>​            &lt;— response</p>
+<p><strong>软件架构</strong></p>
+<p>客户端应用存根            处理调用</p>
+<p>RPC 库                    RPC库</p>
+<p>Net   ——————————   Net</p>
+<p><strong>更多的细节</strong></p>
+<p>1.要调用服务器的那个处理函数</p>
+<p>2.Marshalling（编组）：将数据格式化为数据包</p>
+<p>​    1）处理数组、指针和对象是很棘手的</p>
+<p>​    2）Go的RPC库是相当强大的</p>
+<p>​    3）有一些东西你不能传送：例如，channels（通道）,functions（函数）</p>
+<p>3.Binding（绑定）:客户端如何知道与谁交互?</p>
+<p>​       1）客户端被提供了服务器的主机名</p>
+<p>​       2）也许名称服务将服务映射到最佳的服务器主机</p>
+<p>4.线程：</p>
+<p>​    1）客户端可能启动很多线程，所以1个以上的调用未完成，匹配响应</p>
+<p>​    2）处理程序可能很慢，因此服务器经常在每一个线程中运行每个处理程序</p>
+<p><strong>RPC问题：如何处理失败</strong></p>
+<p>​    例如：数据包丢失、网络中断、服务器速度慢、服务器崩溃</p>
+<p><strong>客户端RPC库中的故障是什么样的?</strong></p>
+<p>1.客户端从未收到服务器的响应</p>
+<p>2.客户端不知道服务器是否能看到请求</p>
+<p>3.可能服务器或者网络在发送回复之前失败了</p>
+<p><strong>最简单的方案：“至少一次”行为</strong></p>
+<p>1.RPC库等待响应一段时间</p>
+<p>2.如果没有响应到达，重新发送请求</p>
+<p>3.多次尝试</p>
+<p>4.仍然没有响应的话，向应用程序返回一个错误</p>
+<p>5.问题：应用程序容易处理至少一次的操作吗？</p>
+<p>​    至少一次：客户端发送“从银行账户中扣除5美元”</p>
+<p>6.问题：这个客户端程序有什么问题？</p>
+<p>​    put(“k”, 10) 通过RPC在数据库服务器中设置key的值    </p>
+<p>​    put(“k”, 20) 然后客户端执行第二次put操作到同一个key</p>
+<p>7.问题：至少一次总是OK的吗？</p>
+<p>​    1）重复操作是可以的，例如只读操作</p>
+<p>​    2）如果应用程序有自己对于写副本的执行计划</p>
+<p><strong>更好的PRC行为：“至多一次”</strong></p>
+<p>1.想法：服务器RPC代码检测重复请求</p>
+<p>2.返回上一个reply，而不是重新运行处理程序</p>
+<p><strong>如何检测重复的请求</strong></p>
+<p>1.客户端在每个请求中都包含一个唯一ID（xid）使用相同的xid重新发送    </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">server:</span><br><span class="line">if seen[xid]:</span><br><span class="line">	r = old[xid]</span><br><span class="line">else</span><br><span class="line">	r = handler()</span><br><span class="line">	old[xid] = r</span><br><span class="line">	seen[xid] = true</span><br></pre></td></tr></table></figure>
+<p><strong>至多一次请求的复杂之处</strong></p>
+<p>1.这将在实验2和以后的实验中出现</p>
+<p>2.如何确保XID是唯一的？</p>
+<p>​    大的随机数？</p>
+<p>​    合并唯一客户端ID（IP地址？）有序列？</p>
+<p>​    服务器必须最终放弃优化旧的RPC的信息</p>
+<p>​    1）什么时候丢弃是安全的</p>
+<p>​    想法：</p>
+<p>​    唯一的客户端ID</p>
+<p>​    上一次客户端RPC请求的序列号</p>
+<p>​    客户端的每一个RPCC包含”seen all replies &lt;= X”</p>
+<p>​    像TCP的sequence号一样</p>
+<p>​    或者一次只允许一个客户端PRC</p>
+<p>​    当seq + 1到达允许服务器放弃所有的 &lt;= seq 的请求</p>
+<p>​    或者客户端同意小于5分钟的重试，5分钟后服务器放弃</p>
+<p>如何处理相同的请求当原来的请求仍然在执行？</p>
+<p>​    服务器不知道要回复，不想重复运行</p>
+<p>​    想法：给每个正在执行的RPC设置一个”pending” flag；等待或者忽略相同的请求</p>
+<p><strong>当一个 at-most-once 服务器宕机和重启怎么办？</strong></p>
+<p>1.如果内存中最多有一次重复的信息，服务器将忘记重新启动后接受重复请求</p>
+<p>2.也许它应该吧重复的信息写到磁盘？</p>
+<p>3.也许副本服务器也应该复制重复的信息？</p>
+<p><strong>“一次就好”怎么样？</strong></p>
+<p>最多一次加上无限制的重试加上容错服务</p>
+<p><strong>Go的RPC是 “at-most-once”</strong></p>
+<p>1.打开TCP连接</p>
+<p>2.向TCP连接中写入请求</p>
+<p>3.TCP可以重新传输，但服务器的TCP将过滤掉重复的请求</p>
+<p>4.Go的代码里面没有重试</p>
+<p>5.Go RPC代码在没有得到回复的时候会返回一个error</p>
+<p>1）可能在一个TCP超时之后</p>
+<p>2）可能服务器没有看到请求</p>
+<p>3）可能服务器执行了请求，但是在回复到达客户端之前服务或者网络失败</p>
+<p><strong>Go RPC的 at-most-once 不足以应对Lab1</strong></p>
+<p>1.它只适用于单个RPC调用</p>
+<p>2.如果一个worker没有响应，master会重新发请求给其他的worker，但是原来的worker上的任务可能没有失败</p>
+<p>3.Go的RPC不能检测出这种重复</p>
+<p>1）在lab1中没问题，它在应用层处理了</p>
+<p>2）Lab2需要明确的检测重复提交</p>
+<p><strong>线程</strong></p>
+<p>1.线程是一个基本的服务结构工具</p>
+<p>2.你将会在lab中广泛的使用它</p>
+<p>3.它们可能很棘手</p>
+<p>4.但是对PRC非常有用</p>
+<p>5.Go称它们为Goroutines，也有很多人称它们为线程</p>
+<p><strong>Thread = “Thread of control”</strong></p>
+<p>1.多线程允许程序逻辑上在同一时刻同时做很多事情</p>
+<p>2.线程共享内存</p>
+<p>3.线程之间共享程序计数器，寄存器，栈空间</p>
+<p><strong>多线程的一些挑战</strong></p>
+<p>1.共享数据</p>
+<p>1）两个线程如果同时修改了相同的变量会怎么样？</p>
+<p>2）一个线程正在读数据，另一个线程改变数据呢？</p>
+<p>3）需要保护共享数据上的不变量</p>
+<p>4）使用Go sync.Mutex锁</p>
+<p>2.线程之间的通过</p>
+<p>例如：等待所有的Map线程完成</p>
+<p>使用Go channels</p>
+<p>3.死锁</p>
+<p>1）线程1等待线程2</p>
+<p>2）线程2等待线程1</p>
+<p>4.锁粒度</p>
+<p>1）粗粒度-&gt;实现简单，但是并发性能不好</p>
+<p>2）细粒度-&gt;更好的并发性能，更多的锁竞争(races)和死锁</p>
+<p>5.让我们来看labrpc 包里如何解决这些问题</p>
+<p>1）它类似于Go的RPC系统，但是网络是一个模拟网络</p>
+<ul>
+<li>网络延迟请求和响应</li>
+<li>网络丢包请求和响应</li>
+<li>网络的重发请求和响应</li>
+</ul>
+<p>2）说明 threads，mutexes，channels的用法</p>
+<p>3）使用Go实现了一个完整的RPC包</p>
+<p><strong>网络的结构</strong></p>
+<p>1.网络的描述</p>
+<p>1）服务器</p>
+<p>2）客户端</p>
+<p>2.每个网络都是互斥的</p>
+<p><strong>RPC概述</strong></p>
+<p>1.在test_test.go文件里面有很多例子</p>
+<p>2.应用调用RPC</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reply := end.Call(&quot;Raft.AppendEntries&quot;, args, &amp;reply) //发出一个RPC请求，等待回复</span><br></pre></td></tr></table></figure>
+<p>3.服务端</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">srv := MakeServer()</span><br><span class="line">srv.AddService(svc) -- 一个服务器可以有多种服务</span><br></pre></td></tr></table></figure>
+<p>4.k/v</p>
+<p>将srv传递给 net.AddServer()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">svc := MakeService(recevierPbject) -- obj&apos;s 方法会处理RPC请求</span><br></pre></td></tr></table></figure>
+<p>非常像Go的rpcs.Register()</p>
+<p>传递svc给 srv.AddService()</p>
+<p>5.服务器的数据结构</p>
+<p>1）AddService()</p>
+<p>添加一个服务名</p>
+<p>问题：为什么使用锁？</p>
+<p>问题：什么事defer()？</p>
+<p>2）Dispatch()</p>
+<p>分发一个请求到正确的服务</p>
+<p>问题：为什么持有锁？</p>
+<p>问题：为什么持有锁的范围互道函数的末尾？</p>
+<p>3）Call()</p>
+<p>使用反射查找参数的类型</p>
+<p>使用gob编码参数</p>
+<p>e.ch 是网络发送请求的通道</p>
+<p>使用一个通道来接收网络的回复（&lt;- req.replyCh）</p>
+<p>4）MakeEnd()</p>
+<p>有一个模拟网络的线程/goroutine</p>
+<p>从e.ch中读取并处理请求</p>
+<p>每个请求都在一个单独的goroutine中处理</p>
+<p>Q：一个endpoint 可以有很多未完成的请求吗</p>
+<p>Q：为什么使用rn.mu.Lock()？</p>
+<p>Q：锁保护了什么？</p>
+<p>5）ProcessReq()</p>
+<p>查找一个服务endpoint</p>
+<p>如果网络不可靠，可能会延迟或者丢失请求</p>
+<p>分发请求到一个新的线程</p>
+<p>通过读取ech中的数据等待服务端回复直到100ms过去</p>
+<p>100ms只是用来验证服务器是不是宕机了</p>
+<p>然后回复</p>
+<p>Q：谁将会读取回复？</p>
+<p>Q：如果ProcessReq不持有rn的锁可以吗？</p>
+<p>6）Service.dispatch()</p>
+<p>给请求找到一个处理的方法</p>
+<p>解码参数</p>
+<p>调用函数</p>
+<p>编码回复</p>
+<p>返回回复信息</p>
+<p>Go的内存模型需要显示同步才能进行通信</p>
+<p>下面代码是不正确的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var x int</span><br><span class="line">done := false</span><br><span class="line">go func() &#123; x = f(...); done = true &#125;</span><br><span class="line">while done == false &#123; &#125;</span><br></pre></td></tr></table></figure>
+<p>这是一个非常诱人的写法，但是Go会说这是为定义的</p>
+<p>使用通道或者sync.WaitGroup代替</p>
+<p><strong>学习Go的goroutines和channels</strong></p>
+<p><a href="https://golang.org/doc/articles/race_detector.html" target="_blank" rel="noopener">https://golang.org/doc/articles/race_detector.html</a></p>
+</div><div class="tags"><a href="/tags/分布式系统6-824笔记/">分布式系统6.824笔记</a></div><div class="post-nav"><a class="pre" href="/2019/01/24/LEC3/">LEC3</a><a class="next" href="/2019/01/17/LEC20-vedio/">LEC20-vedio</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Parallel-Execution/" style="font-size: 15px;">Parallel Execution</a> <a href="/tags/Join-Algorithms/" style="font-size: 15px;">Join Algorithms</a> <a href="/tags/Concurrency-control-theory/" style="font-size: 15px;">Concurrency control theory</a> <a href="/tags/6-824视频/" style="font-size: 15px;">6.824视频</a> <a href="/tags/分布式系统6-824笔记/" style="font-size: 15px;">分布式系统6.824笔记</a> <a href="/tags/movies/" style="font-size: 15px;">movies</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-17-NOTES/">CMU-DBMS-COURSE-17-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/">CMU-DBMS-COURSE-16-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-15-NOTES/">CMU-DBMS-COURSE-15-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/">CMU-DBMS-COURSE-14-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/">CMU-DBMS-COURSE-13-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/10/Google-Spanner-Paper/">Google-Spanner-Paper</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/">CMU-DBMS-COURSE-12-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/">CMU-DBMS-COURSE-11-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/">CMU-DBMS-COURSE-10-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/">CMU-DBMS-COURSE-09-NOTES</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

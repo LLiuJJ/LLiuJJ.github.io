@@ -1,0 +1,210 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>CMU-DBMS-COURSE-12-NOTES | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">CMU-DBMS-COURSE-12-NOTES</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">CMU-DBMS-COURSE-12-NOTES</h1><div class="post-meta">Jun 9, 2019</div><div class="post-content"><h5 id="Why-do-we-need-to-join"><a href="#Why-do-we-need-to-join" class="headerlink" title="Why do we need to join?"></a>Why do we need to join?</h5><p>We normalize(标准化) tables in a relational database to avoid unnecessary repetition(重复) of information.</p>
+<p>We use the join operate to reconstruct(重建) the original tuples without any information loss.</p>
+<h5 id="Normalized-tables"><a href="#Normalized-tables" class="headerlink" title="Normalized tables"></a>Normalized tables</h5><p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/Normalized-tables.png" alt="Normalized-tables"></p>
+<h5 id="Join-Algorithms"><a href="#Join-Algorithms" class="headerlink" title="Join Algorithms"></a>Join Algorithms</h5><p>We will focus on joining two tables at a time. In general, we want the smaller table to always be the outer table.</p>
+<h5 id="Join-Operator-Output"><a href="#Join-Operator-Output" class="headerlink" title="Join Operator Output"></a>Join Operator Output</h5><p>For a tuple r belong to R and a tuple s belong to S that match on join attributes, concatenate(连接) r and s together into a new tuple.</p>
+<p>Contents can vary(变化):</p>
+<ul>
+<li>Depends on processing model</li>
+<li>Depends on storage model</li>
+<li>Depends on the query</li>
+</ul>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/Join-OPERATOR-1.png" alt="Join-OPERATOR-1"></p>
+<h5 id="Join-operator-output-data"><a href="#Join-operator-output-data" class="headerlink" title="Join operator output: data"></a>Join operator output: data</h5><p>Copy the values for the attributes in outer and inner tuples into a new output tuple.</p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/JOIN-OPERATOR-OUTPUT-DATA-1.png" alt="JOIN-OPERATOR-OUTPUT-DATA-1"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/JOIN-OPERATOR-OUTPUT-DATA-2.png" alt="JOIN-OPERATOR-OUTPUT-DATA-2"></p>
+<p>Subsequent operators in the query plan never need to go back to the base tables to get more data.</p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/JOIN-OPERATOR-OUTPUT-DATA-3.png" alt="JOIN-OPERATOR-OUTPUT-DATA-3"></p>
+<h5 id="Join-Operator-output-record-ids"><a href="#Join-Operator-output-record-ids" class="headerlink" title="Join Operator output: record ids"></a>Join Operator output: record ids</h5><p>Only copy the joins keys along with the record ids of the matching tuples.</p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/JOIN-OPERATOR-OUTPUT-RECORD-IDS-1.png" alt="JOIN-OPERATOR-OUTPUT-RECORD-IDS-1"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/JOIN-OPERATOR-OUTPUT-RECORD-IDS-2.png" alt="JOIN-OPERATOR-OUTPUT-RECORD-IDS-2"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/JOIN-OPERATOR-OUTPUT-RECORD-IDS-3.png" alt="JOIN-OPERATOR-OUTPUT-RECORD-IDS-3"></p>
+<p>Ideal for column stores because the DBMS does not copy data that is not need for the query.</p>
+<p>This is called late materialization.</p>
+<h5 id="Simple-nested-loop-join"><a href="#Simple-nested-loop-join" class="headerlink" title="Simple nested loop join"></a>Simple nested loop join</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">foreach tuple r ∈ R : &lt;- Outer</span><br><span class="line">	foreach tuple s ∈ S : &lt;- Inner</span><br><span class="line">	 emit , if r and s match</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/SIMPLE-NESTED-LOOP-JOIN-1.png" alt="SIMPLE-NESTED-LOOP-JOIN-1"></p>
+<p>Why is this algorithm bad?</p>
+<p>-&gt; For every tuple in R, it scans S once</p>
+<p><strong>Cost：M + (m * N)</strong></p>
+<p>Example database:</p>
+<p>-&gt; M = 1000, m = 100,000</p>
+<p>-&gt; N = 500, n = 40,000</p>
+<p>Cost Analysis:</p>
+<p>-&gt; M + (m <em> N) = 1000 + (100000 </em> 500) = 50,000,100 IOs</p>
+<p>-&gt; At 0.1 ms/IO, Total time = 1.3 hours</p>
+<p>What if smaller table（S）is used as the outer table?</p>
+<p>-&gt; N + (n <em> M) = 500 + (40000 </em> 1000) = 40,000,500 Ios</p>
+<p>-&gt; At 0.1 ms/IO, Total time = 1.1 hours</p>
+<h5 id="Block-nested-嵌套-loop-join"><a href="#Block-nested-嵌套-loop-join" class="headerlink" title="Block nested(嵌套) loop join"></a>Block nested(嵌套) loop join</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">foreach block BR ∈ R:</span><br><span class="line">	foreach block BS ∈ S:</span><br><span class="line">		foreach tuple r ∈ BR:</span><br><span class="line">			foreach tuple s ∈ Bs:</span><br><span class="line">				emit, if r and s match</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/BLOCK-NESTED-LOOP-JOIN-1.png" alt="BLOCK-NESTED-LOOP-JOIN-1"></p>
+<p>This algorithm performs fewer disk accesses.</p>
+<p>-&gt; for every block in R, it scans S one</p>
+<p>Cost: M + (M* N)</p>
+<p>Which one should be the outter table?</p>
+<ul>
+<li>The smaller table in terms of # of pages</li>
+</ul>
+<p>Example databases:</p>
+<p>-&gt; M = 1000, m = 100,000</p>
+<p>-&gt; N = 500, n = 40,000</p>
+<p>Cost Analysis:</p>
+<p>-&gt; M + (M <em> N) = 1000 + (1000 </em> 500) = 501,000 IOs</p>
+<p>-&gt; At 0.1 ms/IO, Total time = 50 seconds</p>
+<p>What if we have B buffers available?</p>
+<p>-&gt; Use B-2 buffers for scanning the outer table.</p>
+<p>-&gt; Use one buffer for the inner table, one buffer for storing output.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">foreach B - 2 blocks b(R) ∈ R</span><br><span class="line">	foreach block b(S) ∈ S</span><br><span class="line">		foreach tuple r ∈ b(R)</span><br><span class="line">			foreach	tuple s ∈ b(S)</span><br><span class="line">				emit , if r and s match</span><br></pre></td></tr></table></figure>
+<p>This algorithm uses B-2 buffers for scanning R.</p>
+<p>Cost: M + ([M / (B - 2)] * N) (向上取整)</p>
+<p>What of the outer relation completely fits in memory(B &gt; M + 2)?</p>
+<p>-&gt; Cost: M + N = 1000 + 500 = 1500 IOs</p>
+<p>-&gt; At 0.1 ms/IO, Total time = 0.15 seconds</p>
+<h5 id="Index-nested（嵌套的）-loop-join"><a href="#Index-nested（嵌套的）-loop-join" class="headerlink" title="Index nested（嵌套的） loop join"></a>Index nested（嵌套的） loop join</h5><p>Why do basic nested  loop joins suck ass(很糟糕)?</p>
+<ul>
+<li>For each tuple in the outer table, we have to do a sequential(顺序的) scan to check for a match in the inner table.</li>
+</ul>
+<p>Can we accelerate(加快) the join using an index?</p>
+<p>Use an index to find inner table matches.</p>
+<ul>
+<li>We could use an existing index for the join.</li>
+<li>Or even build one on the fly.</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">foreach tuple r ∈ R:</span><br><span class="line">	foreach tuple s ∈ Index r(i) = s(j)):</span><br><span class="line">		emit , if r and s match</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/INDEX-NESTED-LOOP-JOIN-1.png" alt="INDEX-NESTED-LOOP-JOIN-1"></p>
+<p>Assume the cost of each index probe is some constant C per tuple.</p>
+<p>Cost: M + (m * C)</p>
+<h5 id="Nested-loop-join"><a href="#Nested-loop-join" class="headerlink" title="Nested loop join"></a>Nested loop join</h5><p>Pick the smaller table as the outer table.</p>
+<p>Buffer as much of the outer table in memory as possible.</p>
+<p>Loop over the inner table or use an index.</p>
+<h5 id="Sort-merge-join"><a href="#Sort-merge-join" class="headerlink" title="Sort-merge join"></a>Sort-merge join</h5><p>Phase #1: Sort</p>
+<ul>
+<li>Sort both tables on the join key(s).</li>
+<li>Can use the external merge sort algorithm that we talked about last class.</li>
+</ul>
+<p>Phase #2: Merge</p>
+<ul>
+<li>Step through the two sorted tables in parallel, and emit matching tuples.</li>
+<li>My need to backtrack(回溯) depending on the join type.</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">sort R,S on join keys</span><br><span class="line">cursor(R) &lt;- R(sorted), cursor(S)&lt;- S(sorted)</span><br><span class="line">while cursor(R) and cursor(S)</span><br><span class="line">	if cursor(R) &gt; cursor(S):</span><br><span class="line">		increment cursor(S)</span><br><span class="line">	if cursor(R) &lt; cursor(S):</span><br><span class="line">		increment cursor(R)</span><br><span class="line">	elif cursor(R) and cursor(S) matcg:</span><br><span class="line">		emit</span><br><span class="line">		increment cursor(S)</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/SORT-MERGE-JOIN-1.png" alt="SORT-MERGE-JOIN-1"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/SORT-MERGE-JOIN-2.png" alt="SORT-MERGE-JOIN-2"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/SORT-MERGE-JOIN-3.png" alt="SORT-MERGE-JOIN-3"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/SORT-MERGE-JOIN-4.png" alt="SORT-MERGE-JOIN-4"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/SORT-MERGE-JOIN-5.png" alt="SORT-MERGE-JOIN-5"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/SORT-MERGE-JOIN-6.png" alt="SORT-MERGE-JOIN-6"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/SORT-MERGE-JOIN-7.png" alt="SORT-MERGE-JOIN-7"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/SORT-MERGE-JOIN-8.png" alt="SORT-MERGE-JOIN-8"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/SORT-MERGE-JOIN-9.png" alt="SORT-MERGE-JOIN-9"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/SORT-MERGE-JOIN-10.png" alt="SORT-MERGE-JOIN-10"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/SORT-MERGE-JOIN-11.png" alt="SORT-MERGE-JOIN-11"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/SORT-MERGE-JOIN-12.png" alt="SORT-MERGE-JOIN-12"></p>
+<p>Sort Cost(R): 2M * (log M / log B)</p>
+<p>Sort Cost(S): 2N * (log N / log B)</p>
+<p>Merge Cost: (M + N)</p>
+<p>Total Cost: Sort + Merge</p>
+<p>Example database:</p>
+<p>-&gt; M = 1000, m = 100,000</p>
+<p>-&gt; N= 500, n = 40,000</p>
+<p>With 100 buffer pages, both R and S can be sorted in two passes:</p>
+<ul>
+<li>Sort Cost(R) = 2000 * (log 1000 / log 100) = 3000 IOs</li>
+<li>Sort Cost(S) = 1000 * (log 500 / log 100) = 1350 IOs</li>
+<li>Merge Cost = (1000 + 500) = 1500 IOs</li>
+<li>Total Cost = 3000 + 1350 + 1500 = 5850 IOs</li>
+<li>At 0.1 ms/IO, Total time = 0.59 seconds</li>
+</ul>
+<p>Cost: (M * N) + (sort cost)</p>
+<h5 id="When-is-sort-merge-join-useful"><a href="#When-is-sort-merge-join-useful" class="headerlink" title="When is sort-merge join useful?"></a>When is sort-merge join useful?</h5><p>One or both tables are already sorted on join key.</p>
+<p>Output must be sorted on join key.</p>
+<p>The input relations may be sorted by either by an explicit(明确的) sort operator, or by scanning the relation using an index on the join key.</p>
+<h5 id="Hash-join"><a href="#Hash-join" class="headerlink" title="Hash join"></a>Hash join</h5><p>If tuple <strong>r ∈ R</strong> and a tuple <strong>s ∈ S</strong> satisfy（满足） the join condition（条件）, then they have the same value for the join attributes.</p>
+<p>If that value is hashed to some value i, the R tuple has to be in r(i) and the S tuple in s(i).</p>
+<p>Therefore, R tuples in r(i) need only to be compared with S tuples in s(i).</p>
+<h5 id="Basic-hash-join-algorithm"><a href="#Basic-hash-join-algorithm" class="headerlink" title="Basic hash join algorithm"></a>Basic hash join algorithm</h5><p>Phase #1: Build</p>
+<p>Scan the outer relation and populate a hash table using the hash function h1 on join attributes.</p>
+<p>Phase #2: Probe</p>
+<p>Scan the inner relation and use h1 on each tuple to jump to a location in the hash table and find a matching tuple.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">build hash table HT(R) for R</span><br><span class="line">foreach	tuple s ∈ S</span><br><span class="line">	output , if h1 (s) ∈ HT(R)</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/BASIC-HASH-JOIN-ALGORITHM-1.png" alt="BASIC-HASH-JOIN-ALGORITHM-1"></p>
+<h5 id="Hash-table-contents"><a href="#Hash-table-contents" class="headerlink" title="Hash table contents"></a>Hash table contents</h5><p>Key: The attribute(s) that the query is joining the tables on.</p>
+<p>Value: Varies per implementation.</p>
+<p>Depends on what the operators above the join in the query plan expect as its input.</p>
+<h5 id="Hash-table-values"><a href="#Hash-table-values" class="headerlink" title="Hash table values"></a>Hash table values</h5><p>Approach #1: Full Tuple</p>
+<p>Avoid having to retrieve(检索) the outer relation’s tuple contents on a match.</p>
+<p>Takes up more space in memory.</p>
+<p>Approach #2: Tuple Identifier</p>
+<p>Ideal for column stores because the DBMS doesn’t fetch data from disk it doesn’t need.</p>
+<p>Also better if join selectivity(选择性) is low.</p>
+<h5 id="Hash-join-1"><a href="#Hash-join-1" class="headerlink" title="Hash join"></a>Hash join</h5><p>What happens if we do not have enough memory to fit the entire hash table?</p>
+<p>We do not want to let the buffer pool manager swap out the hash table pages at a random.</p>
+<h5 id="Grace-hash-join"><a href="#Grace-hash-join" class="headerlink" title="Grace hash join"></a>Grace hash join</h5><p>Hash join when tables don’t fit in memory.</p>
+<p>Build Phase: Hash both tables on the join attribute into partitions(分区)</p>
+<p>Probe(查看) Phase: Compares tuples in corresponding(相应的) partitions for each table.</p>
+<p>Named after the GRACE database machine from Japan.</p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/GRACE-HASH-JOIN-1.png" alt="GRACE-HASH-JOIN-1"></p>
+<p>Hash R into (0,1,…,max) buckets.</p>
+<p>Hash S into the same # of buckets with the same hash fuction.</p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/GRACE-HASH-JOIN-2.png" alt="GRACE-HASH-JOIN-2"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/GRACE-HASH-JOIN-3.png" alt="GRACE-HASH-JOIN-3"></p>
+<p>If the buckets do not fit in memory, then use recursive(递归的) partitioning to split the tables into chunks that will fit.</p>
+<p>Build another hash table for bucket(R,i) using hash function h2 (with h2 != h1)</p>
+<p>Then probe it for each tuple of the other table’s bucket at that level.</p>
+<h5 id="Recursive-partitioning"><a href="#Recursive-partitioning" class="headerlink" title="Recursive partitioning"></a>Recursive partitioning</h5><p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/RECURSIVE-PARTITIONING-1.png" alt="RECURSIVE-PARTITIONING-1"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/RECURSIVE-PARTITIONING-2.png" alt="RECURSIVE-PARTITIONING-2"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/RECURSIVE-PARTITIONING-3.png" alt="RECURSIVE-PARTITIONING-3"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/RECURSIVE-PARTITIONING-4.png" alt="RECURSIVE-PARTITIONING-4"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/RECURSIVE-PARTITIONING-5.png" alt="RECURSIVE-PARTITIONING-5"></p>
+<p><img src="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/RECURSIVE-PARTITIONING-6.png" alt="RECURSIVE-PARTITIONING-6"></p>
+<p>Cost of hash join?</p>
+<p>Assume that we have enough buffers.</p>
+<p>Cost: 3(M + N)</p>
+<p>Partitioning Phase:</p>
+<p>Read + Write both tables</p>
+<p>2(M + N) IOs</p>
+<p>Probing Phase:</p>
+<p>Read both tables</p>
+<p>M + N IOs</p>
+<p>Example database:</p>
+<p>M = 1000, m = 100,000</p>
+<p>N = 500, n = 40,000</p>
+<p>Cost analysis:</p>
+<p>3 <em> (M + N) = 3 </em> (1000 + 500) = 4,500 IOs</p>
+<p>At 0.1 ms/IO, Total time = 0.45 seconds</p>
+<h5 id="Join-algorithms-summary"><a href="#Join-algorithms-summary" class="headerlink" title="Join algorithms: summary"></a>Join algorithms: summary</h5><table>
+<thead>
+<tr>
+<th><strong>Algorithm</strong></th>
+<th><strong>IO Cost</strong></th>
+<th><strong>Example</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simple Nested Loop Join</td>
+<td><strong>M+ (m * N)</strong></td>
+<td>1.3 hours</td>
+</tr>
+<tr>
+<td>Block Nested Loop Join</td>
+<td><strong>M+ (M * N)</strong></td>
+<td>50 seconds</td>
+</tr>
+<tr>
+<td>Index Nested Loop Join</td>
+<td><strong>M+ (m * C)</strong></td>
+<td>~20 seconds</td>
+</tr>
+<tr>
+<td>Sort-Merge Join</td>
+<td><strong>M+ N+ (sort cost)</strong></td>
+<td>0.59 seconds</td>
+</tr>
+<tr>
+<td>Hash Join</td>
+<td><strong>3(M+ N)</strong></td>
+<td>0.45 seconds</td>
+</tr>
+</tbody>
+</table>
+</div><div class="tags"><a href="/tags/Join-Algorithms/">Join Algorithms</a></div><div class="post-nav"><a class="pre" href="/2019/06/10/Google-Spanner-Paper/">Google-Spanner-Paper</a><a class="next" href="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/">CMU-DBMS-COURSE-11-NOTES</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Parallel-Execution/" style="font-size: 15px;">Parallel Execution</a> <a href="/tags/Join-Algorithms/" style="font-size: 15px;">Join Algorithms</a> <a href="/tags/Concurrency-control-theory/" style="font-size: 15px;">Concurrency control theory</a> <a href="/tags/6-824视频/" style="font-size: 15px;">6.824视频</a> <a href="/tags/分布式系统6-824笔记/" style="font-size: 15px;">分布式系统6.824笔记</a> <a href="/tags/movies/" style="font-size: 15px;">movies</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-17-NOTES/">CMU-DBMS-COURSE-17-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/">CMU-DBMS-COURSE-16-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-15-NOTES/">CMU-DBMS-COURSE-15-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/">CMU-DBMS-COURSE-14-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/">CMU-DBMS-COURSE-13-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/10/Google-Spanner-Paper/">Google-Spanner-Paper</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/">CMU-DBMS-COURSE-12-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/">CMU-DBMS-COURSE-11-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/">CMU-DBMS-COURSE-10-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/">CMU-DBMS-COURSE-09-NOTES</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

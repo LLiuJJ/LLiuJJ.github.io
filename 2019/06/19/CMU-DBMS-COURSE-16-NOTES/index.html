@@ -1,0 +1,192 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>CMU-DBMS-COURSE-16-NOTES | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">CMU-DBMS-COURSE-16-NOTES</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">CMU-DBMS-COURSE-16-NOTES</h1><div class="post-meta">Jun 19, 2019</div><div class="post-content"><h5 id="Semester-学期-status"><a href="#Semester-学期-status" class="headerlink" title="Semester(学期) status"></a>Semester(学期) status</h5><p>A DBMS’s concurrency control and recovery components permeate(渗透) throughout the design of its entire architecture.</p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/Status.png" alt="Status"></p>
+<h5 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h5><p>We both change the same record in a table at the same time.</p>
+<p>How to avoid race(竞争) condition? (Lost Updates Concurrency Control)</p>
+<p>You transfer $100 between bank accounts but there is a power failure.</p>
+<p>What is the correct database state? (Durability Recovery)</p>
+<h5 id="Concurrency-control-amp-recovery"><a href="#Concurrency-control-amp-recovery" class="headerlink" title="Concurrency control &amp; recovery"></a>Concurrency control &amp; recovery</h5><p>Valuable properties of DBMSs (DBMS的重要特性)</p>
+<p>Based on concept of transactions with ACID properties.</p>
+<h5 id="Transactions"><a href="#Transactions" class="headerlink" title="Transactions"></a>Transactions</h5><p>A transaction is the execution of a sequence of one or more operations (e.g., SQL queries) on a shared database to perform some higher-level function.</p>
+<p>It is the basic unit of change in DBMS</p>
+<p><strong>Example</strong></p>
+<p>Move $100 from Andy’ bank account to his bookie’s account.</p>
+<p>Transaction:</p>
+<ul>
+<li><p>Check whether Andy has $100.</p>
+</li>
+<li><p>Deduct $100 from his account.</p>
+</li>
+<li><p>Add $100 to his bookie’s account.</p>
+</li>
+</ul>
+<h5 id="Strawman-System"><a href="#Strawman-System" class="headerlink" title="Strawman System"></a>Strawman System</h5><p>Execute each txn one-by-one(i.e., serial order) as they arrive at the DBMS.</p>
+<ul>
+<li>One and only one txn can be running at the same time in the DBMS.</li>
+</ul>
+<p>Before a txn starts, copy the entire database to a new file and make all changes to that file.</p>
+<ul>
+<li>If the txn completes successfully, overwrite the original file with the new one.</li>
+<li>If the txn fails, just remove the dirty copy.</li>
+</ul>
+<h5 id="Definitions"><a href="#Definitions" class="headerlink" title="Definitions"></a>Definitions</h5><p>A txn may carry out many operations on the data retrieved from the database</p>
+<p>However, the DBMS is only concerned about what data is read/written from/to the database.</p>
+<ul>
+<li>Changes to the “outside world” are beyond the scope of the DBMS.</li>
+</ul>
+<h5 id="Formal-Definitions"><a href="#Formal-Definitions" class="headerlink" title="Formal Definitions"></a>Formal Definitions</h5><p>Database: A fixed set of named data objects(e.g., A,B,C,…)</p>
+<ul>
+<li>We do not need to define what these objects are now</li>
+</ul>
+<p>Transaction: A sequence of read and write operations(R(A), W(B), …)</p>
+<ul>
+<li>DBMS’s abstract view of a user program</li>
+</ul>
+<h5 id="Transactions-in-SQL"><a href="#Transactions-in-SQL" class="headerlink" title="Transactions in SQL"></a>Transactions in SQL</h5><p>A new txn starts with the BEGIN command.</p>
+<p>The txn stops with either COMMIT or ABORT:</p>
+<ul>
+<li>If commit, all changes are saved.</li>
+<li>If abort, all changes are undone so that it’s like as if the txn never executed at all.</li>
+<li>Abort can be either self-inflicted or caused by the DBMS.</li>
+</ul>
+<h5 id="Correnctness-criteria-ACID"><a href="#Correnctness-criteria-ACID" class="headerlink" title="Correnctness criteria: ACID"></a>Correnctness criteria: ACID</h5><p><strong>Atomicity:</strong> All actions in the txn happen, or none happen.</p>
+<p><strong>Consistency:</strong> If each txn is consistent and the DB starts consistent, then it ends up consistent.</p>
+<p><strong>Isolation:</strong> Execution of one txn is isolated from that of other txns.</p>
+<p><strong>Durability:</strong> If a txn commits, its effects persist.</p>
+<h5 id="Atomicity-of-transactions"><a href="#Atomicity-of-transactions" class="headerlink" title="Atomicity of transactions"></a>Atomicity of transactions</h5><p>Two possible outcomes of executing a txn:</p>
+<ul>
+<li>Commit after completing all its actions.</li>
+<li>Abort(or be aborted by the DBMS) after executing some actions.</li>
+</ul>
+<p>DBMS guarantees that txns are atomic.</p>
+<ul>
+<li>From user’s point of view: txn always either executes all its actions, or executes no actions at all.</li>
+</ul>
+<p>We take $100 out of Andy’s account but then there is a power failure before we transfer it to his bookie.</p>
+<p><em>When the database comes back on-line, what should be the correct state of Andy’s account?</em></p>
+<h5 id="Mechanisms-机制-for-ensuring-atomicity"><a href="#Mechanisms-机制-for-ensuring-atomicity" class="headerlink" title="Mechanisms(机制) for ensuring atomicity"></a>Mechanisms(机制) for ensuring atomicity</h5><p><strong>Approach #1: Logging</strong></p>
+<ul>
+<li>DBMS logs all actions so that it can undo the actions of aborted transactions.</li>
+<li>Think of the like the black box in airplanes…</li>
+</ul>
+<p>Logging used by all modern systems.</p>
+<ul>
+<li>Audit Trail(审计跟踪) &amp; Efficiency Reasons</li>
+</ul>
+<p><strong>Approach #2: Shadow Paging</strong></p>
+<ul>
+<li>DBMS makes copies of pages and txns make changes to those copies. Only when the txn commits it the page made visible to others.</li>
+<li>Originally from System R.</li>
+</ul>
+<p>Few systems do this:</p>
+<ul>
+<li>CouchDB</li>
+<li>LMDB(OpenLDAP)</li>
+</ul>
+<h5 id="Consistency"><a href="#Consistency" class="headerlink" title="Consistency"></a>Consistency</h5><p>The “world” represented by the database is logically correct. All questions asked about the data are given logically correct answers.</p>
+<h5 id="Database-consistency"><a href="#Database-consistency" class="headerlink" title="Database consistency"></a>Database consistency</h5><p>The database accurately models the real world and follows integrity(完整性) constraints.</p>
+<p>Transactions in the future see the effects of transactions committed in the past inside of the database.</p>
+<h5 id="Transaction-consistency"><a href="#Transaction-consistency" class="headerlink" title="Transaction consistency"></a>Transaction consistency</h5><p>If the database is consistent before the transaction starts(running alone), it will also be consistent after.</p>
+<p>Transaction consistency is the application’s responsibility.</p>
+<h5 id="Isolatin-of-transactions"><a href="#Isolatin-of-transactions" class="headerlink" title="Isolatin of transactions"></a>Isolatin of transactions</h5><p>Users submit txns, and each txn executes as if it was running by itself.</p>
+<p>Concurrency is achieved by DBMS, which interleaves(交错) actions (reads/writes of DB objects) of various transactions.</p>
+<h5 id="Mechanisms-机制-for-ensuring-isolation"><a href="#Mechanisms-机制-for-ensuring-isolation" class="headerlink" title="Mechanisms(机制) for ensuring isolation"></a>Mechanisms(机制) for ensuring isolation</h5><p>A concurrency control protocol is how the DBMS decides the proper interleaving of operations from multiple transactions.</p>
+<p>Two categories of protocols:</p>
+<p><strong>Pessimistic:</strong> Don’t let problems arise in the first place.</p>
+<p><strong>Optimistic: </strong>Assume conflicts are rare, deal with them after they happen.</p>
+<h5 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example<img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/Exmple.png" alt="Exmple"></h5><p>Assume at first A and B each have $1000.</p>
+<p>T1 transfers $100 from A’s account to B’s </p>
+<p>T2 credits both accounts with 6% interest.</p>
+<p><em>What are the possible outcomes of running T1 and T2?</em></p>
+<p>Many! But A+B should be:</p>
+<ul>
+<li>$2000 * 1.06 = 2120$</li>
+</ul>
+<p>There is no guarantee that T1 will execute before T2 or vice-versa(反之亦然), if both are submitted together. But, the net effect must be equivalent to these two transactions running serially(连续的) in some order.</p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/SERIAL-EXECUTION-EXAMPLE.png" alt="SERIAL-EXECUTION-EXAMPLE"></p>
+<h5 id="Interleaving-transactions"><a href="#Interleaving-transactions" class="headerlink" title="Interleaving transactions"></a>Interleaving transactions</h5><p>We interleave txns to maximize concurrency.</p>
+<ul>
+<li>Slow disk/network I/O.</li>
+<li>Multi-core CPUs.</li>
+</ul>
+<p>When one txn stalls(暂停) because of a resource (e.g., page fault), another txn  </p>
+<p>can continue executing and make forward progress.</p>
+<h5 id="Interleaving-example-GOOD"><a href="#Interleaving-example-GOOD" class="headerlink" title="Interleaving example(GOOD)"></a>Interleaving example(GOOD)</h5><p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/INTERLEAVING-EXAMPLE-(GOOD" alt="INTERLEAVING-EXAMPLE-(GOOD)-1">-1.png)</p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/INTERLEAVING-EXAMPLE-(GOOD" alt="INTERLEAVING-EXAMPLE-(GOOD)-2">-2.png)</p>
+<h5 id="Interleaving-example-BAD"><a href="#Interleaving-example-BAD" class="headerlink" title="Interleaving example(BAD)"></a>Interleaving example(BAD)</h5><p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/INTERLEAVING-EXAMPLE-(BAD" alt="INTERLEAVING-EXAMPLE-(BAD)-1">-1.png)</p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/INTERLEAVING-EXAMPLE-(BAD" alt="INTERLEAVING-EXAMPLE-(BAD)-2">-2.png)</p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/INTERLEAVING-EXAMPLE-(BAD" alt="INTERLEAVING-EXAMPLE-(BAD)-3">-3.png)</p>
+<p>Tips：2014算错了 应该为 A=954, B=1160, A+B = 2114</p>
+<h5 id="Correctness"><a href="#Correctness" class="headerlink" title="Correctness"></a>Correctness</h5><p><em>How do we judge whether a schedule is correct?</em></p>
+<p>If the schedule is equivalent to some serial execution.</p>
+<h5 id="Formal-正式的-properties-of-schedules"><a href="#Formal-正式的-properties-of-schedules" class="headerlink" title="Formal(正式的) properties of schedules"></a>Formal(正式的) properties of schedules</h5><p><strong>Serial Schedule</strong></p>
+<ul>
+<li>A schedule that does not interleave the actions of different transactions.</li>
+</ul>
+<p><strong>Equivalent Schedules</strong></p>
+<ul>
+<li>For any database state, the effect of executing the first schedule is identical to the effect of executing the second schedule.</li>
+<li>Doesn’t matter what the arithmetic operations are!</li>
+</ul>
+<h5 id="Serializable-可串行化的-Schedule"><a href="#Serializable-可串行化的-Schedule" class="headerlink" title="Serializable(可串行化的) Schedule"></a>Serializable(可串行化的) Schedule</h5><ul>
+<li>A schedule that is equivalent to some serial execution of the transactions.</li>
+</ul>
+<p>If each transaction preserves consistency, every serializable schedule preserves consistency.</p>
+<p>Serializability is a less intuitive(直观) notion(概念) of correctness compared to txn initiation time or commit order, but it provides the DBMS with additional flexibility in scheduling operations.</p>
+<p>More flexibility means better parallelism.</p>
+<h5 id="Conflicting-operations"><a href="#Conflicting-operations" class="headerlink" title="Conflicting operations"></a>Conflicting operations</h5><p>We need a formal notion of equivalence that can be implemented efficiently based on the notion of “conflicting” operations.</p>
+<p>Two operations conflict if:</p>
+<ul>
+<li>They are by different transactions</li>
+<li>They are on the same object and at least one of them is a write.</li>
+</ul>
+<h5 id="Interleaved-execution-anomalies-异常"><a href="#Interleaved-execution-anomalies-异常" class="headerlink" title="Interleaved execution anomalies(异常)"></a>Interleaved execution anomalies(异常)</h5><p><em>Read-Write conflicts</em></p>
+<p>Unrepeatable Reads </p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/Unrepeatable-Reads.png" alt="Unrepeatable-Reads"></p>
+<p>Reading Uncommitted Data (“Dirty Reads”)</p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/Reading-Uncommitted-Data.png" alt="Reading-Uncommitted-Data"></p>
+<p>Overwriting Uncommitted Data</p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/Overwriting-Uncommitted-Data.png" alt="Overwriting-Uncommitted-Data"></p>
+<h5 id="Formal-properties-of-schedules"><a href="#Formal-properties-of-schedules" class="headerlink" title="Formal properties of schedules"></a>Formal properties of schedules</h5><p>Given these conflicts, we now can understand what it means for a schedule to be serializable.</p>
+<ul>
+<li>This is to check whether schedules are correct.</li>
+<li>This is not how to generate a correct schedule.</li>
+</ul>
+<p>There are different levels of serializability:</p>
+<ul>
+<li>Conflict Serializability - Most DBMSs try to support this.</li>
+<li>View Serializability - No DBMS can do this.</li>
+</ul>
+<h5 id="Conflict-serializability-intuition"><a href="#Conflict-serializability-intuition" class="headerlink" title="Conflict serializability intuition"></a>Conflict serializability intuition</h5><p>Schedule S is conflict serializable if you are able to transform S into a serial schedule by swapping consecutive(连续不断的) non-conflicting operations of different transactions.</p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/CONFLICT-SERIALIZABILITY-INTUITION-1.png" alt="CONFLICT-SERIALIZABILITY-INTUITION-1"></p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/CONFLICT-SERIALIZABILITY-INTUITION-2.png" alt="CONFLICT-SERIALIZABILITY-INTUITION-2"><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/CONFLICT-SERIALIZABILITY-INTUITION-3.png" alt="CONFLICT-SERIALIZABILITY-INTUITION-3"></p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/CONFLICT-SERIALIZABILITY-INTUITION-4.png" alt="CONFLICT-SERIALIZABILITY-INTUITION-4"></p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/CONFLICT-SERIALIZABILITY-INTUITION-5.png" alt="CONFLICT-SERIALIZABILITY-INTUITION-5"></p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/CONFLICT-SERIALIZABILITY-INTUITION-6.png" alt="CONFLICT-SERIALIZABILITY-INTUITION-6"></p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/CONFLICT-SERIALIZABILITY-INTUITION-7.png" alt="CONFLICT-SERIALIZABILITY-INTUITION-7"></p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/CONFLICT-SERIALIZABILITY-INTUITION-8.png" alt="CONFLICT-SERIALIZABILITY-INTUITION-8"></p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/CONFLICT-SERIALIZABILITY-INTUITION-9.png" alt="CONFLICT-SERIALIZABILITY-INTUITION-9"></p>
+<h5 id="Serializability"><a href="#Serializability" class="headerlink" title="Serializability"></a>Serializability</h5><p>Swapping operations is easy when there are only two tens in the schedule. It’s cumbersome(麻烦) when there many txns.</p>
+<h5 id="Dependency-graphs"><a href="#Dependency-graphs" class="headerlink" title="Dependency graphs"></a>Dependency graphs</h5><p>One node per txn</p>
+<p>Edge from Ti to Tj if:</p>
+<ul>
+<li>And operation Oi of Ti conflicts with an operation Oj of Tj </li>
+<li>Oi appears earlier in the schedule than Oj</li>
+</ul>
+<p>Also known as a precedence(优先) graph</p>
+<p>A schedule is conflict serializable if its dependency graph is acyclic(无环的).</p>
+<h5 id="Example-1"><a href="#Example-1" class="headerlink" title="Example #1"></a>Example #1</h5><p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/EXAMPLE-1-1.png" alt="EXAMPLE-1-1"></p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/EXAMPLE-1-2.png" alt="EXAMPLE-1-2"></p>
+<h5 id="Example-2-Threesome"><a href="#Example-2-Threesome" class="headerlink" title="Example #2 Threesome"></a>Example #2 Threesome</h5><p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/EXAMPLE-2-1.png" alt="EXAMPLE-2-1"></p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/EXAMPLE-2-2.png" alt="EXAMPLE-2-2"></p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/EXAMPLE-2-3.png" alt="EXAMPLE-2-3"></p>
+<h5 id="Example-3-Inconsistenct-analysis"><a href="#Example-3-Inconsistenct-analysis" class="headerlink" title="Example #3 Inconsistenct analysis"></a>Example #3 Inconsistenct analysis</h5><p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/EXAMPLE-3-1.png" alt="EXAMPLE-3-1"></p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/EXAMPLE-3-2.png" alt="EXAMPLE-3-2"></p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/EXAMPLE-3-3.png" alt="EXAMPLE-3-3"></p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/EXAMPLE-3-4.png" alt="EXAMPLE-3-4"></p>
+<h5 id="View-serializability"><a href="#View-serializability" class="headerlink" title="View serializability"></a>View serializability</h5><p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/VIEW-SERIALIZABILITY-1.png" alt="VIEW-SERIALIZABILITY-1"></p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/VIEW-SERIALIZABILITY-2.png" alt="VIEW-SERIALIZABILITY-2"></p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/VIEW-SERIALIZABILITY-3.png" alt="VIEW-SERIALIZABILITY-3"></p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/VIEW-SERIALIZABILITY-4.png" alt="VIEW-SERIALIZABILITY-4"></p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/VIEW-SERIALIZABILITY-5.png" alt="VIEW-SERIALIZABILITY-5"></p>
+<p><img src="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/VIEW-SERIALIZABILITY-6.png" alt="VIEW-SERIALIZABILITY-6"></p>
+</div><div class="tags"><a href="/tags/Concurrency-control-theory/">Concurrency control theory</a></div><div class="post-nav"><a class="pre" href="/2019/06/19/CMU-DBMS-COURSE-17-NOTES/">CMU-DBMS-COURSE-17-NOTES</a><a class="next" href="/2019/06/19/CMU-DBMS-COURSE-15-NOTES/">CMU-DBMS-COURSE-15-NOTES</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Parallel-Execution/" style="font-size: 15px;">Parallel Execution</a> <a href="/tags/Join-Algorithms/" style="font-size: 15px;">Join Algorithms</a> <a href="/tags/Concurrency-control-theory/" style="font-size: 15px;">Concurrency control theory</a> <a href="/tags/6-824视频/" style="font-size: 15px;">6.824视频</a> <a href="/tags/分布式系统6-824笔记/" style="font-size: 15px;">分布式系统6.824笔记</a> <a href="/tags/movies/" style="font-size: 15px;">movies</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-17-NOTES/">CMU-DBMS-COURSE-17-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/">CMU-DBMS-COURSE-16-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-15-NOTES/">CMU-DBMS-COURSE-15-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/">CMU-DBMS-COURSE-14-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/">CMU-DBMS-COURSE-13-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/10/Google-Spanner-Paper/">Google-Spanner-Paper</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/">CMU-DBMS-COURSE-12-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/">CMU-DBMS-COURSE-11-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/">CMU-DBMS-COURSE-10-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/13/CMU-DBMS-COURSE-09-NOTES/">CMU-DBMS-COURSE-09-NOTES</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
