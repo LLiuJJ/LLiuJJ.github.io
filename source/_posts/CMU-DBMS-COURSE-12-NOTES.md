@@ -1,7 +1,7 @@
 ---
-title: CMU-DBMS-COURSE-12-NOTES
+title: CMU-DBMS-COURSE-12-NOTES (Joins (Nested Loop, Sort-Merge, Hash))
 date: 2019-06-09 10:21:04
-tags: Join Algorithms
+tags: Joins (Nested Loop, Sort-Merge, Hash)
 ---
 
 ##### Why do we need to join?

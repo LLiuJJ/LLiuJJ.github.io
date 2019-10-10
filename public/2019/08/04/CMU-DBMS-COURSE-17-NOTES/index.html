@@ -1,0 +1,176 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>CMU-DBMS-COURSE-17-NOTES (Two Phase Locking) | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">CMU-DBMS-COURSE-17-NOTES (Two Phase Locking)</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">CMU-DBMS-COURSE-17-NOTES (Two Phase Locking)</h1><div class="post-meta">Aug 4, 2019</div><a class="disqus-comment-count" href="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/#vcomment"><span class="valine-comment-count" data-xid="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/"></span><span> 条评论</span></a><div class="post-content"><h5 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example<img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/ex1.png" alt="ex1"></h5><p>We need a way to guarantee that all execution schedules are correct(i.e, serializable) without knowing the entire schedule adead of time.</p>
+<p>Solution: Use locks to protect database objects.</p>
+<h5 id="Executing-with-locks"><a href="#Executing-with-locks" class="headerlink" title="Executing with locks"></a>Executing with locks</h5><p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/LOCK-1.png" alt="LOCK-1"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/LOCK-2.png" alt="LOCK-2"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/LOCK-3.png" alt="LOCK-3"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/LOCK-4.png" alt="LOCK-4"></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Locks</th>
+<th>Latches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Separate…</strong></td>
+<td>User transactions</td>
+<td>Threads</td>
+</tr>
+<tr>
+<td><strong>Protect…</strong></td>
+<td>Database Contents</td>
+<td>In-Memory Data Structures</td>
+</tr>
+<tr>
+<td><strong>During…</strong></td>
+<td>Entire Transactions</td>
+<td>(关键的)ritical Sections</td>
+</tr>
+<tr>
+<td><strong>Modes…</strong></td>
+<td>Shared, Exclusive, Update, Intention</td>
+<td>Read, Write</td>
+</tr>
+<tr>
+<td>Deadlock</td>
+<td>Detection &amp; Resolution</td>
+<td>Avoidance(避免)</td>
+</tr>
+<tr>
+<td><strong>…by…</strong></td>
+<td>Waits-for, Timeout, Aborts</td>
+<td>Coding Discipline(准则)</td>
+</tr>
+<tr>
+<td>Kept in …</td>
+<td>Lock Manager</td>
+<td>Protected Data Structure</td>
+</tr>
+</tbody>
+</table>
+<p> (注：闩锁和锁定既有相同点又有不同点。相同点在于它们都是用于实现串行化的资源。而不同点则在于闩锁（Latch）是一个低级别、轻量级的锁，获得和释放的速度很快，以类似于信号灯的方式实现。而锁定（Lock）则可能持续的时间很长，通过使用队列，按照先进先出的方式实现。Latch是非入队的，而Lock是入队的。Latch不存在死锁，而Lock中存在)</p>
+<p><strong>Basic Lock types</strong></p>
+<ul>
+<li>S-LOCK: Shared locks for reads</li>
+<li>X-LOCK: Exclusive locks for writes</li>
+</ul>
+<p><strong>Executing with locks</strong></p>
+<p>Transactions request locks(or upgrades).</p>
+<p>Lock Manager grants or blocks requests.</p>
+<p>Transactions release locks.</p>
+<p>Lock manager updates its internal lock-table.</p>
+<ul>
+<li>It keeps track of what transactions hold what locks and what transactions are waiting to acquire any locks.</li>
+</ul>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/LOCK-EXE-1.png" alt="LOCK-EXE-1"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/LOCK-EXE-2.png" alt="LOCK-EXE-2"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/LOCK-EXE-3.png" alt="LOCK-EXE-3"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/LOCK-EXE-4.png" alt="LOCK-EXE-4"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/LOCK-EXE-5.png" alt="LOCK-EXE-5"></p>
+<p><strong>Concurrency contorl protocol</strong></p>
+<p>Two-phase locking(2PL) is a concurrency control protocol that determines whether a txn is allowed to access an object in the database on the fly.</p>
+<p>The protocol does not need to know all of the queries that a txn will execute ahead of time.</p>
+<p><strong>Two phase locking</strong></p>
+<ul>
+<li>Phase #1: Growing</li>
+</ul>
+<p>Each txn requests the locks that it needs from the DBMS’s lock manager.</p>
+<p>The lock manager grants/denies lock requests.</p>
+<ul>
+<li>Phase #2: Shrinking </li>
+</ul>
+<p>The txn is allowed to only release locks that it previously acquired. It cannot acquire new locks.</p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/GrowingPhase.png" alt="GrowingPhase"></p>
+<p>The txn is not allowed to acquire/upgrade locks after the growing phase finishes.</p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/ShrinkingPhase.png" alt="ShrinkingPhase"></p>
+<p>The txn is not allowed to acquire/upgrade locks after the growing phase finishes.</p>
+<p><strong>Executing with 2PL</strong></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/2PL-EXEC1.jpg" alt="2PL-EXEC1"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/2PL-EXEC2.jpg" alt="2PL-EXEC2"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/2PL-EXEC3.jpg" alt="2PL-EXEC3"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/2PL-EXEC4.jpg" alt="2PL-EXEC4"></p>
+<p>2PL on its own is sufficient to guarantee conflict serializability.</p>
+<p>It generates schedules whose precedence(优先) graph is acyclic(非循环的).</p>
+<p><strong>2PL Cascading aborts</strong></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/2PL-CASCADING-ABORT.jpg" alt="2PL-CASCADING-ABORT"></p>
+<p>This is a permissible schedule in 2PL, but the DBMS has to also abort T2 when T1 aborts.</p>
+<ul>
+<li>Any information about T1 cannot be “leaked” to the outside world.</li>
+</ul>
+<p><strong>Strict two-phase locking</strong></p>
+<p>The txn is not allowed to acquire/upgrade locks after the growing phase finishes.</p>
+<p>Allows only conflict serializable schedules, but it is often stronger than needed for some apps.</p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/STRICT-TWO-PHASE-LOCKING.jpg" alt="STRICT-TWO-PHASE-LOCKING"></p>
+<p>A schedule is strict if a value written by a txn is not read or overwritten by other tens until that txn finishes.</p>
+<p>Advantages:</p>
+<ul>
+<li>Does not incur cascading aborts.</li>
+<li>Aborted txns can be undone by just restoring(恢复) original values of modified tuples.</li>
+</ul>
+<p><strong>Example</strong></p>
+<p>T1 - Move $100 from Andy’s account(A) to his bookie’s account(B).</p>
+<p>T2 - Compute the total amount in all accounts and return it to the application.</p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/2PL-EX1.jpg" alt="2PL-EX1"></p>
+<ul>
+<li>Non 2PL example</li>
+</ul>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/no-2pl-1.png" alt="NO-2PL-1"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/no-2pl-2.png" alt="NO-2PL-2"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/no-2pl-3.png" alt="NO-2PL-3"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/no-2pl-4.png" alt="NO-2PL-4"></p>
+<ul>
+<li>2PL example</li>
+</ul>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/2PL-1.png" alt="2PL-1"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/2PL-2.png" alt="2PL-2"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/2PL-3.png" alt="2PL-3"></p>
+<ul>
+<li>Strict 2PL example</li>
+</ul>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/STRICT-2PL-1.png" alt="STRICT 2PL 1"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/STRICT-2PL-2.png" alt="STRICT 2PL 2"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/STRICT-2PL-3.png" alt="STRICT 2PL 3"></p>
+<ul>
+<li>2PL may lead to DeadLock</li>
+</ul>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/DEADLOCK-1.png" alt="DEADLOCK-1"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/DEADLOCK-2.png" alt="DEADLOCK-2"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/DEADLOCK-3.png" alt="DEADLOCK-3"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/DEADLOCK-4.png" alt="DEADLOCK-4"></p>
+<p>A deadlock is a cycle of transactions waiting for locks to be released by each other.</p>
+<p>There is two ways of dealing with deadlocks</p>
+<ul>
+<li>1.Deadlock Detection(检测)</li>
+<li>2.Deadlock Prevention(预防)</li>
+</ul>
+<p><strong>Deadlock Detection</strong></p>
+<p>Model: The DBMS creates a waits-for graph to keep track of what locks each txn is waiting to aquire:<br>In follow Model</p>
+<ul>
+<li>Nodes are transactions</li>
+<li>Edge from T(i) to T(j) if T(i) is waiting for T(j) to release a lock.</li>
+</ul>
+<p>The system will periodically check for cycles in waits-for graph and then make a decision on how to break it.</p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/DEADLOCK-DETECTION-1.png" alt="DEADLOCK-DETECTION-1"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/DEADLOCK-DETECTION-2.png" alt="DEADLOCK-DETECTION-2"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/DEADLOCK-DETECTION-3.png" alt="DEADLOCK-DETECTION-3"></p>
+<p><img src="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/DEADLOCK-DETECTION-4.png" alt="DEADLOCK-DETECTION-4"></p>
+</div><div class="tags"><a href="/tags/Two-Phase-Locking/">Two Phase Locking</a></div><div class="post-nav"><a class="next" href="/2019/06/29/一些管用的配置/">一些管用的配置</a></div><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' ? true : false;
+var verify = 'false' ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'ILqOzWM8jrm21Dhs5Ernxczi-gzGzoHsz',
+  appKey:'7sChUpdXujjsSpdpukXYva9P',
+  placeholder:'Just so so',
+  avatar:'mm',
+  guest_info:guest_info,
+  pageSize:'10'
+})</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Joins-Nested-Loop-Sort-Merge-Hash/" style="font-size: 15px;">Joins (Nested Loop, Sort-Merge, Hash)</a> <a href="/tags/6-824视频/" style="font-size: 15px;">6.824视频</a> <a href="/tags/分布式系统6-824笔记/" style="font-size: 15px;">分布式系统6.824笔记</a> <a href="/tags/movies/" style="font-size: 15px;">movies</a> <a href="/tags/各种开发必要的配置摘记/" style="font-size: 15px;">各种开发必要的配置摘记</a> <a href="/tags/Concurrency-control-theory/" style="font-size: 15px;">Concurrency control theory</a> <a href="/tags/Two-Phase-Locking/" style="font-size: 15px;">Two Phase Locking</a> <a href="/tags/Query-Optimization/" style="font-size: 15px;">Query Optimization</a> <a href="/tags/Parallel-Execution/" style="font-size: 15px;">Parallel Execution</a> <a href="/tags/Sorting-Aggregations/" style="font-size: 15px;">Sorting + Aggregations</a> <a href="/tags/Query-Processing-Models-Access-Methods-Expression-Evaluation/" style="font-size: 15px;">Query Processing (Models, Access Methods, Expression Evaluation)</a> <a href="/tags/Index-Concurrency-Control/" style="font-size: 15px;">(Index Concurrency Control)</a> <a href="/tags/Database-Storage-I/" style="font-size: 15px;">Database Storage I</a> <a href="/tags/Database-Storage-II/" style="font-size: 15px;">Database Storage II</a> <a href="/tags/Buffer-Pools/" style="font-size: 15px;">Buffer Pools</a> <a href="/tags/Hash-Tables-Open-Extendible-Linear-Cuckoo/" style="font-size: 15px;">(Hash Tables (Open, Extendible, Linear, Cuckoo))</a> <a href="/tags/Trees-Indexes-I/" style="font-size: 15px;">(Trees Indexes I)</a> <a href="/tags/Trees-Indexes-II/" style="font-size: 15px;">(Trees Indexes II)</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/">CMU-DBMS-COURSE-17-NOTES (Two Phase Locking)</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/29/一些管用的配置/">一些管用的配置</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/">CMU-DBMS-COURSE-16-NOTES (Concurrency control theory)</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-15-NOTES/">CMU-DBMS-COURSE-15-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/">CMU-DBMS-COURSE-14-NOTES (Parallel Execution)</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/">CMU-DBMS-COURSE-13-NOTES (Query Optimization)</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/10/Google-Spanner-Paper/">Google-Spanner-Paper</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/">CMU-DBMS-COURSE-12-NOTES (Joins (Nested Loop, Sort-Merge, Hash))</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/12/CMU-DBMS-COURSE-11-NOTES/">CMU-DBMS-COURSE-11-NOTES (Sorting + Aggregations)</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/15/CMU-DBMS-COURSE-10-NOTES/">CMU-DBMS-COURSE-10-NOTES (Query Processing (Models, Access Methods, Expression Evaluation))</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://draveness.me/" title="draveness.me" target="_blank">draveness.me</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

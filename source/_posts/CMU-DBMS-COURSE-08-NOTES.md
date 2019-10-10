@@ -1,7 +1,7 @@
 ---
-title: CMU-DBMS-COURSE-08-NOTES
+title: CMU-DBMS-COURSE-08-NOTES (Trees Indexes II)
 date: 2019-04-11 16:53:22
-tags:
+tags: (Trees Indexes II)
 ---
 
 **隐式索引**

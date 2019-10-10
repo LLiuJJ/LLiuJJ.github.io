@@ -1,5 +1,5 @@
 ---
-title: CMU-DBMS-COURSE-14-NOTES
+title: CMU-DBMS-COURSE-14-NOTES (Parallel Execution)
 date: 2019-06-18 12:32:26
 tags: Parallel Execution
 ---

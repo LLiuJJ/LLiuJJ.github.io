@@ -1,7 +1,7 @@
 ---
-title: CMU-DBMS-COURSE-05-NOTES
+title: CMU-DBMS-COURSE-05-NOTES (Buffer Pools)
 date: 2019-04-06 17:24:31
-tags:
+tags: Buffer Pools
 ---
 
 **DBMS如何管理内存，以及处理内存与磁盘间的数据交换**

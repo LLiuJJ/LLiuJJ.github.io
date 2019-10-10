@@ -1,7 +1,7 @@
 ---
-title: CMU-DBMS-COURSE-10-NOTES
+title: CMU-DBMS-COURSE-10-NOTES (Query Processing (Models, Access Methods, Expression Evaluation))
 date: 2019-04-15 17:25:50
-tags:
+tags:  Query Processing (Models, Access Methods, Expression Evaluation)
 ---
 
 #### 查询计划

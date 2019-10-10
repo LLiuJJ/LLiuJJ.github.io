@@ -1,7 +1,7 @@
 ---
-title: CMU-DBMS-COURSE-13-NOTES
+title: CMU-DBMS-COURSE-13-NOTES (Query Optimization)
 date: 2019-06-13 12:27:50
-tags:
+tags: Query Optimization
 ---
 
 ##### IBM SYSTEM R

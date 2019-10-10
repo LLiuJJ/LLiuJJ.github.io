@@ -1,7 +1,7 @@
 ---
-title: CMU-DBMS-COURSE-11-NOTES
+title: CMU-DBMS-COURSE-11-NOTES (Sorting + Aggregations)
 date: 2019-05-12 19:15:41
-tags: 
+tags: Sorting + Aggregations
 ---
 
 - Tip 感觉很多话中文翻译过来很别扭，后续就全部用原文做笔记了

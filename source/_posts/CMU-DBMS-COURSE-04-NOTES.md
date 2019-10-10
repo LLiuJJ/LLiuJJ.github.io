@@ -1,7 +1,7 @@
 ---
-title: CMU-DBMS-COURSE-04-NOTES
+title: CMU-DBMS-COURSE-04-NOTES (Database Storage II)
 date: 2019-04-06 17:24:26
-tags:
+tags: Database Storage II
 ---
 
 **磁盘式数据库存储架构**

@@ -1,7 +1,7 @@
 ---
-title: CMU-DBMS-COURSE-06-NOTES
+title: CMU-DBMS-COURSE-06-NOTES (Hash Tables (Open, Extendible, Linear, Cuckoo))
 date: 2019-04-06 17:24:36
-tags:
+tags: (Hash Tables (Open, Extendible, Linear, Cuckoo))
 ---
 
 **课程进度**

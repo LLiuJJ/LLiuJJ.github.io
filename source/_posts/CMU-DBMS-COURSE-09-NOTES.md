@@ -1,7 +1,7 @@
 ---
-title: CMU-DBMS-COURSE-09-NOTES
+title: CMU-DBMS-COURSE-09-NOTES (Index Concurrency Control)
 date: 2019-04-13 14:53:23
-tags:
+tags: (Index Concurrency Control)
 ---
 
 - 我们假设到目前为止我们讨论的所有数据结构都是单线程的

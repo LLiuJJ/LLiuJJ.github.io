@@ -1,7 +1,7 @@
 ---
-title: CMU-DBMS-COURSE-03-NOTES
+title: CMU-DBMS-COURSE-03-NOTES (Database Storage I)
 date: 2019-04-06 17:18:53
-tags:
+tags: Database Storage I
 ---
 
 **存储器架构**
