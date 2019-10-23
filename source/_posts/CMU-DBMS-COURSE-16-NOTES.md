@@ -159,7 +159,7 @@ Two categories of protocols:
 
 **Pessimistic:** Don't let problems arise in the first place.
 
-**Optimistic: **Assume conflicts are rare, deal with them after they happen.
+**Optimistic:** Assume conflicts are rare, deal with them after they happen.
 
 ##### Example![Exmple](CMU-DBMS-COURSE-16-NOTES/Exmple.png)
 

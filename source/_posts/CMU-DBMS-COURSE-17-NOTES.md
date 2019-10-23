@@ -1,5 +1,5 @@
 ---
-title: CMU-DBMS-COURSE-17-NOTES (Two Phase Locking)
+title: CMU-DBMS-COURSE-17-NOTES (Two Phase Locking - Pessimistic)
 date: 2019-08-04 22:49:45
 tags: Two Phase Locking
 ---
@@ -189,3 +189,83 @@ The system will periodically check for cycles in waits-for graph and then make a
 ![DEADLOCK-DETECTION-3](CMU-DBMS-COURSE-17-NOTES/DEADLOCK-DETECTION-3.png)
 
 ![DEADLOCK-DETECTION-4](CMU-DBMS-COURSE-17-NOTES/DEADLOCK-DETECTION-4.png)
+
+**deadlock handing**
+
+When the DBMS detects a deadlock, it will select a "victim(牺牲者)" txn to rollback to break the cycle.
+
+Selecting the proper victim depends on a lot of different variables...
+- By age (lowest timestamp)
+- By progress (least/most queries executed)
+- By the items already locked
+- By the txns that we have to rollback with it
+
+We also should consider the times a txn has been restarted in the past to prevent starvation(防止饥饿).
+
+The victim txn will either restart or abort(more common) depending on how it was invoked.
+
+There is a trade-off(权衡) between the frequency of checking for deadlocks and how long txns have to wait before deadlocks are broken.
+
+After selecting a victim txn to abort, the DBMS can also decide on how far to rollback the txn's changes.
+
+- 1: Completely
+- 2: Minimally
+
+**Deadlock Prevention**
+
+When a txn tries to acquire a lock that is held by another txn, the DBMS kills one of them to prevent a deadlock.
+
+This approach does not require a waits-for graph or detection algorithm.
+
+Assign priorities(分配优先级) based on timestamps:
+
+- Older Timestamp = Higher priority(e.g., T(1) > T(2))
+
+Wait-Die("Old Waits for Young")
+
+- If reqesting txn has higher priority than holding txn, then requesting txn waits for holding txn.
+
+- Otherwise requesting txn aborts.
+
+Wound(受伤)-Wait("Young Waits for Old")
+
+- If requesting txn has higher priority than holding txn, then holding txn aborts and releases lock.
+
+- Otherwise requesting txn waits.
+
+![DEADLOCK-PREVENTION](CMU-DBMS-COURSE-17-NOTES/DEADLOCK-PREVENTION.png)
+
+**Lock Granularities(锁粒度)**
+
+When we say that a txn acquires a "lock", what does that actually mean?
+- On an Attribute? Tuple? Page? Table?
+
+Ideally, each txn should obtain fewest number of locks that is needed
+
+![LOCK-HIERARCHY1](CMU-DBMS-COURSE-17-NOTES/LOCK-HIERARCHY-1.png)
+
+![LOCK-HIERARCHY2](CMU-DBMS-COURSE-17-NOTES/LOCK-HIERARCHY-2.png)
+
+**Example**
+
+What locks should follow txns obtain?
+T(1) - get the balance of Andy's shady off-shore bank account(非法境外账户).
+T(2) - Increase Lin's bank account balance by 1%.
+
+- Exclusive(独占的) + Shared for leafs of lock tree.
+- Special Intention locks(意向锁) for higher levels.
+
+**Intention Lock**
+An intention lock allows a higher level node to be locked in shared or exclusive mode without having to check all descendent(派生的) nodes.
+
+If a node is in an intention mode, then explicit locking is being done at a lower level in the tree.
+
+Intention-Shared(IS)
+- Indicates explicit locking at a lower level with shared locks.
+
+Intention-Exclusive(IX)
+- Indicates locking at lower level with exclusive or shared locks.
+
+Shared + Intention-Exclusive(SIX)
+- The subtree rooted by that node is locked explicitly in shared mode and explicit locking is being done at a lower level with exclusive-mode locks.
+
