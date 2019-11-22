@@ -1,24 +1,33 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>CMU-DBMS-COURSE-19-NOTES (MVCC) | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">CMU-DBMS-COURSE-19-NOTES (MVCC)</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">CMU-DBMS-COURSE-19-NOTES (MVCC)</h1><div class="post-meta">Nov 19, 2019</div><a class="disqus-comment-count" href="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/#vcomment"><span class="valine-comment-count" data-xid="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/"></span><span> 条评论</span></a><div class="post-content"><h5 id="多版本并发控制"><a href="#多版本并发控制" class="headerlink" title="多版本并发控制"></a>多版本并发控制</h5><p>​    在多版本并发控制机制中，每个write(Q)操作创建Q的一个新版本。当一个事务发出read(Q)操作时，并发控制管理器选择Q的一个版本进行读取。</p>
-<h5 id="协议中数据项的内容"><a href="#协议中数据项的内容" class="headerlink" title="协议中数据项的内容"></a>协议中数据项的内容</h5><p>​     对于每个数据项 Q, 又一个版本的序列 &lt;Q1, Q2, … Qm&gt; 与它相关联，并且每个版本 Qk 包含三个重要的字段信息。</p>
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>CMU-DBMS-COURSE-19-NOTES (MVCC) | TuringTuring</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">CMU-DBMS-COURSE-19-NOTES (MVCC)</h1><a id="logo" href="/.">TuringTuring</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">CMU-DBMS-COURSE-19-NOTES (MVCC)</h1><div class="post-meta">Nov 19, 2019</div><a class="disqus-comment-count" href="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/#vcomment"><span class="valine-comment-count" data-xid="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/"></span><span> 条评论</span></a><div class="post-content"><h5 id="多版本并发控制"><a href="#多版本并发控制" class="headerlink" title="多版本并发控制"></a>多版本并发控制</h5><hr>
+<p>​    在多版本并发控制机制中，每个write(Q)操作创建Q的一个新版本。当一个事务发出read(Q)操作时，并发控制管理器选择Q的一个版本进行读取。</p>
+<h5 id="协议中数据项的内容"><a href="#协议中数据项的内容" class="headerlink" title="协议中数据项的内容"></a>协议中数据项的内容</h5><hr>
+<p>​     对于每个数据项 Q, 又一个版本的序列 &lt;Q1, Q2, … Qm&gt; 与它相关联，并且每个版本 Qk 包含三个重要的字段信息。</p>
 <ul>
 <li>Content 是 Qk 版本的值。</li>
 <li>W-timestamp(Q) 是创建Qk 这个版本的事务的时间戳。</li>
 <li>R-timestamp(Q) 所有成功地读取 Qk 版本的事务的最大时间戳。</li>
 </ul>
 <p>​      对于每个事务 Ti 数据库系统在该事务开始的时候会为它赋予一个唯一静态的时间戳 TS(Ti)。</p>
-<h5 id="事务读写操作导致数据项内容的变化情况"><a href="#事务读写操作导致数据项内容的变化情况" class="headerlink" title="事务读写操作导致数据项内容的变化情况"></a>事务读写操作导致数据项内容的变化情况</h5><ul>
-<li>当一个事务Ti 通过 write(Q) 操作创建数据项 Q 的一个新版本 Qk，版本的 content 字段保存了Ti 写入的值，系统将 W-timestamp 与 R-timestamp 初始化为 TS(Ti)。</li>
-<li>当一个事务Tj读取Qk的值并且有 R-timestamp(Qk) &lt; TS(Tj) 的情况，R-timestamp 的值就会被更新。</li>
+<h5 id="事务读写操作导致数据项内容的变化情况"><a href="#事务读写操作导致数据项内容的变化情况" class="headerlink" title="事务读写操作导致数据项内容的变化情况"></a>事务读写操作导致数据项内容的变化情况</h5><hr>
+<ul>
+<li><p>当一个事务Ti 通过 write(Q) 操作创建数据项 Q 的一个新版本 Qk，版本的 content 字段保存了Ti 写入的值，系统将 W-timestamp 与 R-timestamp 初始化为 TS(Ti)。</p>
+</li>
+<li><p>当一个事务Tj读取Qk的值并且有 R-timestamp(Qk) &lt; TS(Tj) 的情况，R-timestamp 的值就会被更新。</p>
+</li>
 </ul>
-<h5 id="多版本时间戳排序机制"><a href="#多版本时间戳排序机制" class="headerlink" title="多版本时间戳排序机制"></a>多版本时间戳排序机制</h5><p>假设有一个事务Ti，一个版本的数据 Qk ， Qk 的写入时间戳是小于等于 TS(Ti) 的最大写时间戳。</p>
+<h5 id="多版本时间戳排序机制"><a href="#多版本时间戳排序机制" class="headerlink" title="多版本时间戳排序机制"></a>多版本时间戳排序机制</h5><hr>
+<p>假设有一个事务Ti，一个版本的数据 Qk ， Qk 的写入时间戳是小于等于 TS(Ti) 的最大写时间戳。</p>
 <p>在 Ti 在 Read(Q) 和 Write(Q) 的时候要保证的规则</p>
 <ul>
 <li>如果事务Ti进行 read(Q) 操作，则返回的值就是 Qk的内容。</li>
 <li>如果事务Ti发出 write(Q)，且若 TS(Ti) &lt; R-timestamp(Qk) （Ti试图写入其他事务已经读取了的版本），则系统将必须回滚事务 Ti，如果 TS(Ti) = W-timestamp(Qk)，则系统覆盖 Qk的内容。如果 TS(Ti) &gt; R-timestamp(Qk)，则创建Q的一个新版本 Qj。</li>
 </ul>
-<h5 id="多版本时间戳排序机制优缺点"><a href="#多版本时间戳排序机制优缺点" class="headerlink" title="多版本时间戳排序机制优缺点"></a>多版本时间戳排序机制优缺点</h5><ul>
-<li>优点：读请求从不失败且不必等待。</li>
-<li>缺点：1.读数据的时候需要更新 R-timestamp 字段，两次磁盘访问开销大。2.事务时间产生冲突通过回滚而不是等待来解决。</li>
+<h5 id="多版本时间戳排序机制优缺点"><a href="#多版本时间戳排序机制优缺点" class="headerlink" title="多版本时间戳排序机制优缺点"></a>多版本时间戳排序机制优缺点</h5><hr>
+<ul>
+<li><p>优点：读请求从不失败且不必等待。</p>
+</li>
+<li><p>缺点：1.读数据的时候需要更新 R-timestamp 字段，两次磁盘访问开销大。2.事务时间产生冲突通过回滚而不是等待来解决。</p>
+</li>
 </ul>
 <h5 id="例子一"><a href="#例子一" class="headerlink" title="例子一"></a>例子一</h5><p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/MVCC-EX1-1.png" alt="Version表示数据项的版本"></p>
 <p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/MVCC-EX1-2.png" alt="Begin和End分别表示，版本记录对应开始和结束对应事务的时间戳"></p>
@@ -36,8 +45,84 @@
 <p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/MVCC-EX2-7.png" alt="T1读取A1的值，这个值是它之前写入的"></p>
 <p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/MVCC-EX2-8.png" alt="T1提交，并设置状态表状态为提交"></p>
 <p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/MVCC-EX2-9.png" alt="T2此时可以创建一个新版本的数据了"></p>
-<h5 id="使用了MVCC的数据库"><a href="#使用了MVCC的数据库" class="headerlink" title="使用了MVCC的数据库"></a>使用了MVCC的数据库</h5><p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/MVCCDB.png" alt="应用十分广泛"></p>
-</div><div class="tags"></div><div class="post-nav"><a class="next" href="/2019/10/10/CMU-DBMS-COURSE-18-NOTES/">CMU-DBMS-COURSE-18-NOTES (Timestamp Ordering Concurrency Control - Optimistic)</a></div><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' ? true : false;
+<h5 id="使用了MVCC的数据库"><a href="#使用了MVCC的数据库" class="headerlink" title="使用了MVCC的数据库"></a>使用了MVCC的数据库</h5><hr>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/MVCCDB.png" alt="应用十分广泛"></p>
+<h5 id="MVCC实现的设计要点"><a href="#MVCC实现的设计要点" class="headerlink" title="MVCC实现的设计要点"></a>MVCC实现的设计要点</h5><hr>
+<ol>
+<li>选用什么并发控制协议 (T/O,  2PL …)</li>
+<li>如何存储多个版本的数据</li>
+<li>垃圾回收机制</li>
+<li>索引的管理</li>
+</ol>
+<h5 id="版本如何存储"><a href="#版本如何存储" class="headerlink" title="版本如何存储"></a>版本如何存储</h5><hr>
+<p>​    这涉及到如何存储一个逻辑对象的多个物理版本</p>
+<p>​    数据库管理系统为每一个逻辑元组创建一个版本链，这允许数据库管理系统找到在运行时对于某个事务可见的版本。索引总是指向链的头部，一个线程遍历链去找到对于它来说可见的版本，不同的存储方案决定了某个版本存储的位置和内容。</p>
+<p><strong>方法一：仅追加存储</strong> - 新的版本追加到同一个表里面</p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/AOS1.png" alt="版本0保存了指向版本1的指针"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/AOS2.png" alt="这时候创建新的版本A2"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/AOS3.png" alt="修改A1的指针"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/AOS4.png" alt="指向A2版本"></p>
+<p><em>版本链的顺序考虑</em></p>
+<hr>
+<ul>
+<li>O2N(Oldest to Newest) : 将新版本的数据追加到版本链的尾部，寻找新的数据的时候需要遍历版本链</li>
+<li>N2O(Newest to Oldest) : 头部是最新的数据，寻找新版本数据更快，但是每次插入新版本数据都需要更新索引</li>
+</ul>
+<p><strong>方法二：时间遍历存储(Time-travel)</strong> - 对于每个更新，将当前的版本拷贝到 time traval 表里面。</p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/TTS1.png" alt="新版本指向旧版本"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/TTS2.png" alt="新版本也会拷贝到旧版本表中"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/TTS3.png" alt="新版本数据变化"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/TTS4.png" alt="新版本A3写入"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/TTS5.png" alt="更新A3指针到A2"></p>
+<p>​                                                                           …</p>
+<p><strong>方法三：增量存储(Delta storage)</strong> - 修改后的属性原始值将复制到单独的记录存储空间中</p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/DS-1.png" alt="DS-1"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/DS-2.png" alt="写入新版本数据222，存储历史版本数据到增量存储段中"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/DS-3.png" alt="准备更新数据A2，历史版本存储到增量存储段中，维护历史版本指针链"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/DS-4.png" alt="写入新版本A3，更新指针指向最新历史版本"></p>
+<h5 id="垃圾版本回收机制"><a href="#垃圾版本回收机制" class="headerlink" title="垃圾版本回收机制"></a>垃圾版本回收机制</h5><hr>
+<p>随着写入版本的增加，我们需要从数据库中删除不再需要的物理版本。</p>
+<p><strong>哪些版本的数据不再被需要</strong>？</p>
+<ul>
+<li>没有处于运行状态(active) 的事务需要看到这个版本的数据。</li>
+<li>这个版本的数据是被一个中断了的事务创建的。</li>
+</ul>
+<p><strong>需要确定的事情</strong></p>
+<ul>
+<li>怎么去找需要过期的版本？</li>
+<li>怎么决定什么时候回收内存是安全的？</li>
+</ul>
+<p><strong>元组级别的回收(Tuple-level)</strong></p>
+<p>后台清理（Background Vacuuming）</p>
+<p>派出单独的线程出来，定期的扫描查找可以被回收的版本。</p>
+<p>例子</p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/TLGC-1.png" alt="TLGC-1"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/TLGC-2.png" alt="TLGC-2"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/TLGC-3.png" alt="TLGC-3"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/TLGC-4.png" alt="TLGC-4"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/TLGC-5.png" alt="TLGC-5"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/TLGC-6.png" alt="TLGC-6"></p>
+<p>协同清理（Cooperative Cleaning）</p>
+<p>工作(worker)线程再遍历历史版本链的时候识别哪些版本可以被回收，这个适用于 O2N 的方式</p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/TLGC-7.png" alt="TLGC-7"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/TLGC-8.png" alt="TLGC-8"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/TLGC-9.png" alt="TLGC-9"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/TLGC-10.png" alt="TLGC-10"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/TLGC-11.png" alt="TLGC-11"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/TLGC-12.png" alt="TLGC-12"></p>
+<h5 id="索引管理"><a href="#索引管理" class="headerlink" title="索引管理"></a>索引管理</h5><hr>
+<p>所有的主键索引指向版本链的头部物理地址，DBMS更新主键索引的频率取决于更新元组的时候是不是有创建新版本数据。</p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/Index-Manager.png" alt="Index-Manager"></p>
+<p>二级索引需要加一个中间层映射逻辑id到元组的物理地址</p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/SEC-INDEX1.png" alt="SEC-INDEX1"></p>
+<p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/SEC-INDEX2.png" alt="SEC-INDEX2"></p>
+<h5 id="一些数据库具体实现选择"><a href="#一些数据库具体实现选择" class="headerlink" title="一些数据库具体实现选择"></a>一些数据库具体实现选择</h5><p><img src="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/MVCC-IMPL.png" alt="MVCC-IMPL"></p>
+<h5 id="一些具体实现代码"><a href="#一些具体实现代码" class="headerlink" title="一些具体实现代码"></a>一些具体实现代码</h5><hr>
+<p>TIKV <a href="https://github.com/tikv/tikv/tree/master/src/storage/mvcc" target="_blank" rel="noopener">https://github.com/tikv/tikv/tree/master/src/storage/mvcc</a></p>
+<p>Innodb <a href="https://www.cnblogs.com/micrari/p/8144339.html" target="_blank" rel="noopener">https://www.cnblogs.com/micrari/p/8144339.html</a></p>
+<p>​              <a href="https://vinta.ws/code/locking-and-mvcc-in-mysql-innodb.html" target="_blank" rel="noopener">https://vinta.ws/code/locking-and-mvcc-in-mysql-innodb.html</a></p>
+<p>Postgres <a href="https://www.postgresql.org/docs/11/mvcc-intro.html" target="_blank" rel="noopener">https://www.postgresql.org/docs/11/mvcc-intro.html</a></p>
+</div><div class="tags"></div><div class="post-nav"><a class="pre" href="/2019/11/22/CMU-DBMS-COURSE-20-NOTES/">CMU-DBMS-COURSE-20-NOTES (日志记录的方案)</a><a class="next" href="/2019/10/10/CMU-DBMS-COURSE-18-NOTES/">CMU-DBMS-COURSE-18-NOTES (Timestamp Ordering Concurrency Control - Optimistic)</a></div><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' ? true : false;
 var verify = 'false' ? true : false;
 var GUEST_INFO = ['nick','mail','link'];
 var guest_info = 'nick,mail,link'.split(',').filter(function(item){
@@ -54,4 +139,4 @@ window.valine = new Valine({
   avatar:'mm',
   guest_info:guest_info,
   pageSize:'10'
-})</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Joins-Nested-Loop-Sort-Merge-Hash/" style="font-size: 15px;">Joins (Nested Loop, Sort-Merge, Hash)</a> <a href="/tags/Database-Storage-I/" style="font-size: 15px;">Database Storage I</a> <a href="/tags/Buffer-Pools/" style="font-size: 15px;">Buffer Pools</a> <a href="/tags/Hash-Tables-Open-Extendible-Linear-Cuckoo/" style="font-size: 15px;">(Hash Tables (Open, Extendible, Linear, Cuckoo))</a> <a href="/tags/Trees-Indexes-I/" style="font-size: 15px;">(Trees Indexes I)</a> <a href="/tags/Trees-Indexes-II/" style="font-size: 15px;">(Trees Indexes II)</a> <a href="/tags/Index-Concurrency-Control/" style="font-size: 15px;">(Index Concurrency Control)</a> <a href="/tags/Query-Processing-Models-Access-Methods-Expression-Evaluation/" style="font-size: 15px;">Query Processing (Models, Access Methods, Expression Evaluation)</a> <a href="/tags/Sorting-Aggregations/" style="font-size: 15px;">Sorting + Aggregations</a> <a href="/tags/Database-Storage-II/" style="font-size: 15px;">Database Storage II</a> <a href="/tags/Parallel-Execution/" style="font-size: 15px;">Parallel Execution</a> <a href="/tags/Query-Optimization/" style="font-size: 15px;">Query Optimization</a> <a href="/tags/Concurrency-control-theory/" style="font-size: 15px;">Concurrency control theory</a> <a href="/tags/Two-Phase-Locking/" style="font-size: 15px;">Two Phase Locking</a> <a href="/tags/Timestamp-Ordering-Concurrency-Control/" style="font-size: 15px;">Timestamp Ordering Concurrency Control</a> <a href="/tags/6-824视频/" style="font-size: 15px;">6.824视频</a> <a href="/tags/分布式系统6-824笔记/" style="font-size: 15px;">分布式系统6.824笔记</a> <a href="/tags/各种开发必要的配置摘记/" style="font-size: 15px;">各种开发必要的配置摘记</a> <a href="/tags/movies/" style="font-size: 15px;">movies</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/">CMU-DBMS-COURSE-19-NOTES (MVCC)</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/10/10/CMU-DBMS-COURSE-18-NOTES/">CMU-DBMS-COURSE-18-NOTES (Timestamp Ordering Concurrency Control - Optimistic)</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/">CMU-DBMS-COURSE-17-NOTES (Two Phase Locking - Pessimistic)</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/29/一些管用的配置/">一些管用的配置</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/">CMU-DBMS-COURSE-16-NOTES (Concurrency control theory)</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-15-NOTES/">CMU-DBMS-COURSE-15-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/">CMU-DBMS-COURSE-14-NOTES (Parallel Execution)</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/">CMU-DBMS-COURSE-13-NOTES (Query Optimization)</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/10/Google-Spanner-Paper/">Google-Spanner-Paper</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/09/CMU-DBMS-COURSE-12-NOTES/">CMU-DBMS-COURSE-12-NOTES (Joins (Nested Loop, Sort-Merge, Hash))</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://draveness.me/" title="draveness.me" target="_blank">draveness.me</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
+})</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://turingturing.cn"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Query-Processing-Models-Access-Methods-Expression-Evaluation/" style="font-size: 15px;">Query Processing (Models, Access Methods, Expression Evaluation)</a> <a href="/tags/Database-Storage-I/" style="font-size: 15px;">Database Storage I</a> <a href="/tags/Database-Storage-II/" style="font-size: 15px;">Database Storage II</a> <a href="/tags/Buffer-Pools/" style="font-size: 15px;">Buffer Pools</a> <a href="/tags/Trees-Indexes-II/" style="font-size: 15px;">(Trees Indexes II)</a> <a href="/tags/Index-Concurrency-Control/" style="font-size: 15px;">(Index Concurrency Control)</a> <a href="/tags/Query-Optimization/" style="font-size: 15px;">Query Optimization</a> <a href="/tags/Trees-Indexes-I/" style="font-size: 15px;">(Trees Indexes I)</a> <a href="/tags/Joins-Nested-Loop-Sort-Merge-Hash/" style="font-size: 15px;">Joins (Nested Loop, Sort-Merge, Hash)</a> <a href="/tags/Hash-Tables-Open-Extendible-Linear-Cuckoo/" style="font-size: 15px;">(Hash Tables (Open, Extendible, Linear, Cuckoo))</a> <a href="/tags/Concurrency-control-theory/" style="font-size: 15px;">Concurrency control theory</a> <a href="/tags/Sorting-Aggregations/" style="font-size: 15px;">Sorting + Aggregations</a> <a href="/tags/Two-Phase-Locking/" style="font-size: 15px;">Two Phase Locking</a> <a href="/tags/Parallel-Execution/" style="font-size: 15px;">Parallel Execution</a> <a href="/tags/Timestamp-Ordering-Concurrency-Control/" style="font-size: 15px;">Timestamp Ordering Concurrency Control</a> <a href="/tags/分布式系统6-824笔记/" style="font-size: 15px;">分布式系统6.824笔记</a> <a href="/tags/6-824视频/" style="font-size: 15px;">6.824视频</a> <a href="/tags/各种开发必要的配置摘记/" style="font-size: 15px;">各种开发必要的配置摘记</a> <a href="/tags/movies/" style="font-size: 15px;">movies</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/11/22/CMU-DBMS-COURSE-20-NOTES/">CMU-DBMS-COURSE-20-NOTES (日志记录的方案)</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/11/19/CMU-DBMS-COURSE-19-NOTES/">CMU-DBMS-COURSE-19-NOTES (MVCC)</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/10/10/CMU-DBMS-COURSE-18-NOTES/">CMU-DBMS-COURSE-18-NOTES (Timestamp Ordering Concurrency Control - Optimistic)</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/08/04/CMU-DBMS-COURSE-17-NOTES/">CMU-DBMS-COURSE-17-NOTES (Two Phase Locking - Pessimistic)</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/29/一些管用的配置/">一些管用的配置</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-16-NOTES/">CMU-DBMS-COURSE-16-NOTES (Concurrency control theory)</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/19/CMU-DBMS-COURSE-15-NOTES/">CMU-DBMS-COURSE-15-NOTES</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/18/CMU-DBMS-COURSE-14-NOTES/">CMU-DBMS-COURSE-14-NOTES (Parallel Execution)</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/13/CMU-DBMS-COURSE-13-NOTES/">CMU-DBMS-COURSE-13-NOTES (Query Optimization)</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/10/Google-Spanner-Paper/">Google-Spanner-Paper</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://draveness.me/" title="draveness.me" target="_blank">draveness.me</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">TuringTuring.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
